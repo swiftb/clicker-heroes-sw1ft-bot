@@ -159,6 +159,7 @@ if (libVersion != minLibVersion) {
 #Include *i ch_bot_settings.ahk
 
 scheduleReload := false
+scheduleStop := false
 
 if (useConfigurationAssistant) {
 	configurationAssistant()
@@ -302,6 +303,10 @@ return
 	toggleFlag("scheduleReload", scheduleReload)
 return
 
++Pause::
+	toggleFlag("scheduleStop", scheduleStop)
+return
+
 
 ; -----------------------------------------------------------------------------------------
 ; -- Functions
@@ -419,6 +424,7 @@ loopSpeedRun() {
 		}
 		ascend(autoAscend)
 		handleScheduledReload(true)
+		handleScheduledStop()
 	}
 }
 
@@ -733,6 +739,15 @@ handleScheduledReload(autorun := false) {
 
 		autorun_flag := autorun = true ? "/autorun" : ""
 		Run "%A_AhkPath%" /restart "%A_ScriptFullPath%" %autorun_flag%
+	}
+}
+
+handleScheduledStop() {
+	global
+	if(scheduleStop) {
+		showSplashAlways("Stopping speedruns...", 1)
+		scheduleStop := false
+		exit
 	}
 }
 
