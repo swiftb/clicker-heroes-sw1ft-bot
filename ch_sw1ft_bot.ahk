@@ -158,11 +158,14 @@ if (libVersion != minLibVersion) {
 
 #Include *i ch_bot_settings.ahk
 
+scheduleReload := false
+
 if (useConfigurationAssistant) {
 	configurationAssistant()
 }
 
 clientCheck()
+handleAutorun()
 
 ; -----------------------------------------------------------------------------------------
 ; -- Hotkeys (+=Shift, !=Alt, ^=Ctrl)
@@ -219,32 +222,14 @@ return
 
 ; Reload script with Alt+F5
 !F5::
-	showSplashAlways("Reloading bot...", 1)
-	Reload
+	global scheduleReload := true
+	handleScheduledReload()
 return
 
 ; Speed run loop.
 ; Use to farm Hero Souls
 ^F1::
-	mode := hybridMode ? "hybrid" : "speed"
-	showSplashAlways("Starting " . mode . " runs...")
-	loop
-	{
-		getClickable()
-	    sleep % coinPickUpDelay * 1000
-		initRun()
-		if (activateSkillsAtStart) {
-			activateSkills(speedRunStartCombo[2])
-		}
-		speedRun()
-		if (hybridMode) {
-			deepRun()
-		}
-		if (saveBeforeAscending) {
-			save()
-		}
-		ascend(autoAscend)
-	}
+	loopSpeedRun()
 return
 
 ; Deep run.
@@ -311,6 +296,12 @@ return
 +^F12::
 	toggleFlag("debug", debug)
 return
+
+; Schedule reload script with Shift+F5
++F5::
+	toggleFlag("scheduleReload", scheduleReload)
+return
+
 
 ; -----------------------------------------------------------------------------------------
 ; -- Functions
@@ -404,6 +395,31 @@ upgrade(times, cc1:=1, cc2:=1, cc3:=1, cc4:=1, skip:=false) {
 	ctrlClick(xLvl, yLvlInit + oLvl*3, cc4)
 
 	scrollDown(times)
+}
+
+loopSpeedRun() {
+	global
+
+	mode := hybridMode ? "hybrid" : "speed"
+	showSplashAlways("Starting " . mode . " runs...")
+	loop
+	{
+		getClickable()
+		sleep % coinPickUpDelay * 1000
+		initRun()
+		if (activateSkillsAtStart) {
+			activateSkills(speedRunStartCombo[2])
+		}
+		speedRun()
+		if (hybridMode) {
+			deepRun()
+		}
+		if (saveBeforeAscending) {
+			save()
+		}
+		ascend(autoAscend)
+		handleScheduledReload(true)
+	}
 }
 
 ; All heroes/rangers are expected to "insta-kill" everything at max speed (i.e. around
@@ -709,6 +725,27 @@ stopMouseMonitoring() {
 	setTimer, checkMousePosition, off
 }
 
+
+handleScheduledReload(autorun := false) {
+	global
+	if(scheduleReload) {
+		showSplashAlways("Reloading bot...", 1)
+
+		autorun_flag := autorun = true ? "/autorun" : ""
+		Run "%A_AhkPath%" /restart "%A_ScriptFullPath%" %autorun_flag%
+	}
+}
+
+handleAutorun() {
+	global
+	param_1 = %1%
+	if(param_1 = "/autorun") {
+		showSplashAlways("Autorun speedruns...")
+		loopSpeedrun()
+	}
+}
+
+
 ; -----------------------------------------------------------------------------------------
 ; -- Subroutines
 ; -----------------------------------------------------------------------------------------
@@ -731,3 +768,4 @@ checkMousePosition:
 		}
 	}
 return
+
