@@ -50,8 +50,11 @@
 **Q:** Why didn’t the bot buy all ranger upgrades?  
 **A:** It got there too early. Use the `firstStintAdjustment` setting to give it some extra time.
 
-**Q:** With `saveBeforeAscending` enabled, the script don't seem to click save after changing the file name. Why?  
+**Q:** With `saveBeforeAscending` enabled, the script don't seem to click save after changing the file name.  
 **A:** Change the `saveButtonClassNN` setting to `Button2`
+
+**Q:** With `saveBeforeAscending` enabled, the script changes the file name, but Windows fails to see this and tries to save with the default `clickerHeroSave.txt` name.  
+**A:** Change the `saveMode` setting to `2`
 
 **Q:** The script didn’t ascend. Why?  
 **A:** Adjust the `ascDownClicks` setting.

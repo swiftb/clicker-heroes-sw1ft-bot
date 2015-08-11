@@ -15,6 +15,10 @@ browserTopMargin := 230 ; Firefox [230], IE [198], Chrome (steals focus!) [222]
 ; with "saveBeforeAscending" set to true, change "Button1" to "Button2".
 saveButtonClassNN := "Button1" ; or Button2
 
+; If the auto-save fails to change the file name properly and you get
+; a "already exists" message, change save mode to 2.
+saveMode := 1 ; or 2
+
 ; -----------------------------------------------------------------------------------------
 ; -- BEWARE!        CHANGING ANYTHING BELOW THIS LINE IS ON YOUR OWN RISK        BEWARE! --
 ; -----------------------------------------------------------------------------------------
@@ -425,7 +429,11 @@ save() {
 	sleep % zzz * 4
 
 	; Change the file name...
-	ControlSetText, Edit1, %fileName%, ahk_class %dialogBoxClass%
+	if (saveMode = 1) {
+		ControlSetText, Edit1, %fileName%, ahk_class %dialogBoxClass%
+	} else {
+		ControlSend, Edit1, %fileName%, ahk_class %dialogBoxClass%
+	}
 	sleep % zzz * 4
 	; ... and double-check that it's correct
 	ControlGetText, newFileName, Edit1, ahk_class %dialogBoxClass%

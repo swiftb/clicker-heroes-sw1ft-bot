@@ -238,7 +238,6 @@ return
 		}
 		speedRun()
 		if (hybridMode) {
-			screenShot() ; TODO: Remove
 			deepRun()
 		}
 		if (saveBeforeAscending) {
