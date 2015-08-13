@@ -4,23 +4,23 @@
 **A:** No. You should play this stage of the game all by yourself, it’s the best part!
 
 **Q:** So, at what point does the bot start to work?  
-**A:** See _Minimum recommended game state_ in the README.
+**A:** See __Minimum recommended game state__ in the __README__.
 
 **Q:** What ancients do I need?  
 **A1:** For idle speed runs: Argaiv, Iris, Libertas, Mammon, Mimzee, Morgulis, Siyalatas, Solomon. Maxed: Atman, Bubos, Dogcog, Dora, Fortuna, Khrysos, Kumawakamaru.  
 **A2:** For active deep runs: Bhaal, Chronos, Fragsworth, Juggernaut, Pluto, Thusia. Maxed: Berserker, Chawedo, Energon, Hecatoncheir, Kleptos, Revolc, Sniperino, Vaagur.
 
 **Q:** Does the bot work with the Steam or browser version?  
-**A:** Both.
+**A:** Both. If you run the browser version, it's worth noting that Chrome has issues with AutoHotkey and keep stealing focus! Any other browser is fine.
 
 **Q:** Is the bot for idle or active play?  
-**A:** It’s mainly designed for idle play, doing short _optimal zone_ runs over and over to farm Hero Souls. With the included active clicker it can also run in hybrid mode (e.g. 27 minutes idle, 6 minutes active), or you can re-gild to a higher ranger and start a long deep run to up your *HZE*.
+**A:** It’s mainly designed for idle play, doing short _optimal zone_ runs over and over to farm Hero Souls. With the included active clicker it can also run in hybrid mode (e.g. 27 minutes idle, 6 minutes active), or you can re-gild to a higher ranger and start a long deep run to up your *HZE* (Highest Zone Ever).
 
 **Q:** Does it run in the background?  
 **A:** Yes. The Clicker Heroes window can be behind other windows, but not minimized.
 
 **Q:** How do I start the bot?  
-**A:** See _Starting the bot_ in the README.
+**A:** See __Starting the bot__ in the __README__.
 
 **Q:** Why do I get an error when trying to run one of the script files?  
 **A:** Make sure you have the latest version of both [AutoHotkey](http://ahkscript.org/) and the bot files.
@@ -65,8 +65,10 @@
 **Q:** Can the bot farm Hero Souls while I’m AFK?  
 **A:** Yes, change the `autoAscend` option, but be aware that new relics will be salvaged! A warning will be given 10 seconds (can be changed) before the script salvage and ascend, giving you some time to respond. You can pause/unpause with the <kbd>Pause</kbd> key or abort with <kbd>Alt+Pause</kbd>.
 
-**Q:** Can I move the text splash windows or the progress bar?  
-**A:** Yes, both. Under *Optional Configuration*, you’ll find the *Look & Feel* section. The monster clicker has similar settings.
+**Q1:** Can I turn off sounds?  
+**Q2:** Can I move the text splash windows or the progress bar?  
+**A:** Yes. Under __Optional Configuration__, you’ll find the __Look & Feel__ section. The monster clicker has similar settings.  
+**A2:** Screenshot sounds in Steam can also be turned off: Right-click __Steam__ in your toolbar and uncheck __Play a sound__ under __Settings__ > __In-Game__
 
 **Q:** Can I safely upgrade ancients while the bot runs?  
 **A:** Yes, the script will automatically halt when your mouse pointer gets close to the tab section.

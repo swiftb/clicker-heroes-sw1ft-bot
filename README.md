@@ -42,7 +42,7 @@ These recommendations should give you enough gold after ascending with a *[click
 
 ## Setup
 
-* In Clicker Heroes, turn off the *Show relic found popups* option
+* In Clicker Heroes, turn off the __Show relic found popups__ option and keep all heroes expanded.
 * Download and install the latest version of [AutoHotkey][]
 * Download all `.ahk` script files to a new folder
 * Set the variables listed in the table(s) below
@@ -52,10 +52,10 @@ These recommendations should give you enough gold after ascending with a *[click
 
 | Variable | Explanation |
 | -------- | ----------- |
-irisLevel    | Set to your Iris level in game
-optimalLevel | Your optimal zone level <sup>(1)</sup>
-speedRunTime | The duration of the speed run <sup>(1)</sup>
-gildedRanger | The number of your gilded ranger <sup>(2)</sup>
+`irisLevel`    | Set to your Iris level in game
+`optimalLevel` | Your optimal zone level <sup>(1)</sup>
+`speedRunTime` | The duration of the speed run <sup>(1)</sup>
+`gildedRanger` | The number of your gilded ranger <sup>(2)</sup>
 
 (1) Set according to the [Ancients Optimizer][]  
 (2) **1**:Dread Knight, **2**:Atlas, **3**:Terra, **4**:Phthalo, **5**:Banana, **6**:Lilin, **7**:Cadmia, **8**:Alabaster, **9**:Astraea
@@ -64,12 +64,12 @@ gildedRanger | The number of your gilded ranger <sup>(2)</sup>
 
 | Variable | Explanation |
 | -------- | ----------- |
-deepRunTime         | The duration of the deep run
-hybridMode          | [true/false] Chain a deep run when the speed run finish
-autoAscend          | [true/false] Warning! Set to true will both salvage relics and ascend without any user intervention!
-saveBeforeAscending | [true/false] Auto-save before ascending
+`deepRunTime`         | The duration of the deep run
+`hybridMode`          | [`true`/`false`] Chain a deep run when the speed run finish
+`autoAscend`          | [`true`/`false`] Warning! Set to true will both salvage relics and ascend without any user intervention!
+`saveBeforeAscending` | [`true`/`false`] Auto-save before ascending
 
-Note: Not a complete list (see *Optional Settings* in the bot file)
+Note: Not a complete list (see **Optional Settings** in the bot file)
 
 #### Mandatory lib configuration variables
 
@@ -77,8 +77,8 @@ These only need to be changed if you run the browser client.
 
 | Variable | Explanation |
 | -------- | ----------- |
-SetTitleMatchMode | **3** for Steam or **regex** for browser version
-browserTopMargin  | Browser top margin <sup>(3)</sup>
+`SetTitleMatchMode` | **`3`** for Steam or **`regex`** for browser version
+`browserTopMargin`  | Browser top margin <sup>(3)</sup>
 
 (3) Start Windows Spy, then check the relative y position of the top edge of the CH area (below the logo).
 
@@ -86,7 +86,7 @@ browserTopMargin  | Browser top margin <sup>(3)</sup>
 
 Double-click the `ch_sw1ft_bot.ahk` file to start the bot. In your taskbar you should see a green **H** icon.
 
-Note: If your Windows account don't have administrator rights, you might have to start the script by right-clicking it and select *Run as Administrator*.
+Note: If your Windows account don't have administrator rights, you might have to start the script by right-clicking it and select **Run as Administrator**.
 
 ### Function tests
 
@@ -143,7 +143,7 @@ These hotkeys can be executed while a speed or deep run is active.
 
 ## Questions or comments?
 
-Check the FAQ or visit the original script [home][] on Reddit.
+Check the **FAQ** or visit the original script [home][] on Reddit.
 
 [Reddit]: https://www.reddit.com/r/ClickerHeroes/
 [Steam]: http://store.steampowered.com/app/363970/

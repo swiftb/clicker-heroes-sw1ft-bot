@@ -52,8 +52,8 @@ clickDelay := short
 
 ; -----------------------------------------------------------------------------------------
 
-if (libVersion != minLibVersion) {
-	showWarningSplash("The bot lib version must be " . minLibVersion . "!")
+if (libVersion < minLibVersion) {
+	showWarningSplash("The bot lib version must be " . minLibVersion . " or higher!")
 	ExitApp
 }
 

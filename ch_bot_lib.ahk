@@ -23,7 +23,7 @@ saveMode := 1 ; or 2
 ; -- BEWARE!        CHANGING ANYTHING BELOW THIS LINE IS ON YOUR OWN RISK        BEWARE! --
 ; -----------------------------------------------------------------------------------------
 
-libVersion=1.3
+libVersion=1.31
 
 winName=Clicker Heroes
 
