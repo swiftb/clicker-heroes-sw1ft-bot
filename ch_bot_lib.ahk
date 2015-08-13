@@ -103,7 +103,7 @@ yDestroyYes := 430
 xScroll := 554
 yUp := 219
 yDown := 653
-top2BottomClicks := 46
+top2BottomClicks := 45
 
 xGilded := 95
 yGilded := 582
@@ -149,6 +149,16 @@ ySettingsClose := 52
 
 xSave := 286
 ySave := 112
+
+xSkill := 201
+oSkill := 36 ; offset to next skill
+ySkillTop := 279
+ySkill2nd := 410
+ySkillCenter := 434
+
+xMiddleZone := 858
+xNextZone := 1042
+yZone := 70
 
 ; -----------------------------------------------------------------------------------------
 ; -- Functions
@@ -262,26 +272,26 @@ switchToRelicTab() {
 
 scrollToTop() {
 	global
-	scrollUp(top2BottomClicks)
-	sleep 1000
+	clickPos(xScroll, yUp, top2BottomClicks)
+	sleep % 25 * top2BottomClicks + 150
 }
 
 scrollToBottom() {
 	global
-	scrollDown(top2BottomClicks)
-	sleep 1000
+	clickPos(xScroll, yDown, top2BottomClicks)
+	sleep % 25 * top2BottomClicks + 150
 }
 
 scrollUp(clickCount:=1) {
 	global
 	clickPos(xScroll, yUp, clickCount)
-	sleep % zzz * 2
+	sleep % 25 * clickCount + 150
 }
 
 scrollDown(clickCount:=1) {
 	global
 	clickPos(xScroll, yDown, clickCount)
-	sleep % zzz * 2
+	sleep % 25 * clickCount + 150
 }
 
 ; Scroll down fix when at bottom and scroll bar don't update correctly
@@ -445,4 +455,37 @@ save() {
 
 	sleep % zzz * 3
 	clickPos(xSettingsClose, ySettingsClose)
+}
+
+scrollZoneLeft(zones) {
+	global
+	clickPos(xNextZone, yZone, zones)
+	sleep % 25 * zones + 150
+	clickPos(xMiddleZone, yZone)
+}
+
+horizontalSkills(y, skills) {
+	global
+	local x := xSkill
+
+	loop % skills
+	{
+		clickPos(x, y)
+		sleep 30
+		x += oSkill
+	}
+}
+
+verticalSkills(x) {
+	global
+	local extraClicks := 6
+	local y := ySkillCenter - extraClicks * buttonSize
+
+	; Scrolling is not an exact science, hence we click above, center and below
+	loop % 2 * extraClicks + 1
+	{
+		clickPos(x, y)
+		sleep 30
+		y += buttonSize
+	}
 }

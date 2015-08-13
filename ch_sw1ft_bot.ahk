@@ -13,7 +13,7 @@
 SetControlDelay, -1
 
 scriptName=CH Sw1ft Bot
-scriptVersion=2.32
+scriptVersion := "2.x"
 minLibVersion=1.31
 
 script := scriptName . " v" . scriptVersion
@@ -45,10 +45,12 @@ gildedRanger := 6 ; the number of your main guilded ranger
 
 ; -- Speed run ----------------------------------------------------------------------------
 
-; If the script starts on the 2nd ranger too early (before lvl 100) or too late (after lvl 200), adjust this setting.
-firstStintAdjustment := 0 ; Add or remove time (in seconds) to or from the first hero.
+useMidasStart := false
 
 activateSkillsAtStart := true ; usually needed in the late game to get going after ascending
+
+; If the script starts on the 2nd ranger too early (before lvl 100) or too late (after lvl 200), adjust this setting.
+firstStintAdjustment := 0 ; Add or remove time (in seconds) to or from the first hero.
 
 hybridMode := false ; chain a deep run when the speed run finish
 
@@ -168,6 +170,18 @@ clientCheck()
 ; -- Hotkeys (+=Shift, !=Alt, ^=Ctrl)
 ; -----------------------------------------------------------------------------------------
 
+F1::
+	midasStart()
+return
+
+F2::
+	loop 1
+	{
+		midasStart()
+		midasQuickAscend()
+	}
+return
+
 ; Show the cursor position with Alt+Middle Mouse Button
 !mbutton::
 	mousegetpos, xpos, ypos
@@ -226,25 +240,7 @@ return
 ; Speed run loop.
 ; Use to farm Hero Souls
 ^F1::
-	mode := hybridMode ? "hybrid" : "speed"
-	showSplashAlways("Starting " . mode . " runs...")
-	loop
-	{
-		getClickable()
-	    sleep % coinPickUpDelay * 1000
-		initRun()
-		if (activateSkillsAtStart) {
-			activateSkills(speedRunStartCombo[2])
-		}
-		speedRun()
-		if (hybridMode) {
-			deepRun()
-		}
-		if (saveBeforeAscending) {
-			save()
-		}
-		ascend(autoAscend)
-	}
+	speedRunLoop()
 return
 
 ; Deep run.
@@ -406,6 +402,110 @@ upgrade(times, cc1:=1, cc2:=1, cc3:=1, cc4:=1, skip:=false) {
 	scrollDown(times)
 }
 
+midasStart() {
+	global
+
+	local yl := yLvl - 10
+
+	; Example configs:
+
+	; Two zones
+	; Siya 14000: [60, 6, 0, 0, 79, 5]
+	; Siya 7000: [55, 6, 0, 0, 79, 5]
+	; Siya 3500: [55, 6, 0, 0, 69, 5]
+
+	; Three zones
+	; Siya 2000: [50, 6, 60, 6, 69, 5]
+
+	midasZoneConfig := [60, 6, 0, 0, 79, 5]
+
+	local midasZone1 := midasZoneConfig[1]
+	local midasDelay1 := midasZoneConfig[2]
+
+	; Extra zone for Siya < 3500
+	local midasExtraZone := midasZoneConfig[3]
+	local midasExtraDelay := midasZoneConfig[4]
+
+	; The goal is to aim in between any of these thresholds:
+	; 160T (Abaddon) <- x -> 1350T (Ma Zhu) <- x -> 12000T (Amenhotep) <- x -> 150q (Beastlord)
+	local midasZone2 := midasZoneConfig[5]
+	local midasDelay2 := midasZoneConfig[6]
+	; Lvl 100 + skill: Broyle 710T, King Midas 57000T
+
+	switchToCombatTab()
+	loop 3 {
+		clickPos(xMonster, yMonster) ; Break idle
+		sleep 30
+	}
+	scrollZoneLeft(midasZone1 - 1)
+	ctrlClick(xLvl, yl) ; Cid
+	clickPos(xSkill + oSkill, ySkillTop) ; Clickstorm
+	sleep % zzz
+
+	scrollToBottom()
+	clickPos(xLvl, yl+oLvl) ; Natalia
+	sleep % midasDelay1 * 1000
+
+	if (midasExtraZone > 0) {
+		scrollZoneLeft(midasExtraZone - midasZone1)
+		maxClick(xLvl, yl+oLvl) ; Natalia maxed
+		horizontalSkills(ySkill2nd, 4)
+		sleep % midasExtraDelay * 1000
+	}
+
+	scrollDown(8)
+	local zones := midasExtraZone > 0 ? midasZone2 - midasExtraZone : midasZone2 - midasZone1
+	scrollZoneLeft(zones)
+	ctrlClick(xLvl, yl+oLvl) ; Broyle x 100
+	sleep % midasDelay2 * 1000
+	ctrlClick(xLvl, yl+oLvl*3) ; Midas x 100
+
+	verticalSkills(xSkill + oSkill*4) ; Metal Detector + Golden Clicks
+	toggleMode()
+	activateSkills("1-4-5")
+	sleep % coinPickUpDelay * 1000
+}
+
+; Just here for testing
+midasQuickAscend() {
+	global
+
+	scrollDown(6)
+	ctrlClick(xLvl, yLvl+oLvl*3, 2)
+	verticalSkills(xSkill + oSkill*3)
+	sleep % zzz * 4
+	clickPos(xYes, yYes)
+	sleep % zzz * 2
+}
+
+speedRunLoop() {
+	global
+	mode := hybridMode ? "hybrid" : "speed"
+	showSplashAlways("Starting " . mode . " runs...")
+	loop
+	{
+		if (useMidasStart) {
+			midasStart()
+			getClickable()
+		} else {
+			getClickable()
+		    sleep % coinPickUpDelay * 1000
+		}
+		initRun()
+		if (activateSkillsAtStart) {
+			activateSkills(speedRunStartCombo[2])
+		}
+		speedRun()
+		if (hybridMode) {
+			deepRun()
+		}
+		if (saveBeforeAscending) {
+			save()
+		}
+		ascend(autoAscend)
+	}
+}
+
 ; All heroes/rangers are expected to "insta-kill" everything at max speed (i.e. around
 ; 7 minutes per 250 levels). Only the last 2-3 minutes should slow down slightly.
 speedRun() {
@@ -485,12 +585,12 @@ speedRun() {
 	{
 		switchToCombatTab()
 		scrollDown(initDownClicks[1])
-		toggleMode() ; toggle to progression mode
+		toggleMode(!useMidasStart) ; toggle to progression mode
 		lvlUp(firstStintTime, 0, 3, ++stint, stints) ; nope, let's bridge with Samurai
 		scrollToBottom()
 	} else {
 		scrollToBottom()
-		toggleMode() ; toggle to progression mode
+		toggleMode(!useMidasStart) ; toggle to progression mode
 		if (firstStintTime > 0) {
 			lvlUp(firstStintTime, 1, firstStintButton, ++stint, stints)
 			scrollWayDown(3)
@@ -684,10 +784,12 @@ regild(ranger, gildCount) {
 }
 
 ; Toggle between farm and progression modes
-toggleMode() {
+toggleMode(toggle:=1) {
 	global
-	ControlSend,, {a down}{a up}, % winName
-	sleep % zzz
+	if (toggle) {
+		ControlSend,, {a down}{a up}, % winName
+		sleep % zzz
+	}
 }
 
 activateSkills(skills) {
