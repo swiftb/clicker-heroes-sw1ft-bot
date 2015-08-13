@@ -420,6 +420,7 @@ speedRun() {
 	local zoneLvl := gildedRanger * lMax + lvlAdjustment ; approx zone lvl where we can buy our gilded ranger @ lvl 150
 	local lvls := zoneLvl - irisLevel ; lvl's to get there
 
+	local firstStintButton := 1
 	local firstStintTime := 0
 	local midStintTime := 0
 
@@ -428,7 +429,10 @@ speedRun() {
 		midStintTime := tMax
 		lvls -= lMax
 		stints += 1
+	} else if (lvls > lMax) {
+		firstStintButton := 2
 	}
+	
 	if (lvls > 0)
 	{
 		firstStintTime := ceil(lvls * tMax / lMax)
@@ -440,7 +444,6 @@ speedRun() {
 	local lastStintTime := srDuration - firstStintTime - midStintTime - totalClickDelay
 	stints += 1
 
-	local firstStintButton := stints = 2 ? 2 : 1
 	local lastStintButton := gildedRanger = 9 ? 3 : 2 ; special case for Astraea
 
 	if (debug)
