@@ -111,6 +111,7 @@ yLvlInit := 000
 ; E.g if your Iris is at 489, you should level it to at least 529, pick the setting for Terra,
 ; reload the script (Alt+F5), ascend with a clickable and try Alt+F2 again.
 
+deepRunClicks := true ; click the monster during a deep run?
 ; -- Look & Feel --------------------------------------------------------------------------
 
 ; true or false
@@ -540,7 +541,9 @@ deepRun() {
 
 	startMouseMonitoring()
 	startProgress("Deep Run Progress", 0, drDuration // barUpdateDelay)
-	monsterClickerOn()
+	if (deepRunClicks) {
+		monsterClickerOn()
+	}
 
 	local comboDelay := deepRunCombo[1]
 	local comboIndex := 2
@@ -556,7 +559,9 @@ deepRun() {
 			showSplashAlways("Deep run aborted!")
 			exit
 		}
-		clickPos(xMonster, yMonster)
+		if (deepRunClicks) {
+			clickPos(xMonster, yMonster)
+		}
 		if (mod(t, comboDelay) = 0) {
 			activateSkills(deepRunCombo[comboIndex])
 			comboIndex := comboIndex < deepRunCombo.MaxIndex() ? comboIndex+1 : 2
@@ -572,7 +577,9 @@ deepRun() {
 		sleep 1000
 	}
 
-	monsterClickerOff()
+	if (deepRunClicks) {
+		monsterClickerOff()
+	}
 	stopProgress()
 	stopMouseMonitoring()
 
