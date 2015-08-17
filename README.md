@@ -44,9 +44,9 @@ These recommendations should give you enough gold after ascending with a *[click
 
 * In Clicker Heroes, turn off the __Show relic found popups__ option and keep all heroes expanded.
 * Download and install the latest version of [AutoHotkey][]
-* Download all `.ahk` script files to a new folder
-* Set the variables listed in the table(s) below
-    - Note: Settings can be made directly in the script files, but the preferred way is to create a `ch_bot_settings.ahk` file and override them there. Look at `ch_bot_settings_example.ahk` for a hybrid run example.
+* Download all `.ahk` script files to a new folder ([ZIP](../../archive/master.zip))
+* Copy the file `ch_bot_settings_default.ahk` to `ch_bot_settings.ahk`
+* Set the variables listed in the table(s) below in the newly created file
 
 #### Mandatory bot configuration variables
 
@@ -97,7 +97,7 @@ If any of these fail, reload the script with <kbd>Alt+F5</kbd> and try again.
 
 ### Starting the main speed run loop
 
-If you plan on doing any hybrid (or deep) runs, then start the `monster_clicker.ahk` script too.
+If you plan on doing any hybrid (or deep) runs, then start the `monster_clicker.ahk` script too (unless you set `deepRunClicks` to `false`).
 
 After a fresh ascend with an available clickable, start the speed run loop with <kbd>Ctrl+F1</kbd>.
 
@@ -107,11 +107,13 @@ Note: Changing settings while a script is running don't take effect until you re
 
 | Hotkey | Function |
 | ------ | -------- |
-<kbd>Ctrl+F1</kbd>   | Loop speed runs
-<kbd>Ctrl+F2</kbd>   | Start a deep run (requires a running `monster_clicker.ahk`)
-<kbd>Pause</kbd>     | Pause/unpause the script
-<kbd>Alt+Pause</kbd> | Abort active speed/deep runs and an initiated auto ascension
-<kbd>Alt+F5</kbd>    | Reload the script (needed after configuration changes and a client window resize)
+<kbd>Ctrl+F1</kbd>     | Loop speed runs
+<kbd>Ctrl+F2</kbd>     | Start a deep run (requires a running `monster_clicker.ahk`)
+<kbd>Pause</kbd>       | Pause/unpause the script
+<kbd>Alt+Pause</kbd>   | Abort active speed/deep runs and an initiated auto ascension
+<kbd>Shift+Pause</kbd> | Do not start new speed/deep runs after finishing the current run and ascension
+<kbd>Alt+F5</kbd>      | Reload the script (needed after configuration changes and a client window resize)
+<kbd>Shift+F5</kbd>    | Reload the script after the current run and restart the speedrun loop afterwards
 
 ### Supplementary Hotkeys
 
