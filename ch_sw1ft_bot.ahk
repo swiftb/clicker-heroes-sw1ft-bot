@@ -44,6 +44,10 @@ handleAutorun()
 ; -- Hotkeys (+=Shift, !=Alt, ^=Ctrl)
 ; -----------------------------------------------------------------------------------------
 
+; Toggle all hotkeys
+^+!F12::Suspend, Toggle
+return
+
 ; Show the cursor position with Alt+Middle Mouse Button
 !mbutton::
 	mousegetpos, xpos, ypos

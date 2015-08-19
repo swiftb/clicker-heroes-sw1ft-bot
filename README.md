@@ -107,6 +107,7 @@ Note: Changing settings while a script is running don't take effect until you re
 
 | Hotkey | Function |
 | ------ | -------- |
+<kbd>Ctrl+Alt+Shift+F12</kbd> | Suspend/Unsuspend all other Hotkeys
 <kbd>Ctrl+F1</kbd>     | Loop speed runs
 <kbd>Ctrl+F2</kbd>     | Start a deep run (requires a running `monster_clicker.ahk`)
 <kbd>Pause</kbd>       | Pause/unpause the script
