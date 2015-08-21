@@ -13,39 +13,49 @@
 SetControlDelay, -1
 
 scriptName=CH Sw1ft Bot
-scriptVersion=2.32
-minLibVersion=1.31
+scriptVersion=2.4
+minLibVersion=1.32
 
 script := scriptName . " v" . scriptVersion
 
-; Load default settings
-#Include *i ch_bot_settings_default.ahk
+scheduleReload := false
+scheduleStop := false
 
 ; -----------------------------------------------------------------------------------------
+
+; Load system default settings
+#Include system\ch_bot_default_settings.ahk
+
+IfNotExist, ch_bot_settings.ahk
+{
+	FileCopy, system\ch_bot_default_settings.ahk, ch_bot_settings.ahk
+}
+
+#Include *i ch_bot_settings.ahk
 
 if (libVersion != minLibVersion) {
 	showWarningSplash("The bot lib version must be " . minLibVersion . "!")
 	ExitApp
 }
 
-#Include *i ch_bot_settings.ahk
-
-scheduleReload := false
-scheduleStop := false
-
 if (useConfigurationAssistant) {
 	configurationAssistant()
 }
 
 clientCheck()
+
+if (deepRunClicks) {
+	Run monster_clicker.ahk
+}
+
 handleAutorun()
 
 ; -----------------------------------------------------------------------------------------
 ; -- Hotkeys (+=Shift, !=Alt, ^=Ctrl)
 ; -----------------------------------------------------------------------------------------
 
-; Toggle all hotkeys
-^+!F12::Suspend, Toggle
+; Suspend/Unsuspend all other Hotkeys
+^Esc::Suspend, Toggle
 return
 
 ; Show the cursor position with Alt+Middle Mouse Button
@@ -103,14 +113,18 @@ return
 	handleScheduledReload()
 return
 
-; Speed run loop.
-; Use to farm Hero Souls
+; Speed run loop
 ^F1::
 	loopSpeedRun()
 return
 
-; Deep run.
-; Use (after a speed run) to get a few new gilds every now and then
+; Stop looping when current speed run finishes with Shift+Pause
++Pause::
+	toggleFlag("scheduleStop", scheduleStop)
+return
+
+; Deep run
+; Use (after a speed run)
 ^F2::
 	deepRun()
 return
@@ -154,15 +168,19 @@ return
 	toggleFlag("screenShotRelics", screenShotRelics)
 return
 
-+^F3::
++^F5::
+	toggleFlag("scheduleReload", scheduleReload)
+return
+
++^F6::
 	toggleFlag("playNotificationSounds", playNotificationSounds)
 return
 
-+^F4::
++^F7::
 	toggleFlag("playWarningSounds", playWarningSounds)
 return
 
-+^F5::
++^F8::
 	toggleFlag("showSplashTexts", showSplashTexts)
 return
 
@@ -173,16 +191,6 @@ return
 +^F12::
 	toggleFlag("debug", debug)
 return
-
-; Schedule reload script with Shift+F5
-+F5::
-	toggleFlag("scheduleReload", scheduleReload)
-return
-
-+Pause::
-	toggleFlag("scheduleStop", scheduleStop)
-return
-
 
 ; -----------------------------------------------------------------------------------------
 ; -- Functions
@@ -299,8 +307,8 @@ loopSpeedRun() {
 			save()
 		}
 		ascend(autoAscend)
-		handleScheduledReload(true)
 		handleScheduledStop()
+		handleScheduledReload(true)
 	}
 }
 
@@ -416,9 +424,7 @@ deepRun() {
 
 	startMouseMonitoring()
 	startProgress("Deep Run Progress", 0, drDuration // barUpdateDelay)
-	if (deepRunClicks) {
-		monsterClickerOn()
-	}
+	monsterClickerOn()
 
 	local comboDelay := deepRunCombo[1]
 	local comboIndex := 2
@@ -452,9 +458,7 @@ deepRun() {
 		sleep 1000
 	}
 
-	if (deepRunClicks) {
-		monsterClickerOff()
-	}
+	monsterClickerOff()
 	stopProgress()
 	stopMouseMonitoring()
 
@@ -462,16 +466,25 @@ deepRun() {
 	sleep 1000
 }
 
-monsterClickerOn() {
-	send {shift down}{f1 down}{f1 up}{shift up}
+monsterClickerOn(isActive:=true) {
+	global
+	if (deepRunClicks) {
+		send {shift down}{f1 down}{f1 up}{shift up}
+	}
 }
 
 monsterClickerPause() {
-	send {shift down}{f2 down}{f2 up}{shift up}
+	global
+	if (deepRunClicks) {
+		send {shift down}{f2 down}{f2 up}{shift up}
+	}
 }
 
 monsterClickerOff() {
-	send {shift down}{pause down}{pause up}{shift up}
+	global
+	if (deepRunClicks) {
+		send {shift down}{pause down}{pause up}{shift up}
+	}
 }
 
 lvlUp(seconds, buyUpgrades, button, stint, stints) {
@@ -509,6 +522,35 @@ lvlUp(seconds, buyUpgrades, button, stint, stints) {
 	}
 	stopProgress()
 	stopMouseMonitoring()
+}
+
+save() {
+	global
+	local fileName := "ch" . A_NowUTC . ".txt"
+	local newFileName := ""
+
+	clickPos(xSettings, ySettings)
+	sleep % zzz * 3
+	clickPos(xSave, ySave)
+	sleep % zzz * 4
+
+	; Change the file name...
+	if (saveMode = 1) {
+		ControlSetText, Edit1, %fileName%, ahk_class %dialogBoxClass%
+	} else {
+		ControlSend, Edit1, %fileName%, ahk_class %dialogBoxClass%
+	}
+	sleep % zzz * 4
+	; ... and double-check that it's correct
+	ControlGetText, newFileName, Edit1, ahk_class %dialogBoxClass%
+	if (newFileName = fileName) {
+		ControlClick, %saveButtonClassNN%, ahk_class %dialogBoxClass%,,,, NA
+	} else {
+		ControlSend,, {esc}, ahk_class %dialogBoxClass%
+	}
+
+	sleep % zzz * 3
+	clickPos(xSettingsClose, ySettingsClose)
 }
 
 ascend(autoYes:=false) {
@@ -613,7 +655,6 @@ stopMouseMonitoring() {
 	setTimer, checkMousePosition, off
 }
 
-
 handleScheduledReload(autorun := false) {
 	global
 	if(scheduleReload) {
@@ -627,7 +668,7 @@ handleScheduledReload(autorun := false) {
 handleScheduledStop() {
 	global
 	if(scheduleStop) {
-		showSplashAlways("Stopping speedruns...", 1)
+		showSplashAlways("Scheduled stop. Exiting...")
 		scheduleStop := false
 		exit
 	}
@@ -637,11 +678,10 @@ handleAutorun() {
 	global
 	param_1 = %1%
 	if(param_1 = "/autorun") {
-		showSplashAlways("Autorun speedruns...")
+		showSplash("Autorun speedruns...", 1)
 		loopSpeedrun()
 	}
 }
-
 
 ; -----------------------------------------------------------------------------------------
 ; -- Subroutines
@@ -665,4 +705,3 @@ checkMousePosition:
 		}
 	}
 return
-

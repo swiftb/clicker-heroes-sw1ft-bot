@@ -14,6 +14,7 @@
 #Persistent
 #NoEnv
 #InstallKeybdHook
+#SingleInstance force
 
 #Include %A_ScriptDir%
 #Include ch_bot_lib.ahk
@@ -22,28 +23,10 @@ SetControlDelay, -1
 SetBatchLines, -1
 
 scriptName=Monster Clicker
-scriptVersion=1.2
+scriptVersion=1.21
 minLibVersion=1.3
 
 script := scriptName . " v" . scriptVersion
-
-; -----------------------------------------------------------------------------------------
-; -- Configuration
-; -----------------------------------------------------------------------------------------
-
-clickDuration := 0 ; minutes (set to zero for manual/remote operation)
-
-; -- Look & Feel --------------------------------------------------------------------------
-
-global playNotificationSounds := clickDuration > 0 ? true : false ; no sound when operated remotely
-global playWarningSounds := true
-global showSplashTexts := true
-
-; Splash text window position
-xSplash := A_ScreenWidth // 2 - wSplash // 2 ; centered
-ySplash := A_ScreenHeight // 2 + 40
-
-; -----------------------------------------------------------------------------------------
 
 short := 21 ; ms
 long := 2000 ; throttled delay
@@ -51,6 +34,16 @@ long := 2000 ; throttled delay
 clickDelay := short
 
 ; -----------------------------------------------------------------------------------------
+
+; Load system default settings
+#Include system\monster_clicker_default_settings.ahk
+
+IfNotExist, monster_clicker_settings.ahk
+{
+	FileCopy, system\monster_clicker_default_settings.ahk, monster_clicker_settings.ahk
+}
+
+#Include *i monster_clicker_settings.ahk
 
 if (libVersion < minLibVersion) {
 	showWarningSplash("The bot lib version must be " . minLibVersion . " or higher!")

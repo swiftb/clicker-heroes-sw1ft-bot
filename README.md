@@ -8,6 +8,7 @@ A mid/late game bot for [Clicker Heroes][Reddit].
 * [Minimum recommended game state](#minimum-recommended-game-state)
 * [Setup](#setup)
 * [Starting the bot](#starting-the-bot)
+* [Configuration](#configuration)
 * [Hotkeys](#main-hotkeys)
 
 ## Features
@@ -33,7 +34,7 @@ To operate as intended, the bot needs a certain minimum game state:
 
 * Atlas or higher ranger gilded
 * _Optimal zone_ > 1000
-* Iris > 145
+* Iris > 145 (and within 1001 levels of the _optimal zone_)
 * Siyalatas > 200
     - Argaiv, Libertas/Mammon/Mimzee, Morgulis and Solomon following the [Rules of Thumb][]
 * __Maxed:__ Atman, Bubos, Dogcog, Dora, Fortuna, Khrysos and Kumawakamaru
@@ -42,25 +43,50 @@ These recommendations should give you enough gold after ascending with a *[click
 
 ## Setup
 
-* In Clicker Heroes, turn off the __Show relic found popups__ option and keep all heroes expanded.
 * Download and install the latest version of [AutoHotkey][]
-* Download all `.ahk` script files to a new folder ([ZIP](../../archive/master.zip))
-* Copy the file `ch_bot_settings_default.ahk` to `ch_bot_settings.ahk`
-* Set the variables listed in the table(s) below in the newly created file
+* Download and unpack the latest [ZIP](../../archive/master.zip), or individually download all `.ahk` files to a new folder (where you also need the system folder with the default settings files).
 
-#### Mandatory bot configuration variables
+## Starting the bot
+
+* Start Clicker Heroes
+* Double-click the `ch_sw1ft_bot.ahk` file to start the bot. In your taskbar you should see a green **H** icon.
+
+If you run the browser version, you will get a "Clicker Heroes started?" message on your initial start. This is expected until you have configured the [Mandatory lib settings](#mandatory-lib-settings).
+
+Unless they already exist, three user settings files will be created as copies of the default system settings. All configuration changes should be made in these files:
+
+`ch_bot_lib_settings.ahk`, `ch_bot_settings.ahk` and `monster_clicker_settings.ahk`.
+
+Note: If your Windows account don't have administrator rights, you might have to start the script by right-clicking it and select **Run as Administrator**.
+
+## Configuration
+
+* In Clicker Heroes, turn off the __Show relic found popups__ option and keep all heroes expanded.
+
+#### Mandatory lib settings
+
+These only need to be changed if you run the browser client.
+
+| Variable | Explanation |
+| -------- | ----------- |
+`SetTitleMatchMode` | **`3`** for Steam or **`regex`** for browser version
+`browserTopMargin`  | Browser top margin <sup>(1)</sup>
+
+(1) Start Windows Spy, then check the **relative** mouse **y** position of the top edge of the CH area (below the logo where the black meets the blue).
+
+#### Mandatory bot settings
 
 | Variable | Explanation |
 | -------- | ----------- |
 `irisLevel`    | Set to your Iris level in game
-`optimalLevel` | Your optimal zone level <sup>(1)</sup>
-`speedRunTime` | The duration of the speed run <sup>(1)</sup>
-`gildedRanger` | The number of your gilded ranger <sup>(2)</sup>
+`optimalLevel` | Your optimal zone level <sup>(2)</sup>
+`speedRunTime` | The duration of the speed run <sup>(2)</sup>
+`gildedRanger` | The number of your gilded ranger <sup>(3)</sup>
 
-(1) Set according to the [Ancients Optimizer][]  
-(2) **1**:Dread Knight, **2**:Atlas, **3**:Terra, **4**:Phthalo, **5**:Banana, **6**:Lilin, **7**:Cadmia, **8**:Alabaster, **9**:Astraea
+(2) Set according to the [Ancients Optimizer][]  
+(3) **1**:Dread Knight, **2**:Atlas, **3**:Terra, **4**:Phthalo, **5**:Banana, **6**:Lilin, **7**:Cadmia, **8**:Alabaster, **9**:Astraea
 
-#### Optional bot configuration variables
+#### Optional bot settings
 
 | Variable | Explanation |
 | -------- | ----------- |
@@ -69,24 +95,7 @@ These recommendations should give you enough gold after ascending with a *[click
 `autoAscend`          | [`true`/`false`] Warning! Set to true will both salvage relics and ascend without any user intervention!
 `saveBeforeAscending` | [`true`/`false`] Auto-save before ascending
 
-Note: Not a complete list (see **Optional Settings** in the bot file)
-
-#### Mandatory lib configuration variables
-
-These only need to be changed if you run the browser client.
-
-| Variable | Explanation |
-| -------- | ----------- |
-`SetTitleMatchMode` | **`3`** for Steam or **`regex`** for browser version
-`browserTopMargin`  | Browser top margin <sup>(3)</sup>
-
-(3) Start Windows Spy, then check the relative y position of the top edge of the CH area (below the logo).
-
-## Starting the bot
-
-Double-click the `ch_sw1ft_bot.ahk` file to start the bot. In your taskbar you should see a green **H** icon.
-
-Note: If your Windows account don't have administrator rights, you might have to start the script by right-clicking it and select **Run as Administrator**.
+Note: Not a complete list.
 
 ### Function tests
 
@@ -97,43 +106,40 @@ If any of these fail, reload the script with <kbd>Alt+F5</kbd> and try again.
 
 ### Starting the main speed run loop
 
-If you plan on doing any hybrid (or deep) runs, then start the `monster_clicker.ahk` script too (unless you set `deepRunClicks` to `false`).
-
 After a fresh ascend with an available clickable, start the speed run loop with <kbd>Ctrl+F1</kbd>.
-
-Note: Changing settings while a script is running don't take effect until you reload the script.
 
 ## Main Hotkeys
 
 | Hotkey | Function |
 | ------ | -------- |
-<kbd>Ctrl+Alt+Shift+F12</kbd> | Suspend/Unsuspend all other Hotkeys
-<kbd>Ctrl+F1</kbd>     | Loop speed runs
-<kbd>Ctrl+F2</kbd>     | Start a deep run (requires a running `monster_clicker.ahk`)
-<kbd>Pause</kbd>       | Pause/unpause the script
-<kbd>Alt+Pause</kbd>   | Abort active speed/deep runs and an initiated auto ascension
-<kbd>Shift+Pause</kbd> | Do not start new speed/deep runs after finishing the current run and ascension
-<kbd>Alt+F5</kbd>      | Reload the script (needed after configuration changes and a client window resize)
-<kbd>Shift+F5</kbd>    | Reload the script after the current run and restart the speedrun loop afterwards
+<kbd>Ctrl+F1</kbd>       | Loop speed runs
+<kbd>Ctrl+F2</kbd>       | Start a deep run
+<kbd>Pause</kbd>         | Pause/unpause the script
+<kbd>Alt+Pause</kbd>     | Abort active speed/deep runs and an initiated auto ascension
+<kbd>Shift+Pause</kbd>   | Do not start new speed/deep runs after finishing the current run and ascension
+<kbd>Alt+F5</kbd>        | Reload the script (needed after configuration changes or a client window resize)
+<kbd>Shift+Ctrl+F5</kbd> | Reload the script after the current run and restart the speed run loop afterwards
 
-### Supplementary Hotkeys
+#### Supplementary Hotkeys
 
 These hotkeys can be executed while a speed or deep run is active.
 
 | Hotkey | Function |
 | ------ | -------- |
-<kbd>Ctrl+F6</kbd> | Set previous ranger as re-gild target
-<kbd>Ctrl+F7</kbd> | Set next ranger as re-gild target
-<kbd>Ctrl+F8</kbd> | Move `reGildCount` gilds to the target ranger (will pause the monster clicker if running)
+<kbd>Ctrl+Esc</kbd> | Suspend/Unsuspend all other Hotkeys
+<kbd>Ctrl+F6</kbd>  | Set previous ranger as re-gild target
+<kbd>Ctrl+F7</kbd>  | Set next ranger as re-gild target
+<kbd>Ctrl+F8</kbd>  | Move `reGildCount` gilds to the target ranger (will pause the monster clicker if running)
 <kbd>Ctrl+F11</kbd> | Autosave the game
 <kbd>Shift+Ctrl+F1</kbd>  | Toggle the `autoAscend` flag
 <kbd>Shift+Ctrl+F2</kbd>  | Toggle the `screenShotRelics` flag
-<kbd>Shift+Ctrl+F3</kbd>  | Toggle the `playNotificationSounds` flag
-<kbd>Shift+Ctrl+F4</kbd>  | Toggle the `playWarningSounds` flag
-<kbd>Shift+Ctrl+F5</kbd>  | Toggle the `showSplashTexts` flag
-<kbd>Shift+Ctrl+F11</kbd>  | Toggle the `saveBeforeAscending` flag
+<kbd>Shift+Ctrl+F6</kbd>  | Toggle the `playNotificationSounds` flag
+<kbd>Shift+Ctrl+F7</kbd>  | Toggle the `playWarningSounds` flag
+<kbd>Shift+Ctrl+F8</kbd>  | Toggle the `showSplashTexts` flag
+<kbd>Shift+Ctrl+F11</kbd> | Toggle the `saveBeforeAscending` flag
+<kbd>Shift+Ctrl+F12</kbd> | Toggle the `debug` flag
 
-### Test Hotkeys
+#### Test Hotkeys
 
 | Hotkey | Function |
 | ------ | -------- |

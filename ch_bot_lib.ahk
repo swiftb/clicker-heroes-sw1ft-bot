@@ -3,27 +3,7 @@
 ; by Sw1ftb
 ; -----------------------------------------------------------------------------------------
 
-fullScreenOption := false ; Steam borderless fullscreen option
-
-SetTitleMatchMode, 3 ; Steam [3] or browser [regex] version?
-
-; If browser, you need to verify (or adjust) the top margin setting.
-; Start Windows Spy, then check the relative y position of the top edge of the CH area (below the logo).
-browserTopMargin := 230 ; Firefox [230], IE [198], Chrome (steals focus!) [222]
-
-; If the script don't press the save button automatically when running
-; with "saveBeforeAscending" set to true, change "Button1" to "Button2".
-saveButtonClassNN := "Button1" ; or Button2
-
-; If the auto-save fails to change the file name properly and you get
-; a "already exists" message, change save mode to 2.
-saveMode := 1 ; or 2
-
-; -----------------------------------------------------------------------------------------
-; -- BEWARE!        CHANGING ANYTHING BELOW THIS LINE IS ON YOUR OWN RISK        BEWARE! --
-; -----------------------------------------------------------------------------------------
-
-libVersion=1.31
+libVersion=1.32
 
 winName=Clicker Heroes
 
@@ -52,15 +32,11 @@ aspectRatio := 1
 hBorder := 0
 vBorder := 0
 
-wSplash := 200
-
 zzz := 200 ; sleep delay (in ms) after a click
 lvlUpDelay := 5 ; time (in seconds) between lvl up clicks
 barUpdateDelay := 30 ; time (in seconds) between progress bar updates
 coinPickUpDelay := 6 ; time (in seconds) needed to pick up all coins from a clickable
 nextHeroDelay := 6 ; extra gold farm delay (in seconds) between heroes
-
-debug := false
 
 dialogBoxClass := "#32770"
 
@@ -151,6 +127,18 @@ xSave := 286
 ySave := 112
 
 ; -----------------------------------------------------------------------------------------
+
+; Load system default settings
+#Include system\ch_bot_lib_default_settings.ahk
+
+IfNotExist, ch_bot_lib_settings.ahk
+{
+	FileCopy, system\ch_bot_lib_default_settings.ahk, ch_bot_lib_settings.ahk
+}
+
+#Include *i ch_bot_lib_settings.ahk
+
+; -----------------------------------------------------------------------------------------
 ; -- Functions
 ; -----------------------------------------------------------------------------------------
 
@@ -196,7 +184,6 @@ calculateBrowserOffsets() {
 		topMarginOffset := browserTopMargin - chTopMargin
 	} else {
 		showWarningSplash("Clicker Heroes started in browser?")
-		ExitApp
 	}
 }
 
@@ -238,7 +225,6 @@ calculateSteamAspectRatio() {
 		}
 	} else {
 		showWarningSplash("Clicker Heroes started?")
-		ExitApp
 	}
 }
 
@@ -416,33 +402,4 @@ screenShot() {
 		sleep % zzz
 		WinActivate, ahk_id %activeWinId% ; ... and restore focus back
 	}
-}
-
-save() {
-	global
-	local fileName := "ch" . A_NowUTC . ".txt"
-	local newFileName := ""
-
-	clickPos(xSettings, ySettings)
-	sleep % zzz * 3
-	clickPos(xSave, ySave)
-	sleep % zzz * 4
-
-	; Change the file name...
-	if (saveMode = 1) {
-		ControlSetText, Edit1, %fileName%, ahk_class %dialogBoxClass%
-	} else {
-		ControlSend, Edit1, %fileName%, ahk_class %dialogBoxClass%
-	}
-	sleep % zzz * 4
-	; ... and double-check that it's correct
-	ControlGetText, newFileName, Edit1, ahk_class %dialogBoxClass%
-	if (newFileName = fileName) {
-		ControlClick, %saveButtonClassNN%, ahk_class %dialogBoxClass%,,,, NA
-	} else {
-		ControlSend,, {esc}, ahk_class %dialogBoxClass%
-	}
-
-	sleep % zzz * 3
-	clickPos(xSettingsClose, ySettingsClose)
 }
