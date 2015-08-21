@@ -13,150 +13,30 @@
 SetControlDelay, -1
 
 scriptName=CH Sw1ft Bot
-scriptVersion=2.32
-minLibVersion=1.31
+scriptVersion=2.4
+minLibVersion=1.32
 
 script := scriptName . " v" . scriptVersion
 
-; -----------------------------------------------------------------------------------------
-; -- Mandatory Configuration
-; -----------------------------------------------------------------------------------------
-
-irisLevel := 1029 ; try to keep your Iris within 1001 levels of your optimal zone
-
-; Clicker Heroes Ancients Optimizer @ http://s3-us-west-2.amazonaws.com/clickerheroes/ancientssoul.html
-
-; Use the optimizer to set the optimal level and time:
-optimalLevel := 2000
-speedRunTime := 29 ; minutes (usually between 28 and 30 minutes)
-
-; In the Heroes tab you can verify that you are using the optimal ranger.
-gildedRanger := 6 ; the number of your main guilded ranger
-; 1:Dread Knight, 2:Atlas, 3:Terra, 4:Phthalo, 5:Banana, 6:Lilin, 7:Cadmia, 8:Alabaster, 9:Astraea
+scheduleReload := false
+scheduleStop := false
 
 ; -----------------------------------------------------------------------------------------
-; -- Optional Settings
-; -----------------------------------------------------------------------------------------
 
-; (Steam only) Want to run borderless fullscreen?
-; 1. In Clicker Heroes, turn on the "Full Screen" option.
-; 2. Change "fullScreenOption" to "true" in the ch_bot_lib.ahk file.
-; 3. Reload with Alt+F5.
+; Load system default settings
+#Include system\ch_bot_default_settings.ahk
 
-; -- Speed run ----------------------------------------------------------------------------
+IfNotExist, ch_bot_settings.ahk
+{
+	FileCopy, system\ch_bot_default_settings.ahk, ch_bot_settings.ahk
+}
 
-; If the script starts on the 2nd ranger too early (before lvl 100) or too late (after lvl 200), adjust this setting.
-firstStintAdjustment := 0 ; Add or remove time (in seconds) to or from the first hero.
-
-activateSkillsAtStart := true ; usually needed in the late game to get going after ascending
-
-hybridMode := false ; chain a deep run when the speed run finish
-
-ascDownClicks := 26 ; # of down clicks needed to get the ascension button center:ish (after a full speed run)
-
-autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention!
-autoAscendDelay := 10 ; warning timer (in seconds) before ascending
-
-saveBeforeAscending := false ; autosave the game
-
-; If you run the Steam client with autoAscend, you can screenshot every relic you salvage!
-screenShotRelics := false
-
-; -- Deep run -----------------------------------------------------------------------------
-
-deepRunTime := 60 ; minutes
-
-clickableHuntDelay := 15 ; hunt for a clickable every 15s
-stopHuntThreshold := 30 ; stop hunt when this many minutes remain of a deep run
-
-; Number of gilds to move over at a time
-reGildCount := 100 ; don't set this higher than 100 if you plan on moving gilds during a deep run
-reGildRanger := gildedRanger + 1 
-
-; -- Init run -----------------------------------------------------------------------------
-
-; The assistant will automatically try to set the correct initDownClicks and yLvlInit settings.
-; It will also assist with Iris level recommendations.
-useConfigurationAssistant := true
-
-; A list of clicks needed to scroll down 4 heroes at a time, starting from the top.
-initDownClicks := [0,0,0,0,0,0]
-
-; This y coordinate is supposed to keep itself inside the top lvl up button when scrolling down according to the above "clicking pattern".
-yLvlInit := 000
-
-; Manual configuration (if not using the assistant):
-; 1. Ascend with a "clickable" available.
-; 2. Click Alt+F1 (the script should pick up the clickable).
-; 3. Scroll down to the bottom. What ranger is last?
-; 4. From the list below, pick the matching settings:
-
-; Astraea      [6,5,6,5,6,3], 241 (Iris > 2010)
-; Alabaster    [6,6,5,6,6,3], 259 (Iris > 1760)
-; Cadmia       [6,6,6,6,6,3], 240 (Iris > 1510)
-; Lilin        [6,6,6,6,6,3], 285 (Iris > 1260)
-; Banana       [6,7,6,7,6,3], 240 (Iris > 1010)
-; Phthalo      [6,7,7,6,7,3], 273 (Iris > 760)
-; Terra        [7,7,7,7,7,3], 240 (Iris > 510)
-; Atlas        [7,7,7,8,7,3], 273 (Iris > 260)
-; Dread Knight [7,8,7,8,7,4], 257
-
-; E.g. if Phthalo is last, you set initDownClicks to [6,7,7,6,7,3] and yLvlInit to 273.
-; In this case your Iris level should be somewhere between 760 and 1010.
-
-; 5. Now click Alt+F2 (the script should level up and upgrade all heroes from Cid to Frostleaf).
-
-; If some heroes where missed, make sure you have picked the suggested setting for your Iris level.
-; If you are close to one of these Iris irisThresholds, you should move above it with some margin. 
-; E.g if your Iris is at 489, you should level it to at least 529, pick the setting for Terra,
-; reload the script (Alt+F5), ascend with a clickable and try Alt+F2 again.
-
-; -- Look & Feel --------------------------------------------------------------------------
-
-; true or false
-global playNotificationSounds := true
-global playWarningSounds := true
-global showSplashTexts := true ; Note that some splash texts will always be shown
-global showProgressBar := true
-
-; Splash text window position
-xSplash := A_ScreenWidth // 2 - wSplash // 2 ; centered
-ySplash := A_ScreenHeight // 2 - 40
-
-; Progress bar position
-xProgressBar := 20
-yProgressBar := 20
-
-; If you run with a dual/tripple monitor setup, you can move windows
-; right or left by adding or subtracting A_ScreenWidth from the x-parameters.
-
-; Left monitor example:
-; xSplash := A_ScreenWidth // 2 - wSplash // 2 - A_ScreenWidth
-; xProgressBar := 20 - A_ScreenWidth
-
-; -- Skill Combos -------------------------------------------------------------------------
-
-; 1 - Clickstorm, 2 - Powersurge, 3 - Lucky Strikes, 4 - Metal Detector, 5 - Golden Clicks
-; 6 - The Dark Ritual, 7 - Super Clicks, 8 - Energize, 9 - Reload
-
-; Test with tools/combo_tester.ahk
-
-comboStart := [15*60, "8-1-2-3-4-5-7-6-9"]
-comboEDR := [2.5*60, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
-comboEGolden := [2.5*60, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"] ; energize 3 (dmg) or 5 (gold)
-comboGoldenLuck := [2.5*60, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
-
-speedRunStartCombo := comboStart
-deepRunCombo := comboGoldenLuck
-
-; -----------------------------------------------------------------------------------------
+#Include *i ch_bot_settings.ahk
 
 if (libVersion != minLibVersion) {
 	showWarningSplash("The bot lib version must be " . minLibVersion . "!")
 	ExitApp
 }
-
-#Include *i ch_bot_settings.ahk
 
 if (useConfigurationAssistant) {
 	configurationAssistant()
@@ -164,9 +44,19 @@ if (useConfigurationAssistant) {
 
 clientCheck()
 
+if (deepRunClicks) {
+	Run monster_clicker.ahk
+}
+
+handleAutorun()
+
 ; -----------------------------------------------------------------------------------------
 ; -- Hotkeys (+=Shift, !=Alt, ^=Ctrl)
 ; -----------------------------------------------------------------------------------------
+
+; Suspend/Unsuspend all other Hotkeys
+^Esc::Suspend, Toggle
+return
 
 ; Show the cursor position with Alt+Middle Mouse Button
 !mbutton::
@@ -219,36 +109,22 @@ return
 
 ; Reload script with Alt+F5
 !F5::
-	showSplashAlways("Reloading bot...", 1)
-	Reload
+	global scheduleReload := true
+	handleScheduledReload()
 return
 
-; Speed run loop.
-; Use to farm Hero Souls
+; Speed run loop
 ^F1::
-	mode := hybridMode ? "hybrid" : "speed"
-	showSplashAlways("Starting " . mode . " runs...")
-	loop
-	{
-		getClickable()
-	    sleep % coinPickUpDelay * 1000
-		initRun()
-		if (activateSkillsAtStart) {
-			activateSkills(speedRunStartCombo[2])
-		}
-		speedRun()
-		if (hybridMode) {
-			deepRun()
-		}
-		if (saveBeforeAscending) {
-			save()
-		}
-		ascend(autoAscend)
-	}
+	loopSpeedRun()
 return
 
-; Deep run.
-; Use (after a speed run) to get a few new gilds every now and then
+; Stop looping when current speed run finishes with Shift+Pause
++Pause::
+	toggleFlag("scheduleStop", scheduleStop)
+return
+
+; Deep run
+; Use (after a speed run)
 ^F2::
 	deepRun()
 return
@@ -292,15 +168,19 @@ return
 	toggleFlag("screenShotRelics", screenShotRelics)
 return
 
-+^F3::
++^F5::
+	toggleFlag("scheduleReload", scheduleReload)
+return
+
++^F6::
 	toggleFlag("playNotificationSounds", playNotificationSounds)
 return
 
-+^F4::
++^F7::
 	toggleFlag("playWarningSounds", playWarningSounds)
 return
 
-+^F5::
++^F8::
 	toggleFlag("showSplashTexts", showSplashTexts)
 return
 
@@ -404,6 +284,32 @@ upgrade(times, cc1:=1, cc2:=1, cc3:=1, cc4:=1, skip:=false) {
 	ctrlClick(xLvl, yLvlInit + oLvl*3, cc4)
 
 	scrollDown(times)
+}
+
+loopSpeedRun() {
+	global
+
+	mode := hybridMode ? "hybrid" : "speed"
+	showSplashAlways("Starting " . mode . " runs...")
+	loop
+	{
+		getClickable()
+		sleep % coinPickUpDelay * 1000
+		initRun()
+		if (activateSkillsAtStart) {
+			activateSkills(speedRunStartCombo[2])
+		}
+		speedRun()
+		if (hybridMode) {
+			deepRun()
+		}
+		if (saveBeforeAscending) {
+			save()
+		}
+		ascend(autoAscend)
+		handleScheduledStop()
+		handleScheduledReload(true)
+	}
 }
 
 ; All heroes/rangers are expected to "insta-kill" everything at max speed (i.e. around
@@ -534,7 +440,9 @@ deepRun() {
 			showSplashAlways("Deep run aborted!")
 			exit
 		}
-		clickPos(xMonster, yMonster)
+		if (deepRunClicks) {
+			clickPos(xMonster, yMonster)
+		}
 		if (mod(t, comboDelay) = 0) {
 			activateSkills(deepRunCombo[comboIndex])
 			comboIndex := comboIndex < deepRunCombo.MaxIndex() ? comboIndex+1 : 2
@@ -558,16 +466,25 @@ deepRun() {
 	sleep 1000
 }
 
-monsterClickerOn() {
-	send {shift down}{f1 down}{f1 up}{shift up}
+monsterClickerOn(isActive:=true) {
+	global
+	if (deepRunClicks) {
+		send {shift down}{f1 down}{f1 up}{shift up}
+	}
 }
 
 monsterClickerPause() {
-	send {shift down}{f2 down}{f2 up}{shift up}
+	global
+	if (deepRunClicks) {
+		send {shift down}{f2 down}{f2 up}{shift up}
+	}
 }
 
 monsterClickerOff() {
-	send {shift down}{pause down}{pause up}{shift up}
+	global
+	if (deepRunClicks) {
+		send {shift down}{pause down}{pause up}{shift up}
+	}
 }
 
 lvlUp(seconds, buyUpgrades, button, stint, stints) {
@@ -605,6 +522,35 @@ lvlUp(seconds, buyUpgrades, button, stint, stints) {
 	}
 	stopProgress()
 	stopMouseMonitoring()
+}
+
+save() {
+	global
+	local fileName := "ch" . A_NowUTC . ".txt"
+	local newFileName := ""
+
+	clickPos(xSettings, ySettings)
+	sleep % zzz * 3
+	clickPos(xSave, ySave)
+	sleep % zzz * 4
+
+	; Change the file name...
+	if (saveMode = 1) {
+		ControlSetText, Edit1, %fileName%, ahk_class %dialogBoxClass%
+	} else {
+		ControlSend, Edit1, %fileName%, ahk_class %dialogBoxClass%
+	}
+	sleep % zzz * 4
+	; ... and double-check that it's correct
+	ControlGetText, newFileName, Edit1, ahk_class %dialogBoxClass%
+	if (newFileName = fileName) {
+		ControlClick, %saveButtonClassNN%, ahk_class %dialogBoxClass%,,,, NA
+	} else {
+		ControlSend,, {esc}, ahk_class %dialogBoxClass%
+	}
+
+	sleep % zzz * 3
+	clickPos(xSettingsClose, ySettingsClose)
 }
 
 ascend(autoYes:=false) {
@@ -707,6 +653,34 @@ startMouseMonitoring() {
 
 stopMouseMonitoring() {
 	setTimer, checkMousePosition, off
+}
+
+handleScheduledReload(autorun := false) {
+	global
+	if(scheduleReload) {
+		showSplashAlways("Reloading bot...", 1)
+
+		autorun_flag := autorun = true ? "/autorun" : ""
+		Run "%A_AhkPath%" /restart "%A_ScriptFullPath%" %autorun_flag%
+	}
+}
+
+handleScheduledStop() {
+	global
+	if(scheduleStop) {
+		showSplashAlways("Scheduled stop. Exiting...")
+		scheduleStop := false
+		exit
+	}
+}
+
+handleAutorun() {
+	global
+	param_1 = %1%
+	if(param_1 = "/autorun") {
+		showSplash("Autorun speedruns...", 1)
+		loopSpeedrun()
+	}
 }
 
 ; -----------------------------------------------------------------------------------------
