@@ -114,6 +114,7 @@ After a fresh ascend with an available clickable, start the speed run loop with 
 | ------ | -------- |
 <kbd>Ctrl+F1</kbd>       | Loop speed runs
 <kbd>Ctrl+F2</kbd>       | Start a deep run
+<kbd>Ctrl+F3</kbd>       | Open Ancient Optimizer
 <kbd>Pause</kbd>         | Pause/unpause the script
 <kbd>Alt+Pause</kbd>     | Abort active speed/deep runs and an initiated auto ascension
 <kbd>Shift+Pause</kbd>   | Do not start new speed/deep runs after finishing the current run and ascension
