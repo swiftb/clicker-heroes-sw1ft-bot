@@ -90,8 +90,8 @@ return
 	}
 return
 
-; Stop clicker with Shift+Pause
-+Pause::
+; Stop clicker with Shift+F3
++F3::
 	keepOnClicking := false
 return
 

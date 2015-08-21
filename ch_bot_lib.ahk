@@ -357,7 +357,7 @@ startProgress(title, min:=0, max:=100) {
 		gui, new
 		gui, margin, 0, 0
 		gui, font, s18
-		gui, add, progress,% "w300 h28 range" min "-" max " -smooth vProgressBar"
+		gui, add, progress,% "w" wProgressBar " h28 range" min "-" max " -smooth vProgressBar"
 		gui, add, text, w92 vProgressBarTime x+2
 		gui, show,% "na x" xProgressBar " y" yProgressBar,% script " - " title
 	}

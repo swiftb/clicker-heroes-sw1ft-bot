@@ -107,12 +107,13 @@ global playWarningSounds := true
 global showSplashTexts := true ; Note that some splash texts will always be shown
 global showProgressBar := true
 
-; Splash text window size and position
+; Splash text window width and position
 wSplash := 200
 xSplash := A_ScreenWidth // 2 - wSplash // 2 ; centered
 ySplash := A_ScreenHeight // 2 - 40
 
-; Progress bar position
+; Progress bar width and position
+wProgressBar := 325
 xProgressBar := 20
 yProgressBar := 20
 
