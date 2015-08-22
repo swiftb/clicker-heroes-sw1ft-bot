@@ -562,6 +562,7 @@ ascend(autoYes:=false) {
 	if (autoYes) {
 		showWarningSplash(autoAscendDelay . " seconds till ASCENSION! (Abort with Alt+Pause)", autoAscendDelay)
 		if (exitThread) {
+			exitThread := false
 			showSplashAlways("Ascension aborted!")
 			exit
 		}
