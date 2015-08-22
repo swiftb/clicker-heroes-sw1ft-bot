@@ -483,7 +483,7 @@ monsterClickerPause() {
 monsterClickerOff() {
 	global
 	if (deepRunClicks) {
-		send {shift down}{pause down}{pause up}{shift up}
+		send {shift down}{f3 down}{f3 up}{shift up}
 	}
 }
 
