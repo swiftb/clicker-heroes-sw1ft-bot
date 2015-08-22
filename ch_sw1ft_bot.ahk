@@ -560,10 +560,13 @@ ascend(autoYes:=false) {
 	local y := yAsc - extraClicks * buttonSize
 
 	if (autoYes) {
-		showWarningSplash(autoAscendDelay . " seconds till ASCENSION! (Abort with Alt+Pause)", autoAscendDelay)
-		if (exitThread) {
-			showSplashAlways("Ascension aborted!")
-			exit
+		if(autoAscendDelay > 0) {
+			showWarningSplash(autoAscendDelay . " seconds till ASCENSION! (Abort with Alt+Pause)", autoAscendDelay)
+			if (exitThread) {
+				exitThread := false
+				showSplashAlways("Ascension aborted!")
+				exit
+			}
 		}
 	} else {
 		playWarningSound()
@@ -593,11 +596,30 @@ salvageJunkPile() {
 	global
 
 	switchToRelicTab()
-	if (autoAscend && screenShotRelics) {
-		clickPos(xRelic, yRelic) ; focus
-		screenShot()
-		clickPos(xRelic+100, yRelic) ; remove focus
+
+	if (autoAscend) {
+		if (screenShotRelics || displayRelicsDuration > 0) {
+			clickPos(xRelic, yRelic) ; focus
+		}
+
+		if (screenShotRelics) {
+			screenShot()
+		}
+
+		if (displayRelicsDuration > 0) {
+			showWarningSplash(displayRelicsDuration . " seconds till SALVATION! (Abort with Alt+Pause)", displayRelicsDuration)
+			if (exitThread) {
+				exitThread := false
+				showSplashAlways("Salvation aborted!")
+				exit
+			}
+		}
+
+		if (screenShotRelics || displayRelicsDuration > 0) {
+			clickPos(xRelic+100, yRelic) ; remove focus
+		}
 	}
+
 	clickPos(xSalvageJunk, ySalvageJunk)
 	sleep % zzz * 4
 	clickPos(xDestroyYes, yDestroyYes)
