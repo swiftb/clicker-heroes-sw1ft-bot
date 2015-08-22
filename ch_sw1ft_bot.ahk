@@ -54,6 +54,8 @@ handleAutorun()
 ; -- Hotkeys (+=Shift, !=Alt, ^=Ctrl)
 ; -----------------------------------------------------------------------------------------
 
+; Midas test hotkeys
+
 F1::
 	midasStart()
 return
@@ -63,6 +65,15 @@ F2::
 	{
 		midasStart()
 		midasQuickAscend()
+	}
+return
+
+F3::
+	loop 1
+	{
+		midasStart()
+		initRun()
+		ascend(autoAscend)
 	}
 return
 
@@ -222,8 +233,11 @@ configurationAssistant() {
 		initDownClicks := [6,5,6,5,6,3]
 		yLvlInit := 241
 	} else if (irisThreshold(1760)) { ; Alabaster
-		initDownClicks := [6,6,5,6,6,3]
-		yLvlInit := 259
+		; [6,6,6,5,6,3], 227
+		; [6,5,6,6,6,3], 260
+		; [5,6,6,5,6,3], 293
+		initDownClicks := [6,5,6,6,6,3]
+		yLvlInit := 260
 	} else if (irisThreshold(1510)) { ; Cadmia
 		initDownClicks := [6,6,6,6,6,3]
 		yLvlInit := 240
@@ -303,30 +317,14 @@ midasStart() {
 
 	local yl := yLvl - 10
 
-	; Example configs:
-
-	; Two zones
-	; Siya 14000: [60, 6, 0, 0, 79, 5]
-	; Siya 7000: [55, 6, 0, 0, 79, 5]
-	; Siya 3500: [55, 6, 0, 0, 69, 5]
-
-	; Three zones
-	; Siya 2000: [50, 6, 60, 6, 69, 5]
-
-	midasZoneConfig := [60, 6, 0, 0, 79, 5]
-
 	local midasZone1 := midasZoneConfig[1]
 	local midasDelay1 := midasZoneConfig[2]
 
-	; Extra zone for Siya < 3500
 	local midasExtraZone := midasZoneConfig[3]
 	local midasExtraDelay := midasZoneConfig[4]
 
-	; The goal is to aim in between any of these thresholds:
-	; 160T (Abaddon) <- x -> 1350T (Ma Zhu) <- x -> 12000T (Amenhotep) <- x -> 150q (Beastlord)
 	local midasZone2 := midasZoneConfig[5]
 	local midasDelay2 := midasZoneConfig[6]
-	; Lvl 100 + skill: Broyle 710T, King Midas 57000T
 
 	switchToCombatTab()
 	loop 3 {
@@ -334,7 +332,8 @@ midasStart() {
 		sleep 30
 	}
 	scrollZoneLeft(midasZone1 - 1)
-	ctrlClick(xLvl, yl) ; Cid
+	sleep % zzz
+	ctrlClick(xLvl, yl) ; Cid x 100
 	clickPos(xSkill + oSkill, ySkillTop) ; Clickstorm
 	sleep % zzz
 
@@ -344,7 +343,7 @@ midasStart() {
 
 	if (midasExtraZone > 0) {
 		scrollZoneLeft(midasExtraZone - midasZone1)
-		maxClick(xLvl, yl+oLvl) ; Natalia maxed
+		ctrlClick(xLvl, yl+oLvl) ; Natalia x 100
 		horizontalSkills(ySkill2nd, 4)
 		sleep % midasExtraDelay * 1000
 	}

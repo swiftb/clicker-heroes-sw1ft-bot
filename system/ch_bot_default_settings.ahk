@@ -19,6 +19,42 @@ gildedRanger := 6 ; the number of your main guilded ranger
 ; -- Optional Settings
 ; -----------------------------------------------------------------------------------------
 
+; -- Midas --------------------------------------------------------------------------------
+
+useMidasStart := false
+
+; Config syntax:
+; [<boss zone 1>, <delay 1>, <extra boss zone>, <extra delay>, <zone 2>, <delay 2>]
+
+; Midas Start Procedure:
+
+; * Scroll to "boss zone 1" > Lvl Cid to 100 > Buy Clickstorm (1) > Scroll down and lvl Natalia to 1 > "delay 1"
+; * (Optional) Scroll to "extra boss zone" > Lvl Natalias to 100 > Buy Natalias upgrades > "extra delay"
+
+; We want to reach this point with an accumulated gold (ag) amount between one of these thresholds:
+; 160T (Abaddon) <- ag -> 1350T (Ma Zhu) <- ag -> 12000T (Amenhotep) <- ag -> 150q (Beastlord)
+; Target amounts:  755T                    6675T                      81000T
+
+; At each threshold, a new hero will spawn and trigger a movement in the scrollbar.
+; If that happens just as we try to scroll down to Broyle and Midas, the start will fail.
+; Hence why we try to be between two thresholds in gold.
+
+; * Scroll down > Scroll to "zone 2" > Lvl Broyle to 100 > "delay 2"
+; * Lvl Midas to 100 > Buy Metal Detector (4) and Golden Clicks (5) -- Total cost ~60000T
+; * Activate Progression Mode > Activate skills 1-4-5 > Coin pickup delay (6 seconds)
+
+; Example configs:
+
+; Two zones
+; Siya 14000: [60, 7, 0, 0, 79, 5]
+; Siya 7000: [55, 6, 0, 0, 79, 5]
+
+; Three zones
+; Siya 3500: [50, 5, 60, 4, 74, 5]
+; Siya 2000: [50, 6, 60, 6, 69, 5]
+
+midasZoneConfig := [60, 7, 0, 0, 79, 5]
+
 ; -- Speed run ----------------------------------------------------------------------------
 
 ; If the script starts on the 2nd ranger too early (before lvl 100) or too late (after lvl 200), adjust this setting.
@@ -80,7 +116,9 @@ yLvlInit := 000
 ; 4. From the list below, pick the matching settings:
 
 ; Astraea      [6,5,6,5,6,3], 241 (Iris > 2010)
-; Alabaster    [6,6,5,6,6,3], 259 (Iris > 1760)
+; Alabaster    [6,6,6,5,6,3], 227 (Iris > 1760)
+; Alabaster    [6,5,6,6,6,3], 260 (Iris > 1760)
+; Alabaster    [5,6,6,5,6,3], 293 (Iris > 1760)
 ; Cadmia       [6,6,6,6,6,3], 240 (Iris > 1510)
 ; Lilin        [6,6,6,6,6,3], 285 (Iris > 1260)
 ; Banana       [6,7,6,7,6,3], 240 (Iris > 1010)
