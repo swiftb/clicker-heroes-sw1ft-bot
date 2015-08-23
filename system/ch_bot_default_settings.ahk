@@ -33,10 +33,10 @@ ascDownClicks := 26 ; # of down clicks needed to get the ascension button center
 autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention!
 
 ; Auto Ascend Warning Mode
-; The following two settings may replace each other or can just be used both
+; The following two settings may replace each other or can both be used.
 ; Set to 0 to disable completely
 autoAscendDelay := 10 ; warning timer (in seconds) before ascending
-displayRelicsDuration := 10 ; warning timer (in seconds) salvaging junk pile
+displayRelicsDuration := 10 ; warning timer (in seconds) before salvaging the junk pile
 
 ; If you run the Steam client with autoAscend, you can screenshot every relic you salvage!
 screenShotRelics := false
@@ -85,7 +85,9 @@ yLvlInit := 000
 ; 4. From the list below, pick the matching settings:
 
 ; Astraea      [6,5,6,5,6,3], 241 (Iris > 2010)
-; Alabaster    [6,6,5,6,6,3], 259 (Iris > 1760)
+; Alabaster    [6,6,6,5,6,3], 227 (Iris > 1760)
+; Alabaster    [6,5,6,6,6,3], 260 (Iris > 1760)
+; Alabaster    [5,6,6,5,6,3], 293 (Iris > 1760)
 ; Cadmia       [6,6,6,6,6,3], 240 (Iris > 1510)
 ; Lilin        [6,6,6,6,6,3], 285 (Iris > 1260)
 ; Banana       [6,7,6,7,6,3], 240 (Iris > 1010)

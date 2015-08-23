@@ -31,6 +31,7 @@ IfNotExist, ch_bot_settings.ahk
 	FileCopy, system\ch_bot_default_settings.ahk, ch_bot_settings.ahk
 }
 
+; Load user settings
 #Include *i ch_bot_settings.ahk
 
 if (libVersion != minLibVersion) {
@@ -210,8 +211,11 @@ configurationAssistant() {
 		initDownClicks := [6,5,6,5,6,3]
 		yLvlInit := 241
 	} else if (irisThreshold(1760)) { ; Alabaster
-		initDownClicks := [6,6,5,6,6,3]
-		yLvlInit := 259
+		; [6,6,6,5,6,3], 227
+		; [6,5,6,6,6,3], 260
+		; [5,6,6,5,6,3], 293
+		initDownClicks := [6,6,6,5,6,3]
+		yLvlInit := 227
 	} else if (irisThreshold(1510)) { ; Cadmia
 		initDownClicks := [6,6,6,6,6,3]
 		yLvlInit := 240
@@ -560,7 +564,7 @@ ascend(autoYes:=false) {
 	local y := yAsc - extraClicks * buttonSize
 
 	if (autoYes) {
-		if(autoAscendDelay > 0) {
+		if (autoAscendDelay > 0) {
 			showWarningSplash(autoAscendDelay . " seconds till ASCENSION! (Abort with Alt+Pause)", autoAscendDelay)
 			if (exitThread) {
 				exitThread := false
