@@ -31,6 +31,7 @@ IfNotExist, ch_bot_settings.ahk
 	FileCopy, system\ch_bot_default_settings.ahk, ch_bot_settings.ahk
 }
 
+; Load user settings
 #Include *i ch_bot_settings.ahk
 
 if (libVersion != minLibVersion) {
@@ -236,8 +237,8 @@ configurationAssistant() {
 		; [6,6,6,5,6,3], 227
 		; [6,5,6,6,6,3], 260
 		; [5,6,6,5,6,3], 293
-		initDownClicks := [6,5,6,6,6,3]
-		yLvlInit := 260
+		initDownClicks := [6,6,6,5,6,3]
+		yLvlInit := 227
 	} else if (irisThreshold(1510)) { ; Cadmia
 		initDownClicks := [6,6,6,6,6,3]
 		yLvlInit := 240
@@ -651,10 +652,13 @@ ascend(autoYes:=false) {
 	local y := yAsc - extraClicks * buttonSize
 
 	if (autoYes) {
-		showWarningSplash(autoAscendDelay . " seconds till ASCENSION! (Abort with Alt+Pause)", autoAscendDelay)
-		if (exitThread) {
-			showSplashAlways("Ascension aborted!")
-			exit
+		if (autoAscendDelay > 0) {
+			showWarningSplash(autoAscendDelay . " seconds till ASCENSION! (Abort with Alt+Pause)", autoAscendDelay)
+			if (exitThread) {
+				exitThread := false
+				showSplashAlways("Ascension aborted!")
+				exit
+			}
 		}
 	} else {
 		playWarningSound()
@@ -684,11 +688,30 @@ salvageJunkPile() {
 	global
 
 	switchToRelicTab()
-	if (autoAscend && screenShotRelics) {
-		clickPos(xRelic, yRelic) ; focus
-		screenShot()
-		clickPos(xRelic+100, yRelic) ; remove focus
+
+	if (autoAscend) {
+		if (screenShotRelics || displayRelicsDuration > 0) {
+			clickPos(xRelic, yRelic) ; focus
+		}
+
+		if (screenShotRelics) {
+			screenShot()
+		}
+
+		if (displayRelicsDuration > 0) {
+			showWarningSplash(displayRelicsDuration . " seconds till SALVATION! (Abort with Alt+Pause)", displayRelicsDuration)
+			if (exitThread) {
+				exitThread := false
+				showSplashAlways("Salvation aborted!")
+				exit
+			}
+		}
+
+		if (screenShotRelics || displayRelicsDuration > 0) {
+			clickPos(xRelic+100, yRelic) ; remove focus
+		}
 	}
+
 	clickPos(xSalvageJunk, ySalvageJunk)
 	sleep % zzz * 4
 	clickPos(xDestroyYes, yDestroyYes)

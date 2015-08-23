@@ -67,7 +67,12 @@ hybridMode := false ; chain a deep run when the speed run finish
 ascDownClicks := 26 ; # of down clicks needed to get the ascension button center:ish (after a full speed run)
 
 autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention!
+
+; Auto Ascend Warning Mode
+; The following two settings may replace each other or can both be used.
+; Set to 0 to disable completely
 autoAscendDelay := 10 ; warning timer (in seconds) before ascending
+displayRelicsDuration := 10 ; warning timer (in seconds) before salvaging the junk pile
 
 ; If you run the Steam client with autoAscend, you can screenshot every relic you salvage!
 screenShotRelics := false
