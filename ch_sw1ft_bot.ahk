@@ -13,7 +13,7 @@
 SetControlDelay, -1
 
 scriptName=CH Sw1ft Bot
-scriptVersion=2.4
+scriptVersion=2.41
 minLibVersion=1.32
 
 script := scriptName . " v" . scriptVersion
@@ -31,6 +31,7 @@ IfNotExist, ch_bot_settings.ahk
 	FileCopy, system\ch_bot_default_settings.ahk, ch_bot_settings.ahk
 }
 
+; Load user settings
 #Include *i ch_bot_settings.ahk
 
 if (libVersion != minLibVersion) {
@@ -45,7 +46,11 @@ if (useConfigurationAssistant) {
 clientCheck()
 
 if (deepRunClicks) {
-	Run monster_clicker.ahk
+	Run, monster_clicker.ahk,, UseErrorLevel
+	if (ErrorLevel != 0) {
+		playWarningSound()
+    	msgbox,,% script,% "Failed to auto-start monster_clicker.ahk (system error code = " . A_LastError . ")!"
+	}
 }
 
 handleAutorun()
@@ -210,8 +215,11 @@ configurationAssistant() {
 		initDownClicks := [6,5,6,5,6,3]
 		yLvlInit := 241
 	} else if (irisThreshold(1760)) { ; Alabaster
-		initDownClicks := [6,6,5,6,6,3]
-		yLvlInit := 259
+		; [6,6,6,5,6,3], 227
+		; [6,5,6,6,6,3], 260
+		; [5,6,6,5,6,3], 293
+		initDownClicks := [6,6,6,5,6,3]
+		yLvlInit := 227
 	} else if (irisThreshold(1510)) { ; Cadmia
 		initDownClicks := [6,6,6,6,6,3]
 		yLvlInit := 240
@@ -560,10 +568,13 @@ ascend(autoYes:=false) {
 	local y := yAsc - extraClicks * buttonSize
 
 	if (autoYes) {
-		showWarningSplash(autoAscendDelay . " seconds till ASCENSION! (Abort with Alt+Pause)", autoAscendDelay)
-		if (exitThread) {
-			showSplashAlways("Ascension aborted!")
-			exit
+		if (autoAscendDelay > 0) {
+			showWarningSplash(autoAscendDelay . " seconds till ASCENSION! (Abort with Alt+Pause)", autoAscendDelay)
+			if (exitThread) {
+				exitThread := false
+				showSplashAlways("Ascension aborted!")
+				exit
+			}
 		}
 	} else {
 		playWarningSound()
@@ -593,11 +604,30 @@ salvageJunkPile() {
 	global
 
 	switchToRelicTab()
-	if (autoAscend && screenShotRelics) {
-		clickPos(xRelic, yRelic) ; focus
-		screenShot()
-		clickPos(xRelic+100, yRelic) ; remove focus
+
+	if (autoAscend) {
+		if (screenShotRelics || displayRelicsDuration > 0) {
+			clickPos(xRelic, yRelic) ; focus
+		}
+
+		if (screenShotRelics) {
+			screenShot()
+		}
+
+		if (displayRelicsDuration > 0) {
+			showWarningSplash("Salvaging junk in " . displayRelicsDuration . " seconds! (Abort with Alt+Pause)", displayRelicsDuration)
+			if (exitThread) {
+				exitThread := false
+				showSplashAlways("Salvage aborted!")
+				exit
+			}
+		}
+
+		if (screenShotRelics || displayRelicsDuration > 0) {
+			clickPos(xRelic+100, yRelic) ; remove focus
+		}
 	}
+
 	clickPos(xSalvageJunk, ySalvageJunk)
 	sleep % zzz * 4
 	clickPos(xDestroyYes, yDestroyYes)

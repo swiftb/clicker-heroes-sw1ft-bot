@@ -72,7 +72,7 @@ These only need to be changed if you run the browser client.
 `SetTitleMatchMode` | **`3`** for Steam or **`regex`** for browser version
 `browserTopMargin`  | Browser top margin <sup>(1)</sup>
 
-(1) Start Windows Spy, then check the **relative** mouse **y** position of the top edge of the CH area (below the logo where the black meets the blue).
+(1) Start Windows Spy, then under **Mouse Position**, check the **Relative** y position of the top left corner of the CH area (below the logo). Update the top margin to this value if they differ and reload the script with <kbd>Alt+F5</kbd>. Still in the top left corner, click <kbd>Alt+Middle Mouse Button</kbd>. With a correctly set top margin, the shown cursor y position should be `30`.
 
 #### Mandatory bot settings
 
@@ -152,7 +152,7 @@ These hotkeys can be executed while a speed or deep run is active.
 
 ## Questions or comments?
 
-Check the **FAQ** or visit the original script [home][] on Reddit.
+Check the [FAQ](FAQ.md) or visit the original script [home][] on Reddit.
 
 [Reddit]: https://www.reddit.com/r/ClickerHeroes/
 [Steam]: http://store.steampowered.com/app/363970/
