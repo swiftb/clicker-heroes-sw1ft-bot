@@ -46,7 +46,11 @@ if (useConfigurationAssistant) {
 clientCheck()
 
 if (deepRunClicks) {
-	Run monster_clicker.ahk
+	Run, monster_clicker.ahk,, UseErrorLevel
+	if (ErrorLevel != 0) {
+		playWarningSound()
+    	msgbox,,% script,% "Failed to auto-start monster_clicker.ahk (system error code = " . A_LastError . ")!"
+	}
 }
 
 handleAutorun()
