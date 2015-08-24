@@ -13,7 +13,7 @@
 SetControlDelay, -1
 
 scriptName=CH Sw1ft Bot
-scriptVersion=2.4
+scriptVersion=2.41
 minLibVersion=1.32
 
 script := scriptName . " v" . scriptVersion
@@ -615,10 +615,10 @@ salvageJunkPile() {
 		}
 
 		if (displayRelicsDuration > 0) {
-			showWarningSplash(displayRelicsDuration . " seconds till SALVATION! (Abort with Alt+Pause)", displayRelicsDuration)
+			showWarningSplash("Salvaging junk in " . displayRelicsDuration . " seconds! (Abort with Alt+Pause)", displayRelicsDuration)
 			if (exitThread) {
 				exitThread := false
-				showSplashAlways("Salvation aborted!")
+				showSplashAlways("Salvage aborted!")
 				exit
 			}
 		}
