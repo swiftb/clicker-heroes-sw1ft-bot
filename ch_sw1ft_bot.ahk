@@ -46,7 +46,11 @@ if (useConfigurationAssistant) {
 clientCheck()
 
 if (deepRunClicks) {
-	Run monster_clicker.ahk
+	Run, monster_clicker.ahk,, UseErrorLevel
+	if (ErrorLevel != 0) {
+		playWarningSound()
+    	msgbox,,% script,% "Failed to auto-start monster_clicker.ahk (system error code = " . A_LastError . ")!"
+	}
 }
 
 handleAutorun()
@@ -699,10 +703,10 @@ salvageJunkPile() {
 		}
 
 		if (displayRelicsDuration > 0) {
-			showWarningSplash(displayRelicsDuration . " seconds till SALVATION! (Abort with Alt+Pause)", displayRelicsDuration)
+			showWarningSplash("Salvaging junk in " . displayRelicsDuration . " seconds! (Abort with Alt+Pause)", displayRelicsDuration)
 			if (exitThread) {
 				exitThread := false
-				showSplashAlways("Salvation aborted!")
+				showSplashAlways("Salvage aborted!")
 				exit
 			}
 		}
