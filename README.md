@@ -44,7 +44,7 @@ These recommendations should give you enough gold after ascending with a *[click
 ## Setup
 
 * Download and install the latest version of [AutoHotkey][]
-* Download and unpack the latest [ZIP](../../archive/master.zip), or individually download all `.ahk` files to a new folder (where you also need the system folder with the default settings files).
+* Download and unpack the zip file from the [latest release][].
 
 ## Starting the bot
 
@@ -163,3 +163,4 @@ Check the [FAQ](FAQ.md) or visit the original script [home][] on Reddit.
 [Ancients Optimizer]: http://s3-us-west-2.amazonaws.com/clickerheroes/ancientssoul.html
 [Clickables]: http://clickerheroes.wikia.com/wiki/Clickables
 [home]: http://redd.it/3a3bmy
+[latest release]: https://github.com/swiftb/clicker-heroes-sw1ft-bot/releases/latest
