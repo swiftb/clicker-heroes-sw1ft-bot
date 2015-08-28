@@ -134,8 +134,9 @@ return
 	deepRun()
 return
 
-^F3::
-	openAncientOptimizer()
+; Open the Ancients Optimizer and auto-import game save data
+^F5::
+	openAncientsOptimizer()
 return
 
 ; Set previous ranger as re-gild target
@@ -571,7 +572,7 @@ save() {
 	clickPos(xSettingsClose, ySettingsClose)
 }
 
-openAncientOptimizer() {
+openAncientsOptimizer() {
 	global
 
 	local templateFileName := "system\ancients_optimizer_loader.html"

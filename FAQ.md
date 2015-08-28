@@ -45,7 +45,7 @@
 **A:** The script will use one or two rangers prior to your gilded ranger. Giving them one gild each should be enough to guarantee maximum “insta-kill” speed.
 
 **Q:** Why didn’t the bot level my gilded ranger?  
-**A:** Make sure the `irisLevel`, `optimalLevel`, `speedRunTime` and `gildedRanger` settings are correct. Use the [Ancients Optimizer][] to tune the latter three. Then follow the _optimal level - 1001_ rule for Iris.
+**A:** Make sure the `irisLevel`, `optimalLevel`, `speedRunTime` and `gildedRanger` settings are correct. Use the [Ancients Optimizer][] (open with <kbd>Ctrl+F5</kbd>) to tune the latter three. Then follow the _optimal level - 1001_ rule for Iris.
 
 **Q:** Why didn’t the bot buy all ranger upgrades?  
 **A:** It got there too early. Use the `firstStintAdjustment` setting to give it some extra time.

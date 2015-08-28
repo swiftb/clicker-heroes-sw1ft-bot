@@ -83,7 +83,8 @@ These only need to be changed if you run the browser client.
 `speedRunTime` | The duration of the speed run <sup>(2)</sup>
 `gildedRanger` | The number of your gilded ranger <sup>(3)</sup>
 
-(2) Set according to the [Ancients Optimizer][]  
+(2) Set according to the [Ancients Optimizer][] (open with <kbd>Ctrl+F5</kbd>).
+
 (3) **1**:Dread Knight, **2**:Atlas, **3**:Terra, **4**:Phthalo, **5**:Banana, **6**:Lilin, **7**:Cadmia, **8**:Alabaster, **9**:Astraea
 
 #### Optional bot settings
@@ -114,7 +115,6 @@ After a fresh ascend with an available clickable, start the speed run loop with 
 | ------ | -------- |
 <kbd>Ctrl+F1</kbd>       | Loop speed runs
 <kbd>Ctrl+F2</kbd>       | Start a deep run
-<kbd>Ctrl+F3</kbd>       | Open Ancient Optimizer
 <kbd>Pause</kbd>         | Pause/unpause the script
 <kbd>Alt+Pause</kbd>     | Abort active speed/deep runs and an initiated auto ascension
 <kbd>Shift+Pause</kbd>   | Do not start new speed/deep runs after finishing the current run and ascension
@@ -128,6 +128,7 @@ These hotkeys can be executed while a speed or deep run is active.
 | Hotkey | Function |
 | ------ | -------- |
 <kbd>Ctrl+Esc</kbd> | Suspend/Unsuspend all other Hotkeys
+<kbd>Ctrl+F5</kbd>  | Open the Ancients Optimizer and auto-import game save data
 <kbd>Ctrl+F6</kbd>  | Set previous ranger as re-gild target
 <kbd>Ctrl+F7</kbd>  | Set next ranger as re-gild target
 <kbd>Ctrl+F8</kbd>  | Move `reGildCount` gilds to the target ranger (will pause the monster clicker if running)
