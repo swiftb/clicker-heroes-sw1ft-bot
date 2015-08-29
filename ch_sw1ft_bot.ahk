@@ -46,7 +46,7 @@ if (useConfigurationAssistant) {
 clientCheck()
 
 if (deepRunClicks) {
-	Run, monster_clicker.ahk,, UseErrorLevel
+	Run, "%A_ScriptDir%\monster_clicker.ahk",, UseErrorLevel
 	if (ErrorLevel != 0) {
 		playWarningSound()
     	msgbox,,% script,% "Failed to auto-start monster_clicker.ahk (system error code = " . A_LastError . ")!"
@@ -155,6 +155,11 @@ return
 ; Use (after a speed run)
 ^F2::
 	deepRun()
+return
+
+; Open the Ancients Optimizer and auto-import game save data
+^F5::
+	openAncientsOptimizer()
 return
 
 ; Set previous ranger as re-gild target
@@ -620,15 +625,21 @@ lvlUp(seconds, buyUpgrades, button, stint, stints) {
 	stopMouseMonitoring()
 }
 
-save() {
+openSaveDialog() {
 	global
-	local fileName := "ch" . A_NowUTC . ".txt"
-	local newFileName := ""
 
 	clickPos(xSettings, ySettings)
 	sleep % zzz * 3
 	clickPos(xSave, ySave)
 	sleep % zzz * 4
+}
+
+save() {
+	global
+	local fileName := "ch" . A_NowUTC . ".txt"
+	local newFileName := ""
+
+	openSaveDialog()
 
 	; Change the file name...
 	if (saveMode = 1) {
@@ -647,6 +658,39 @@ save() {
 
 	sleep % zzz * 3
 	clickPos(xSettingsClose, ySettingsClose)
+}
+
+openAncientsOptimizer() {
+	global
+
+	local templateFileName := "system\ancients_optimizer_loader.html"
+	FileRead, loaderSourceTemplate, %templateFileName%
+
+	local loaderFileName := A_Temp . "\ch_ao_" . A_NowUTC . ".html"
+	local file = FileOpen(loaderFileName, "w")
+	if !IsObject(file)
+	{
+		MsgBox % "Can't open " . loaderFileName . " for writing."
+		return
+	}
+
+	openSaveDialog()
+
+	; Abort saving. Clipboard is good enough
+	ControlSend,, {esc}, ahk_class %dialogBoxClass%
+
+	sleep % zzz * 3
+	clickPos(xSettingsClose, ySettingsClose)
+
+	; Write loader file
+	local loaderSource := StrReplace(loaderSourceTemplate, "#####SAVEGAME#####", Clipboard)
+
+    file.write(loaderSource)
+    file.Close()
+
+    Run, %loaderFileName%
+    sleep % zzz * 5
+    FileDelete, %loaderFileName%
 }
 
 ascend(autoYes:=false) {

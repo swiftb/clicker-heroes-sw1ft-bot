@@ -44,7 +44,7 @@ These recommendations should give you enough gold after ascending with a *[click
 ## Setup
 
 * Download and install the latest version of [AutoHotkey][]
-* Download and unpack the latest [ZIP](../../archive/master.zip), or individually download all `.ahk` files to a new folder (where you also need the system folder with the default settings files).
+* Download and unpack the zip file from the [latest release][].
 
 ## Starting the bot
 
@@ -83,7 +83,8 @@ These only need to be changed if you run the browser client.
 `speedRunTime` | The duration of the speed run <sup>(2)</sup>
 `gildedRanger` | The number of your gilded ranger <sup>(3)</sup>
 
-(2) Set according to the [Ancients Optimizer][]  
+(2) Set according to the [Ancients Optimizer][] (open with <kbd>Ctrl+F5</kbd>).
+
 (3) **1**:Dread Knight, **2**:Atlas, **3**:Terra, **4**:Phthalo, **5**:Banana, **6**:Lilin, **7**:Cadmia, **8**:Alabaster, **9**:Astraea
 
 #### Optional bot settings
@@ -127,6 +128,7 @@ These hotkeys can be executed while a speed or deep run is active.
 | Hotkey | Function |
 | ------ | -------- |
 <kbd>Ctrl+Esc</kbd> | Suspend/Unsuspend all other Hotkeys
+<kbd>Ctrl+F5</kbd>  | Open the Ancients Optimizer and auto-import game save data
 <kbd>Ctrl+F6</kbd>  | Set previous ranger as re-gild target
 <kbd>Ctrl+F7</kbd>  | Set next ranger as re-gild target
 <kbd>Ctrl+F8</kbd>  | Move `reGildCount` gilds to the target ranger (will pause the monster clicker if running)
@@ -163,3 +165,4 @@ Check the [FAQ](FAQ.md) or visit the original script [home][] on Reddit.
 [Ancients Optimizer]: http://s3-us-west-2.amazonaws.com/clickerheroes/ancientssoul.html
 [Clickables]: http://clickerheroes.wikia.com/wiki/Clickables
 [home]: http://redd.it/3a3bmy
+[latest release]: https://github.com/swiftb/clicker-heroes-sw1ft-bot/releases/latest
