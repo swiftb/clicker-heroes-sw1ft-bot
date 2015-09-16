@@ -3,7 +3,9 @@
 ; by Sw1ftb
 ; -----------------------------------------------------------------------------------------
 
-libVersion=1.32
+CoordMode, Pixel, Screen
+
+libVersion=1.4
 
 winName=Clicker Heroes
 
@@ -24,6 +26,12 @@ chTotalWidth := chWidth + chMargin * 2
 chTotalHeight := chHeight + chMargin + chTopMargin
 
 ; Calculated
+xScreenL := 0
+yScreenT := 0
+xScreenR := 0
+yScreenB := 0
+
+; Calculated
 leftMarginOffset := 0
 topMarginOffset := 0
 
@@ -40,31 +48,53 @@ nextHeroDelay := 6 ; extra gold farm delay (in seconds) between heroes
 
 dialogBoxClass := "#32770"
 
+blueColor := 0x60BEFF
+yellowColor := 0xFECB00
+dimmedYellowColor := 0x7E6500
+goldColor := 0xFFB423
+
+; -- Images -------------------------------------------------------------------------------
+
+imageFilePath := "images\"
+
+clickableImage := "clickable.png"
+qualityImage := "quality.png"
+progressionImage := "progression.png"
+combatImage := "combat.png"
+hireImage := "hire.png"
+coinImage := "coin.png"
+lockedImage := "locked.png"
+gildedImage := "gilded.png"
+
+skillImage := "skill.png"
+metalDetectorImage := "metal_detector.png"
+goldBladeImage := "gold_blade.png"
+ascensionImage := "ascension.png"
+frigidEnchantImage := "frigid_enchant.png"
+
+amenhotepImage := "amenhotep.png"
+frostImage := "frost.png"
+iceImage := "ice.png"
+solomonImage := "solomon.png"
+
 ; -- Coordinates --------------------------------------------------------------------------
 
 ; Top LVL UP button when scrolled to the bottom
-xLvl := 100
+xLvl := 80
 yLvl := 285
 oLvl := 107 ; offset to next button
 
-; Ascension button
-xAsc := 310
-yAsc := 434
-
-buttonSize := 35
+buttonSize := 34
 
 ; Ascend Yes button
 xYes := 500
 yYes := 445
 
 xCombatTab := 50
-yCombatTab := 130
-
-xAncientTab := 297
-yAncientTab := 130
-
+xStatsTab := 212
+xAncientTab := 296
 xRelicTab := 380
-yRelicTab := 130
+yTab := 130
 
 xRelic := 103
 yRelic := 380
@@ -81,7 +111,7 @@ yUp := 219
 yDown := 653
 top2BottomClicks := 45
 
-xGilded := 95
+xGilded := 135
 yGilded := 582
 
 xGildedClose := 1090
@@ -101,20 +131,20 @@ rangerPositions[8] := {x:580, y:495}
 rangerPositions[9] := {x:780, y:495}
 
 ; Buy Available Upgrades button
-xBuy := 300
+xBuy := 370
 yBuy := 582
 
-xHero := 474
-yHero := 227
+xFocus := 564
+yFocus := 69
 
 xMonster := 920
 yMonster := 164
 
-; Tab safety zone (script will pause when entering)
-xSafetyZoneL := 8
-xSafetyZoneR := 505
-ySafetyZoneT := 104
-ySafetyZoneB := 154
+; Safety zones (script will pause when entering)
+safetyZones := {}
+safetyZones[1] := {x1:8, y1:104, x2:506, y2:153}
+safetyZones[2] := {x1:1096, y1:29, x2:1144, y2:74}
+safetyZones[3] := {x1:773, y1:600, x2:949, y2:670}
 
 ; The wrench
 xSettings := 1121
@@ -128,9 +158,8 @@ ySave := 112
 
 xSkill := 201
 oSkill := 36 ; offset to next skill
-ySkillTop := 279
-ySkill2nd := 410
-ySkillCenter := 434
+ySkillTop := 279 ; at top
+ySkill2nd := 410 ; at bottom
 
 xMiddleZone := 858
 xNextZone := 1042
@@ -152,19 +181,23 @@ IfNotExist, ch_bot_lib_settings.ahk
 ; -- Functions
 ; -----------------------------------------------------------------------------------------
 
-; No smart image recognition, so we click'em all!
-getClickable() {
+getClickable(idle:=0) {
 	global
-	; Break idle on purpose to get the same amount of gold every run
-	loop 3 {
-		clickPos(xMonster, yMonster)
+
+	if (idle = 0) {
+		; Break idle on purpose to get the same amount of gold every run
+		loop 3 {
+			clickPos(xMonster, yMonster)
+		}
+		clickPos(524, 487)
+		clickPos(747, 431)
+		clickPos(760, 380)
+		clickPos(873, 512)
+		clickPos(1005, 453)
+		clickPos(1053, 443)
+	} else if (locateImage(clickableImage, xPos, yPos)) {
+		clickPos(xPos, yPos, 1, 1) ; absolute pos
 	}
-    clickPos(524, 487)
-    clickPos(747, 431)
-    clickPos(760, 380)
-    clickPos(873, 512)
-    clickPos(1005, 453)
-    clickPos(1053, 443)
 }
 
 clientCheck() {
@@ -175,6 +208,11 @@ clientCheck() {
 	} else {
 		calculateBrowserOffsets() ; Browser
 		fullScreenOption := false
+
+		if (useImageSearch and locateImage(qualityImage, xPos, yPos)) {
+			showSplash("Switching to low quality...", 1, 0)
+			clickPos(xPos, yPos, 1, 1)
+		}
 	}
 	WinActivate, ahk_id %activeWinId% ; ... and restore focus back
 }
@@ -184,14 +222,19 @@ calculateBrowserOffsets() {
 	winName=Lvl.*Clicker Heroes.*
 	IfWinExist, % winName
 	{
-		showSplash("Calculating browser offsets...", 2, 0)
+		showSplash("Calculating browser offsets...", 1, 0)
 		WinActivate
-		WinGetPos, x, y, w, h
+		WinGetPos, xWinPos, yWinPos, w, h
 		WinGet, chWinId, ID, A
 
 		local leftMargin := (w - chWidth) // 2
 		leftMarginOffset := leftMargin - chMargin
 		topMarginOffset := browserTopMargin - chTopMargin
+
+		xScreenL := xWinPos + leftMargin
+		yScreenT := yWinPos + browserTopMargin
+		xScreenR := xScreenL + chWidth
+		yScreenB := yScreenT + chHeight
 	} else {
 		showWarningSplash("Clicker Heroes started in browser?")
 	}
@@ -202,7 +245,7 @@ calculateSteamAspectRatio() {
 	IfWinExist, % winName
 	{
 		WinActivate
-		WinGetPos, x, y, w, h
+		WinGetPos, xWinPos, yWinPos, w, h
 		WinGet, chWinId, ID, A
 
 		; Fullscreen sanity checks
@@ -217,7 +260,7 @@ calculateSteamAspectRatio() {
 		}
 
 		if (w != chTotalWidth || h != chTotalHeight) {
-			showSplash("Calculating Steam aspect ratio...", 2, 0)
+			showSplash("Calculating Steam aspect ratio...", 1, 0)
 
 			local winWidth := fullScreenOption ? w : w - 2 * chMargin
 			local winHeight := fullScreenOption ? h : h - chTopMargin - chMargin
@@ -233,6 +276,11 @@ calculateSteamAspectRatio() {
 				hBorder := (winWidth - chWidth * aspectRatio) // 2
 			}
 		}
+
+		xScreenL := fullScreenOption ? xWinPos : xWinPos + chMargin
+		yScreenT := fullScreenOption ? yWinPos : yWinPos + chTopMargin
+		xScreenR := fullScreenOption ? xWinPos + w : xWinPos + w - chMargin
+		yScreenB := fullScreenOption ? yWinPos + h : yWinPos + h - chMargin
 	} else {
 		showWarningSplash("Clicker Heroes started?")
 	}
@@ -240,44 +288,44 @@ calculateSteamAspectRatio() {
 
 switchToCombatTab() {
 	global
-	clickPos(xCombatTab, yCombatTab)
+	clickPos(xCombatTab, yTab)
 	sleep % zzz * 4
 }
 
 switchToAncientTab() {
 	global
-	clickPos(xAncientTab, yAncientTab)
+	clickPos(xAncientTab, yTab)
 	sleep % zzz * 2
 }
 
 switchToRelicTab() {
 	global
-	clickPos(xRelicTab, yRelicTab)
+	clickPos(xRelicTab, yTab)
 	sleep % zzz * 2
 }
 
 scrollToTop() {
 	global
 	clickPos(xScroll, yUp, top2BottomClicks)
-	sleep % 25 * top2BottomClicks + 150
+	sleep % 250 + top2BottomClicks * 20
 }
 
 scrollToBottom() {
 	global
 	clickPos(xScroll, yDown, top2BottomClicks)
-	sleep % 25 * top2BottomClicks + 150
+	sleep % 250 + top2BottomClicks * 20
 }
 
 scrollUp(clickCount:=1) {
 	global
 	clickPos(xScroll, yUp, clickCount)
-	sleep % 25 * clickCount + 150
+	sleep % 250 + clickCount * 20
 }
 
 scrollDown(clickCount:=1) {
 	global
 	clickPos(xScroll, yDown, clickCount)
-	sleep % 25 * clickCount + 150
+	sleep % 250 + clickCount * 20
 }
 
 ; Scroll down fix when at bottom and scroll bar don't update correctly
@@ -288,28 +336,36 @@ scrollWayDown(clickCount:=1) {
 	sleep % nextHeroDelay * 1000
 }
 
-maxClick(xCoord, yCoord, clickCount:=1) {
+maxClick(xCoord, yCoord, clickCount:=1, absolute:=0) {
 	global
 	ControlSend,, {shift down}{q down}, % winName
-	clickPos(xCoord, yCoord, clickCount)
+	clickPos(xCoord, yCoord, clickCount, absolute)
 	ControlSend,, {q up}{shift up}, % winName
 	sleep % zzz
 }
 
-ctrlClick(xCoord, yCoord, clickCount:=1, sleepSome:=1) {
+ctrlClick(xCoord, yCoord, clickCount:=1, sleepSome:=1, absolute:=0) {
 	global
-	ControlSend,, {ctrl down}, % winName
-	clickPos(xCoord, yCoord, clickCount)
-	ControlSend,, {ctrl up}, % winName
+	ControlSend,, {ctrl down}, ahk_id %chWinId%
+	clickPos(xCoord, yCoord, clickCount, absolute)
+	ControlSend,, {ctrl up}, ahk_id %chWinId%
 	if (sleepSome) {
 		sleep % zzz
 	}
 }
 
-clickPos(xCoord, yCoord, clickCount:=1) {
+zClick(xCoord, yCoord, clickCount:=1, absolute:=0) {
 	global
-	local xAdj := getAdjustedX(xCoord)
-	local yAdj := getAdjustedY(yCoord)
+	ControlSend,, {z down}, % winName
+	clickPos(xCoord, yCoord, clickCount, absolute)
+	ControlSend,, {z up}, % winName
+	sleep % zzz
+}
+
+clickPos(xCoord, yCoord, clickCount:=1, absolute:=0) {
+	global
+	local xAdj := absolute ? xCoord : getAdjustedX(xCoord)
+	local yAdj := absolute ? yCoord : getAdjustedY(yCoord)
  	ControlClick, x%xAdj% y%yAdj%, ahk_id %chWinId%,,, %clickCount%, NA
 }
 
@@ -334,6 +390,12 @@ playNotificationSound() {
 playWarningSound() {
 	if (playWarningSounds) {
 		SoundPlay, %A_WinDir%\Media\tada.wav
+	}
+}
+
+showDebugSplash(text, seconds:=1) {
+	if (debug) {
+		showSplash(text, seconds, 0)
 	}
 }
 
@@ -373,10 +435,14 @@ startProgress(title, min:=0, max:=100) {
 	}
 }
 
-updateProgress(position, remainingTime) {
+updateProgress(position, remainingTime, showLvl:=0) {
 	if (showProgressBar) {
 		guicontrol,, ProgressBar,% position
-		guicontrol,, ProgressBarTime,% formatSeconds(remainingTime)
+		if (showLvl) {
+			guicontrol,, ProgressBarTime,% remainingTime
+		} else {
+			guicontrol,, ProgressBarTime,% formatSeconds(remainingTime)
+		}
 	}
 }
 
@@ -417,7 +483,7 @@ screenShot() {
 scrollZoneLeft(zones) {
 	global
 	clickPos(xNextZone, yZone, zones)
-	sleep % 25 * zones + 150
+	sleep % 300 + zones * 20
 	clickPos(xMiddleZone, yZone)
 }
 
@@ -428,21 +494,158 @@ horizontalSkills(y, skills) {
 	loop % skills
 	{
 		clickPos(x, y)
-		sleep 30
+		sleep 25
 		x += oSkill
 	}
 }
 
 verticalSkills(x) {
 	global
-	local extraClicks := 6
-	local y := ySkillCenter - extraClicks * buttonSize
+	local y := 215
 
-	; Scrolling is not an exact science, hence we click above, center and below
-	loop % 2 * extraClicks + 1
+	loop 14
 	{
 		clickPos(x, y)
-		sleep 30
+		sleep 25
 		y += buttonSize
 	}
+}
+
+getCurrentZone() {
+	global
+
+	if (A_TitleMatchMode = "regex") {
+	    WinGetTitle, title, % winName
+	    currentZone := SubStr(title, 5, InStr(title, "-") - 6)
+	    return currentZone
+	} else {
+		return 0
+	}
+}
+
+reFocus() {
+	global
+	clickPos(xFocus, yFocus)
+}
+
+; -----------------------------------------------------------------------------------------
+; Note that all image/pixel searches are done with absolute coordinates relative to the
+; screen. The CH window is required to be visible and in default size for this to work.
+; -----------------------------------------------------------------------------------------
+
+upLocator(image, what, byref xPos, byref yPos, clickCount:=5, absolute:=0, startAt:=0) {
+	return locator(image, what, xPos, yPos, clickCount, absolute, startAt, 1)
+}
+
+; Try to locate the given image one screen at a time
+locator(image, what, byref xPos, byref yPos, clickCount:=5, absolute:=0, startAt:=0, directionUp:=0) {
+	global
+
+	local attempts := ceil(45 / clickCount)
+	local attempt := 0
+	local retries := locatorRetries
+
+	while (!locateImage(image, xPos, yPos, absolute, startAt, directionUp)) {
+		if (++attempt <= attempts) {
+			if (directionUp) {
+				scrollUp(clickCount)
+				startAt := 0 ; only offset once
+			} else {
+				scrollDown(clickCount)
+			}
+		} else if (retries < 0 or --retries > 0) {
+			showSplash("Could not locate " . what . "! Trying again...")
+			clientCheck()
+			if (directionUp) {
+				scrollToBottom()
+			} else {
+				scrollToTop()
+			}
+			attempt := 0
+		} else {
+			return 0
+		}
+	}
+	return 1
+}
+
+locateImage(imageFileName, byref xPos:="", byref yPos:="", absolute:=0, startAt:=0, directionUp:=0) {
+	if (directionUp) {
+		return locateImageUp(imageFileName, xPos, yPos, absolute, startAt)
+	} else {
+		return locateImageDown(imageFileName, xPos, yPos, absolute, startAt)
+	}
+}
+
+; Bottom up image search in chunks (size equal to the distance between two lvl up buttons)
+locateImageUp(imageFileName, byref xPos:="", byref yPos:="", absolute:=0, startAt:=0) {
+	global
+
+	local searchCount := ceil((yScreenB - yScreenT) / oLvl)
+	local offset := 0
+	if (startAt > 0) {
+		offset := startAt - yScreenB
+		searchCount := ceil((startAt - yScreenT) / oLvl)
+	}
+	local topOffset := offset + yScreenB - yScreenT - oLvl
+	local bottomOffset := offset
+	; msgbox % "searchCount=" . searchCount . ", offset=" . offset . ", topOffset=" . topOffset . ", bottomOffset=" . bottomOffset
+
+	loop % searchCount
+	{
+		if (locateImageDown(imageFileName, xPos, yPos, absolute, topOffset, bottomOffset)) {
+			return 1
+		} else {
+			topOffset -= oLvl
+			if (A_Index > 1) { ; don't offset bottom until round two
+				bottomOffset -= oLvl
+			}
+		}
+	}
+	return 0
+}
+
+; Top down image search
+locateImageDown(imageFileName, byref xPos:="", byref yPos:="", absolute:=0, topOffset:=0, bottomOffset:=0) {
+	global
+	local imageFile := imageFilePath . imageFileName
+	; msgbox % "Searching from y " . yScreenT + topOffset . " to " . yScreenB + bottomOffset
+
+	if (yScreenT + topOffset > yScreenB + bottomOffset) {
+		msgbox,,% script,% "ImageSearch failed! y top > y bottom!"
+		exit
+	}
+	reFocus()
+	ImageSearch xPos, yPos, xScreenL, yScreenT + topOffset, xScreenR, yScreenB + bottomOffset, *30 %imageFile%
+	if (ErrorLevel = 2) {
+		playWarningSound()
+		msgbox,,% script,% "ImageSearch failed! Could not open: " . %imageFile%
+		exit
+	} else if (ErrorLevel = 0 and !absolute) {
+		; Absolute --> Relative
+		xPos -= xWinPos
+		yPos -= yWinPos
+	}
+	return !ErrorLevel
+}
+
+; Search for a specific pixel color within the given region
+locatePixel(pixelColor, xL, yT, xR, yB, byref xPos:="", byref yPos:="") {
+	global
+
+	reFocus()
+	PixelSearch, xPos, yPos, xL, yT, xR, yB, %pixelColor%,, Fast RGB
+	if (ErrorLevel = 0) {
+		; Absolute --> Relative
+		xPos -= xWinPos
+		yPos -= yWinPos
+	}
+	return !ErrorLevel
+}
+
+matchPixelColor(color, x, y) {
+	reFocus()
+	PixelGetColor, pixelColor, x, y, RGB
+	; msgbox % "Is " . pixelColor . " at (" . x . ", " . y . ") equal to " . color . "?"
+	return color = pixelColor
 }

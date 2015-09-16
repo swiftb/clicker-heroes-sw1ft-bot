@@ -19,9 +19,47 @@ gildedRanger := 6 ; the number of your main guilded ranger
 ; -- Optional Settings
 ; -----------------------------------------------------------------------------------------
 
+; -----------------------------------------------------------------------------------------
+; -- Experimental -------------------------------------------------------------------------
+
+; Note: Steam client not supported (low quality works differently and can't get current lvl)
+
+; Set to true will:
+; * enable the use of the new vision run loop (ctrl+f3)
+;   - can run idle/hybrid/active
+;   - does a midas start if no clickable
+;   - can resume (after a click safety pause or if you reload the script)
+;   - ignores time, levels to given zone lvls
+;   - finds gilded heroes/rangers automatically
+;   - can recover from failed initiations (level cid --> frostleaf)
+; * enable the use of the solomonLeveler function
+; * focus the window every 20s if it can't locate either a coin or the progression icon 
+; * enhance the midasStart, initRun and ascend functions
+; * pick up clickables without breaking idle
+; * [old speed/hybrid runs] wait for clickables before ascending, unless useMidasStart is set to true
+useImageSearch := true ; requires browser low quality mode (having issues with Steam)
+
+; Vision run
+endLvlIdle := optimalLevel
+endLvlActive := 0
+; idle:   set endLvlActive = 0 (set activateSkillsAtStart to false for 100% idle)
+; hybrid: set endLvlActive > endLvlIdle
+; active: set endLvlIdle = 0 (set activateSkillsAtStart to false to only use the deepRunCombo)
+
+levelSolomon := false ; feed solomon after ascending?
+solomonLevels := 1
+
+; Scrolling image search
+locatorRetries := -1 ; -1 for infinite
+
+; Test hotkeys:
+; Win+F3 - Locate'n'click clickable
+; Win+F4 - Locate'n'level Solomon
+; Win+F5 - Call the getState function (used by the loopVisionRun function)
+
 ; -- Midas --------------------------------------------------------------------------------
 
-useMidasStart := false
+useMidasStart := false ; pref. used with the useImageSearch option
 
 ; Config syntax:
 ; [<boss zone 1>, <delay 1>, <extra boss zone>, <extra delay>, <zone 2>, <delay 2>]
@@ -45,24 +83,37 @@ useMidasStart := false
 
 ; Example configs:
 
-; Two zones
-; Siya 14000: [60, 7, 0, 0, 79, 5]
-; Siya 7000: [55, 6, 0, 0, 79, 5]
+; Two zones                          useImageSearch = true
+; Siya 14000: [60, 7, 0, 0, 79, 5] ; [63, 6, 0, 0, 83, 4]
+; Siya 7000:  [55, 6, 0, 0, 79, 5] ; [59, 6, 0, 0, 79, 4]
 
 ; Three zones
-; Siya 3500: [50, 5, 60, 4, 74, 5]
-; Siya 2000: [50, 6, 60, 6, 69, 5]
+; Siya 3500: [50, 5, 60, 4, 74, 5] ; [56, 6, 0, 0, 76, 4]
+; Siya 2000: [50, 6, 60, 6, 69, 5] ; [53, 6, 0, 0, 73, 4]
+; Siya 200:                          [44, 7, 56, 5, 64, 4]
 
-midasZoneConfig := [60, 7, 0, 0, 79, 5]
+midasZoneConfig := [56, 6, 0, 0, 76, 4]
 
-; -- Speed run ----------------------------------------------------------------------------
+; Test hotkeys:
+; Win+F1 - One Midas start
+; Win+F2 - Loop Midas start + init run + ascend
+
+; -- Experimental -------------------------------------------------------------------------
+; -----------------------------------------------------------------------------------------
+
+clickableHuntDelay := 10 ; hunt for a clickable every 10s
+stopHuntThreshold := 4 ; stop hunt when this many minutes remain of a run
+
+; -- Speed/Vision run ----------------------------------------------------------------------------
+
+; (s) -- Only used by the speed run
 
 ; If the script starts on the 2nd ranger too early (before lvl 100) or too late (after lvl 200), adjust this setting.
-firstStintAdjustment := 0 ; Add or remove time (in seconds) to or from the first hero.
+firstStintAdjustment := 0 ; (s) Add or remove time (in seconds) to or from the first hero.
 
 activateSkillsAtStart := true ; usually needed in the late game to get going after ascending
 
-hybridMode := false ; chain a deep run when the speed run finish
+hybridMode := false ; (s) chain a deep run when the speed run finish
 
 ascDownClicks := 26 ; # of down clicks needed to get the ascension button center:ish (after a full speed run)
 
@@ -71,7 +122,7 @@ autoAscend := false ; Warning! Set to true will both salvage relics and ascend w
 ; Auto Ascend Warning Mode
 ; The following two settings may replace each other or can both be used.
 ; Set to 0 to disable completely
-autoAscendDelay := 10 ; warning timer (in seconds) before ascending
+autoAscendDelay := 0 ; warning timer (in seconds) before ascending
 displayRelicsDuration := 10 ; warning timer (in seconds) before salvaging the junk pile
 
 ; If you run the Steam client with autoAscend, you can screenshot every relic you salvage!
@@ -81,20 +132,17 @@ saveBeforeAscending := false ; autosave the game
 
 ; If the script don't press the save button automatically when running
 ; with "saveBeforeAscending" set to true, change "Button1" to "Button2".
-saveButtonClassNN := "Button1" ; Button1 or Button2
+saveButtonClassNN := "Button2" ; Button1 or Button2
 
 ; If the auto-save fails to change the file name properly and you get
 ; a "already exists" message, change save mode to 2.
 saveMode := 1 ; 1 or 2
 
-debug := false ; when set to "true", you can press Alt+F3 to show some debug info (also copied into your clipboard)
+global debug := false ; when set to "true", you can press Alt+F3 to show some debug info (also copied into your clipboard)
 
 ; -- Deep run -----------------------------------------------------------------------------
 
 deepRunTime := 60 ; minutes
-
-clickableHuntDelay := 15 ; hunt for a clickable every 15s
-stopHuntThreshold := 30 ; stop hunt when this many minutes remain of a deep run
 
 ; Number of gilds to move over at a time
 reGildCount := 100 ; don't set this higher than 100 if you plan on moving gilds during a deep run
@@ -145,7 +193,7 @@ yLvlInit := 000
 ; -- Look & Feel --------------------------------------------------------------------------
 
 ; true or false
-global playNotificationSounds := true
+global playNotificationSounds := false
 global playWarningSounds := true
 global showSplashTexts := true ; Note that some splash texts will always be shown
 global showProgressBar := true

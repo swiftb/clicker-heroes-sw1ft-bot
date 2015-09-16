@@ -69,23 +69,25 @@ These only need to be changed if you run the browser client.
 
 | Variable | Explanation |
 | -------- | ----------- |
-`SetTitleMatchMode` | **`3`** for Steam or **`regex`** for browser version
-`browserTopMargin`  | Browser top margin <sup>(1)</sup>
+`SetTitleMatchMode` | **`3`** for Steam or **`regex`** for browser version <sup>(1)</sup>
+`browserTopMargin`  | Browser top margin <sup>(2)</sup>
 
-(1) Start Windows Spy, then under **Mouse Position**, check the **Relative** y position of the top left corner of the CH area (below the logo). Update the top margin to this value if they differ and reload the script with <kbd>Alt+F5</kbd>. Still in the top left corner, click <kbd>Alt+Middle Mouse Button</kbd>. With a correctly set top margin, the shown cursor y position should be `30`.
+(1) Browser recommendation: Run Clicker Heroes in Firefox, then use Chrome or some other browser for you normal surfing activities.
+
+(2) Make sure the Clicker Heroes window have focus, then click <kbd>Ctrl+Middle Mouse Button</kbd> dead center in the ancient tab eye: ![](images/ancient_eye_click.png?raw=true)
 
 #### Mandatory bot settings
 
 | Variable | Explanation |
 | -------- | ----------- |
 `irisLevel`    | Set to your Iris level in game
-`optimalLevel` | Your optimal zone level <sup>(2)</sup>
-`speedRunTime` | The duration of the speed run <sup>(2)</sup>
-`gildedRanger` | The number of your gilded ranger <sup>(3)</sup>
+`optimalLevel` | Your optimal zone level <sup>(3)</sup>
+`speedRunTime` | The duration of the speed run <sup>(3)</sup>
+`gildedRanger` | The number of your gilded ranger <sup>(4)</sup>
 
-(2) Set according to the [Ancients Optimizer][] (open with <kbd>Ctrl+F5</kbd>).
+(3) Set according to the [Ancients Optimizer][] (open with <kbd>Ctrl+F5</kbd>).
 
-(3) **1**:Dread Knight, **2**:Atlas, **3**:Terra, **4**:Phthalo, **5**:Banana, **6**:Lilin, **7**:Cadmia, **8**:Alabaster, **9**:Astraea
+(4) **1**:Dread Knight, **2**:Atlas, **3**:Terra, **4**:Phthalo, **5**:Banana, **6**:Lilin, **7**:Cadmia, **8**:Alabaster, **9**:Astraea
 
 #### Optional bot settings
 
@@ -115,10 +117,12 @@ After a fresh ascend with an available clickable, start the speed run loop with 
 | ------ | -------- |
 <kbd>Ctrl+F1</kbd>       | Loop speed runs
 <kbd>Ctrl+F2</kbd>       | Start a deep run
+<kbd>Ctrl+F3</kbd>       | Loop vision runs
 <kbd>Pause</kbd>         | Pause/unpause the script
 <kbd>Alt+Pause</kbd>     | Abort active speed/deep runs and an initiated auto ascension
 <kbd>Shift+Pause</kbd>   | Do not start new speed/deep runs after finishing the current run and ascension
-<kbd>Alt+F5</kbd>        | Reload the script (needed after configuration changes or a client window resize)
+<kbd>Alt+F5</kbd>        | Reload the script (needed after configuration changes)
+<kbd>Alt+F6</kbd>        | Re-initialize coordinates (needed after moving or re-sizing the client window)
 <kbd>Shift+Ctrl+F5</kbd> | Reload the script after the current run and restart the speed run loop afterwards
 
 #### Supplementary Hotkeys

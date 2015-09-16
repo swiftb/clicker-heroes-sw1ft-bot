@@ -11,7 +11,7 @@
 **A2:** For active deep runs: Bhaal, Chronos, Fragsworth, Juggernaut, Pluto, Thusia. Maxed: Berserker, Chawedo, Energon, Hecatoncheir, Kleptos, Revolc, Sniperino, Vaagur.
 
 **Q:** Does the bot work with the Steam or browser version?  
-**A:** Both. If you run the browser version, it's worth noting that Chrome has issues with AutoHotkey and keep stealing focus! Any other browser is fine.
+**A:** Both. If you run the browser version, I recommend running Clicker Heroes in e.g. Firefox, then use Chrome or some other browser for you normal surfing activities.
 
 **Q:** Is the bot for idle or active play?  
 **A:** It’s mainly designed for idle play, doing short _optimal zone_ runs over and over to farm Hero Souls. With the included active clicker it can also run in hybrid mode (e.g. 27 minutes idle, 6 minutes active), or you can re-gild to a higher ranger and start a long deep run to up your *HZE* (Highest Zone Ever).
