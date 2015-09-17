@@ -7,7 +7,7 @@ CoordMode, Pixel, Screen
 
 libVersion=1.4
 
-winName=Clicker Heroes
+winName := "Clicker Heroes"
 
 global ProgressBar, ProgressBarTime ; progress bar controls
 
@@ -142,9 +142,10 @@ yMonster := 164
 
 ; Safety zones (script will pause when entering)
 safetyZones := {}
-safetyZones[1] := {x1:8, y1:104, x2:506, y2:153}
-safetyZones[2] := {x1:1096, y1:29, x2:1144, y2:74}
-safetyZones[3] := {x1:773, y1:600, x2:949, y2:670}
+safetyZones[1] := {x1:8, y1:104, x2:506, y2:153} ; tabs
+safetyZones[2] := {x1:1096, y1:29, x2:1144, y2:74} ; settings
+safetyZones[3] := {x1:773, y1:600, x2:949, y2:670} ; shop
+safetyZones[4] := {x1:79, y1:554, x2:194, y2:612} ; gilded
 
 ; The wrench
 xSettings := 1121
@@ -219,7 +220,7 @@ clientCheck() {
 
 calculateBrowserOffsets() {
 	global
-	winName=Lvl.*Clicker Heroes.*
+	winName := "Lvl.*Clicker Heroes.*" . browser
 	IfWinExist, % winName
 	{
 		showSplash("Calculating browser offsets...", 1, 0)

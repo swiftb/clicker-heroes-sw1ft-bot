@@ -5,6 +5,8 @@
 
 SetTitleMatchMode, regex ; Steam [3] or browser [regex] version?
 
+browser := "Firefox" ; Firefox, Opera, Chrome, Internet Explorer
+
 ; With the CH window focused, click Ctrl+MMB dead center in the ancient tab eye to get this setting.
 browserTopMargin := 230
 

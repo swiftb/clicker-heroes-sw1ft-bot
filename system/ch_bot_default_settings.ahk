@@ -24,7 +24,7 @@ gildedRanger := 6 ; the number of your main guilded ranger
 
 ; Note: Steam client not supported (low quality works differently and can't get current lvl)
 
-; Set to true will:
+; Set to true (requires the window to be visible) will:
 ; * enable the use of the new vision run loop (ctrl+f3)
 ;   - can run idle/hybrid/active
 ;   - does a midas start if no clickable
