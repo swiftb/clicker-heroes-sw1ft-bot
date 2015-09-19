@@ -32,6 +32,7 @@ gildedRanger := 6 ; the number of your main guilded ranger
 ;   - ignores time, levels to given zone lvls
 ;   - finds gilded heroes/rangers automatically
 ;   - can recover from failed initiations (level cid --> frostleaf)
+;   - works with gilded Samurai (Siya > 100) or later
 ; * enable the use of the solomonLeveler function
 ; * focus the window every 20s if it can't locate either a coin or the progression icon 
 ; * enhance the midasStart, initRun and ascend functions
@@ -44,7 +45,7 @@ endLvlIdle := optimalLevel
 endLvlActive := 0
 ; idle:   set endLvlActive = 0 (set activateSkillsAtStart to false for 100% idle)
 ; hybrid: set endLvlActive > endLvlIdle
-; active: set endLvlIdle = 0 (set activateSkillsAtStart to false to only use the deepRunCombo)
+; active: set endLvlIdle = 0
 
 levelSolomon := false ; feed solomon after ascending?
 solomonLevels := 1
@@ -91,8 +92,10 @@ useMidasStart := false ; pref. used with the useImageSearch option
 ; Siya 3500: [50, 5, 60, 4, 74, 5] ; [56, 6, 0, 0, 76, 4]
 ; Siya 2000: [50, 6, 60, 6, 69, 5] ; [53, 6, 0, 0, 73, 4]
 ; Siya 200:                          [44, 7, 56, 5, 64, 4]
+; Siya 100:                          [42, 8, 53, 7, 64, 7]
 
 midasZoneConfig := [56, 6, 0, 0, 76, 4]
+; Note: Your Iris level must be equal or higher than zone 2
 
 ; Test hotkeys:
 ; Win+F1 - One Midas start

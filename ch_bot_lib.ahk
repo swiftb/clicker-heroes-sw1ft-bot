@@ -40,7 +40,7 @@ aspectRatio := 1
 hBorder := 0
 vBorder := 0
 
-zzz := 200 ; sleep delay (in ms) after a click
+zzz := 175 ; sleep delay (in ms) after a click
 lvlUpDelay := 5 ; time (in seconds) between lvl up clicks
 barUpdateDelay := 30 ; time (in seconds) between progress bar updates
 coinPickUpDelay := 6 ; time (in seconds) needed to pick up all coins from a clickable
@@ -52,6 +52,7 @@ blueColor := 0x60BEFF
 yellowColor := 0xFECB00
 dimmedYellowColor := 0x7E6500
 goldColor := 0xFFB423
+brightGoldColor := 0xFFD911
 
 ; -- Images -------------------------------------------------------------------------------
 
@@ -67,6 +68,7 @@ lockedImage := "locked.png"
 gildedImage := "gilded.png"
 
 skillImage := "skill.png"
+dimmedSkillImage := "skill_dimmed.png"
 metalDetectorImage := "metal_detector.png"
 goldBladeImage := "gold_blade.png"
 ascensionImage := "ascension.png"
@@ -74,6 +76,7 @@ frigidEnchantImage := "frigid_enchant.png"
 
 amenhotepImage := "amenhotep.png"
 frostImage := "frost.png"
+dkImage := "dk.png"
 iceImage := "ice.png"
 solomonImage := "solomon.png"
 
@@ -308,25 +311,25 @@ switchToRelicTab() {
 scrollToTop() {
 	global
 	clickPos(xScroll, yUp, top2BottomClicks)
-	sleep % 250 + top2BottomClicks * 20
+	sleep % 275 + top2BottomClicks * 20
 }
 
 scrollToBottom() {
 	global
 	clickPos(xScroll, yDown, top2BottomClicks)
-	sleep % 250 + top2BottomClicks * 20
+	sleep % 275 + top2BottomClicks * 20
 }
 
 scrollUp(clickCount:=1) {
 	global
 	clickPos(xScroll, yUp, clickCount)
-	sleep % 250 + clickCount * 20
+	sleep % 275 + clickCount * 20
 }
 
 scrollDown(clickCount:=1) {
 	global
 	clickPos(xScroll, yDown, clickCount)
-	sleep % 250 + clickCount * 20
+	sleep % 275 + clickCount * 20
 }
 
 ; Scroll down fix when at bottom and scroll bar don't update correctly
@@ -527,6 +530,7 @@ getCurrentZone() {
 reFocus() {
 	global
 	clickPos(xFocus, yFocus)
+	sleep 25
 }
 
 ; -----------------------------------------------------------------------------------------
@@ -557,6 +561,7 @@ locator(image, what, byref xPos, byref yPos, clickCount:=5, absolute:=0, startAt
 		} else if (retries < 0 or --retries > 0) {
 			showSplash("Could not locate " . what . "! Trying again...")
 			clientCheck()
+			clickerInitialize()
 			if (directionUp) {
 				scrollToBottom()
 			} else {
@@ -594,7 +599,7 @@ locateImageUp(imageFileName, byref xPos:="", byref yPos:="", absolute:=0, startA
 
 	loop % searchCount
 	{
-		if (locateImageDown(imageFileName, xPos, yPos, absolute, topOffset, bottomOffset)) {
+		if (locateImageDown(imageFileName, xPos, yPos, absolute, topOffset,, bottomOffset)) {
 			return 1
 		} else {
 			topOffset -= oLvl
@@ -607,17 +612,17 @@ locateImageUp(imageFileName, byref xPos:="", byref yPos:="", absolute:=0, startA
 }
 
 ; Top down image search
-locateImageDown(imageFileName, byref xPos:="", byref yPos:="", absolute:=0, topOffset:=0, bottomOffset:=0) {
+locateImageDown(imageFileName, byref xPos:="", byref yPos:="", absolute:=0, topOffset:=0, leftOffset:=0, bottomOffset:=0, rightOffset:=0) {
 	global
 	local imageFile := imageFilePath . imageFileName
-	; msgbox % "Searching from y " . yScreenT + topOffset . " to " . yScreenB + bottomOffset
+	; msgbox % "Searching from (" . xScreenL + leftOffset . ", " . yScreenT + topOffset . ") to (" . xScreenR + rightOffset . ", " . yScreenB + bottomOffset . ")"
 
 	if (yScreenT + topOffset > yScreenB + bottomOffset) {
 		msgbox,,% script,% "ImageSearch failed! y top > y bottom!"
 		exit
 	}
 	reFocus()
-	ImageSearch xPos, yPos, xScreenL, yScreenT + topOffset, xScreenR, yScreenB + bottomOffset, *30 %imageFile%
+	ImageSearch xPos, yPos, xScreenL + leftOffset, yScreenT + topOffset, xScreenR + rightOffset, yScreenB + bottomOffset, *30 %imageFile%
 	if (ErrorLevel = 2) {
 		playWarningSound()
 		msgbox,,% script,% "ImageSearch failed! Could not open: " . %imageFile%

@@ -333,7 +333,7 @@ irisThreshold(lvl) {
 }
 
 ; Level up and upgrade all heroes
-initRun(levelAll:=false) {
+initRun() {
 	global
 	local initiated := false
 
@@ -349,26 +349,36 @@ initRun(levelAll:=false) {
 		upgrade(initDownClicks[6],,,2) ; beastlord --> shinatobe
 		upgrade(0,,,,,true) ; grant & frostleaf
 	} else {
-		local foundFL := false
-		local image := levelAll ? coinImage : hireImage
-		local clickCount := levelAll ? 1 : 2
-		local startAt := 170
-		loop 9
+		local foundDK := false
+		local x := 0, xButton := 0, yButton := 0
+		local topOffset := 170, rightOffset := -610
+
+		locateImage(coinImage, xButton, yButton) ; get a x coordinate for the hire/lvl up buttons
+
+		loop 9 ; pages
 		{
-			foundFL := locateImage(frostImage, xFL, yFL)
-			while (locateImage(image, x, y, 0, startAt)) {
-				ctrlClick(x, y, clickCount, 1, 1)
-				startAt += oLvl
-				if ((foundFL and y > yFL) or (yScreenT + startAt > yScreenB)) {
+			foundDK := locateImage(dkImage, xDK, yDK)
+			loop 5 ; attempts per page
+			{
+				if (locateImageDown(hireImage, x, yButton,, topOffset,,, rightOffset)
+						or locateImageDown(dimmedSkillImage, x, yButton,, topOffset,,, rightOffset)) {
+					if (foundDK and yButton > yDK) {
+						; Don't level anything below Frostleaf
+						continue
+					}
+					ctrlClick(xButton, yButton, 2, 1, 1)
+				} else {
 					break
 				}
 			}
-			if (foundFL and locateImage(frigidEnchantImage)) {
-				initiated := true
+			if (foundDK) {
+				if (locateImage(frigidEnchantImage)) {
+					; Frostleaf has been leveled
+					initiated := true
+				}
 				break
 			}
 			scrollDown(5)
-			startAt := 170
 		}
 	}
 	scrollToBottom()
@@ -450,8 +460,11 @@ midasStart() {
 	verticalSkills(xSkill + oSkill*4) ; Metal Detector + Golden Clicks
 	toggleMode()
 	activateSkills("1-4-5")
-	sleep % coinPickUpDelay * 1000
 
+	sleep 4000
+	if (!useImageSearch) {
+		sleep % (coinPickUpDelay - 4) * 1000
+	}
 	stopMonitoring()
 }
 
@@ -460,13 +473,13 @@ unlockSkill(x, y, image) {
 	if (useImageSearch) {
 		ctrlClick(x, y, 2, 1, 1) ; x 200
 		sleep 1000
-		loop 15
+		loop 5
 		{
 			if (locateImage(image)) {
 				break
 			} else {
 				zClick(x, y, 1, 1) ; x 25
-				sleep 1000
+				sleep 6000
 			}
 		}
 	}
@@ -522,24 +535,24 @@ loopVisionRun() {
 			exit
 		}
 		if (state = 1) {
-			showDebugSplash("1. Midas start...")
+			showDebugSplash("(1) Midas start...")
 			midasStart()
 		} else if (state = 2) {
-			showDebugSplash("2. Clickable start...")
+			showDebugSplash("(2) Clickable start...")
 			getClickable(useImageSearch)
 		    sleep % coinPickUpDelay * 1000
 	    	toggleMode()
 		}
 		if (getState() = 3) {
-			showDebugSplash("3. Initializing...")
+			showDebugSplash("(3) Initializing...")
 			initiated := initRun()
 		}
 		if (getState() = 4) {
-			showDebugSplash("4. Progressing...")
+			showDebugSplash("(4) Progressing...")
 			visionRun(initiated)
 		}
 		if (getState() = 5) {
-			showDebugSplash("5. Ascending...")
+			showDebugSplash("(5) Ascending...")
 			if (saveBeforeAscending) {
 				save()
 			}
@@ -557,14 +570,15 @@ loopVisionRun() {
 visionRun(initiated:=true) {
 	global
 	exitThread := false
-
 	isResuming := false
+	isClickerRunning := false
+	hasActivatedSkills := false
 
 	local xBtn := 0, yBtn := 0, isNew := 0
 	local xSkill := 0, ySkill := 0, skillSearch := false
 
 	local zone := getCurrentZone()
-	local initZone := 175
+	local initZone := 145
 	local endZone := endLvlActive > 0 ? endLvlActive : endLvlIdle
 
 	local comboDelay := deepRunCombo[1]
@@ -577,14 +591,9 @@ visionRun(initiated:=true) {
 	startMonitoring()
 	startProgress("Vision Run", zone // barUpdateDelay, endZone // barUpdateDelay)
 
-	if (!locateImage(progressionImage)) {
-		toggleMode()
-	}
 	if (initiated and locateImage(lockedImage)) {
+		showDebugSplash("Trigger delayed re-initialization")
 		initiated := false
-	}
-	if (activateSkillsAtStart and zone <= irisLevel + 1) {
-		activateSkills(speedRunStartCombo[2])
 	}
 
 	loop
@@ -596,15 +605,29 @@ visionRun(initiated:=true) {
 			showSplashAlways("Vision run aborted!")
 			exit
 		}
-		if (!initiated and zone > initZone) {
-			showDebugSplash("Delayed initialization...")
-			initiated := initRun(true)
-			isResuming := true
+		if (mod(t, 15) = 0) {
+			; Make sure we are progressing
+			if (!locateImage(progressionImage)) {
+				showDebugSplash("Toggle progression mode")
+				toggleMode()
+			}
+			if (!initiated and zone > initZone) {
+				; When enough gold, re-init
+				showDebugSplash("Delayed re-initialization")
+				if (initRun() and !locateImage(lockedImage)) {
+					showDebugSplash("Initiated!")
+					initiated := true
+				}
+				isResuming := true
+			}
 		}
+		; Traverse bottom up till we find the first gilded hero/ranger we can lvl up
 		if (mod(t, 90) = 0 or isResuming) {
 			if (locateGilded(xBtn, yBtn, isNew)) {
 				maxClick(xBtn, yBtn, 1, 1)
 				if (isNew) {
+					showDebugSplash("New gilded hero found")
+					sleep % coinPickUpDelay
 					buyAvailableUpgrades()
 				}
 				skillSearch := true
@@ -614,31 +637,50 @@ visionRun(initiated:=true) {
 				exit
 			}
 		}
+		; Active zone?
 		if (zone > endLvlIdle) {
-			clickerStart()
 			if (deepRunClicks) {
-				clickPos(xMonster, yMonster)
+				if (!isClickerRunning) {
+					; Yup, start hammering!
+					showDebugSplash("Start external clicker")
+					clickerStart() ; ~38 CPS
+					isClickerRunning := true
+				}
+				clickPos(xMonster, yMonster) ; ~1 CPS
 			}
 			if (mod(t, comboDelay) = 0) {
+				showDebugSplash("Activate combo")
 				activateSkills(deepRunCombo[comboIndex])
 				comboIndex := comboIndex < deepRunCombo.MaxIndex() ? comboIndex+1 : 2
 			}
+		; If option enabled, activate skills once at start
+		} else if (zone < irisLevel + 5 and activateSkillsAtStart and !hasActivatedSkills) {
+			showDebugSplash("Activate skills at start")
+			activateSkills(speedRunStartCombo[2])
+			hasActivatedSkills := true
 		}
-		if (mod(t, 3) = 0) {
-			if (!matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
-				isResuming := true
-			} else if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
+		; Level up...
+		if (mod(t, lvlUpDelay) = 0) {
+			if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
 				if (skillSearch) {
-					if (locateImage(skillImage, xSkill, ySkill)) {
+					skillSearch := false
+					; Aquire possible new skills
+					while (locateImage(skillImage, xSkill, ySkill)) {
 						clickPos(xSkill, ySkill, 1, 1)
-						sleep % zzz
-					} else {
-						skillSearch := false
+						sleep % 500
 					}
 				}
+				; ... when we can afford to do so
 				ctrlClick(xBtn, yBtn, 1, 1, 1)
+			} else if (!matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
+				if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
+					; ... or not, lost sight of our gilded hero
+					showDebugSplash("Lost sight of our gilded hero")
+					isResuming := true
+				}
 			}
 		}
+		; Let's go fishing!
 		if (mod(t, clickableHuntDelay) = 0 and zone < stopHuntZone) {
 			getClickable(useImageSearch)
 		}
@@ -1238,9 +1280,8 @@ checkMousePosition:
 					msgbox,,% script,Click safety pause engaged. Resume?
 					if (!locateImage(combatImage)) {
 						switchToCombatTab()
-						scrollToBottom()
-						isResuming := true
 					}
+					isResuming := true
 				} else {
 					msgbox,,% script,Click safety pause engaged. Continue?
 				}
