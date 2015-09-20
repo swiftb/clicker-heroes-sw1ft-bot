@@ -56,29 +56,37 @@ brightGoldColor := 0xFFD911
 
 ; -- Images -------------------------------------------------------------------------------
 
+; Combat zone offsets
+CZTO := 170
+CZLO := 500
+CZBO := CZTO - chHeight
+CZRO := CZLO - chWidth
+
 imageFilePath := "images\"
 
-clickableImage := "clickable.png"
-qualityImage := "quality.png"
-progressionImage := "progression.png"
-combatImage := "combat.png"
-hireImage := "hire.png"
-coinImage := "coin.png"
-lockedImage := "locked.png"
-gildedImage := "gilded.png"
+imgQuality := {file:"quality.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
+imgProgression := {file:"progression.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 
-skillImage := "skill.png"
-dimmedSkillImage := "skill_dimmed.png"
-metalDetectorImage := "metal_detector.png"
-goldBladeImage := "gold_blade.png"
-ascensionImage := "ascension.png"
-frigidEnchantImage := "frigid_enchant.png"
+imgLocked := {file:"locked.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
+imgClickable := {file:"clickable.png", topOffset:CZTO, leftOffset:CZLO, bottomOffset:0, rightOffset:0}
 
-amenhotepImage := "amenhotep.png"
-frostImage := "frost.png"
-dkImage := "dk.png"
-iceImage := "ice.png"
-solomonImage := "solomon.png"
+imgCombat := {file:"combat.png", topOffset:0, leftOffset:0, bottomOffset:CZBO, rightOffset:CZRO}
+
+imgHire := {file:"hire.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgCoin := {file:"coin.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgGilded := {file:"gilded.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+
+imgSkill := {file:"skill.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgDimmedSkill := {file:"skill_dimmed.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgMetalDetector := {file:"metal_detector.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgGoldBlade := {file:"gold_blade.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgAscension := {file:"ascension.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgFrigidEnchant := {file:"frigid_enchant.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+
+imgAmenhotep := {file:"amenhotep.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgDK := {file:"dk.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgIce := {file:"ice.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgSolomon := {file:"solomon.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 ; -- Coordinates --------------------------------------------------------------------------
 
@@ -199,7 +207,7 @@ getClickable(idle:=0) {
 		clickPos(873, 512)
 		clickPos(1005, 453)
 		clickPos(1053, 443)
-	} else if (locateImage(clickableImage, xPos, yPos)) {
+	} else if (locateImage(imgClickable, xPos, yPos)) {
 		clickPos(xPos, yPos, 1, 1) ; absolute pos
 	}
 }
@@ -213,7 +221,7 @@ clientCheck() {
 		calculateBrowserOffsets() ; Browser
 		fullScreenOption := false
 
-		if (useImageSearch and locateImage(qualityImage, xPos, yPos)) {
+		if (useImageSearch and locateImage(imgQuality, xPos, yPos)) {
 			showSplash("Switching to low quality...", 1, 0)
 			clickPos(xPos, yPos, 1, 1)
 		}
@@ -575,31 +583,33 @@ locator(image, what, byref xPos, byref yPos, clickCount:=5, absolute:=0, startAt
 	return 1
 }
 
-locateImage(imageFileName, byref xPos:="", byref yPos:="", absolute:=0, startAt:=0, directionUp:=0) {
+locateImage(image, byref xPos:="", byref yPos:="", absolute:=0, startAt:=0, directionUp:=0) {
 	if (directionUp) {
-		return locateImageUp(imageFileName, xPos, yPos, absolute, startAt)
+		return locateImageUp(image, xPos, yPos, absolute, startAt)
 	} else {
-		return locateImageDown(imageFileName, xPos, yPos, absolute, startAt)
+		return locateImageDown(image, xPos, yPos, absolute, startAt)
 	}
 }
 
 ; Bottom up image search in chunks (size equal to the distance between two lvl up buttons)
-locateImageUp(imageFileName, byref xPos:="", byref yPos:="", absolute:=0, startAt:=0) {
+locateImageUp(image, byref xPos:="", byref yPos:="", absolute:=0, startAt:=0) {
 	global
 
-	local searchCount := ceil((yScreenB - yScreenT) / oLvl)
+	local yT := yScreenT + image.topOffset
+	local searchCount := ceil((yScreenB - yT) / oLvl)
 	local offset := 0
 	if (startAt > 0) {
 		offset := startAt - yScreenB
-		searchCount := ceil((startAt - yScreenT) / oLvl)
+		searchCount := ceil((startAt - yT) / oLvl)
 	}
 	local topOffset := offset + yScreenB - yScreenT - oLvl
 	local bottomOffset := offset
+
 	; msgbox % "searchCount=" . searchCount . ", offset=" . offset . ", topOffset=" . topOffset . ", bottomOffset=" . bottomOffset
 
 	loop % searchCount
 	{
-		if (locateImageDown(imageFileName, xPos, yPos, absolute, topOffset,, bottomOffset)) {
+		if (locateImageDown(image, xPos, yPos, absolute, topOffset,, bottomOffset)) {
 			return 1
 		} else {
 			topOffset -= oLvl
@@ -612,17 +622,29 @@ locateImageUp(imageFileName, byref xPos:="", byref yPos:="", absolute:=0, startA
 }
 
 ; Top down image search
-locateImageDown(imageFileName, byref xPos:="", byref yPos:="", absolute:=0, topOffset:=0, leftOffset:=0, bottomOffset:=0, rightOffset:=0) {
+locateImageDown(image, byref xPos:="", byref yPos:="", absolute:=0, topOffset:=0, leftOffset:=0, bottomOffset:=0, rightOffset:=0) {
 	global
-	local imageFile := imageFilePath . imageFileName
-	; msgbox % "Searching from (" . xScreenL + leftOffset . ", " . yScreenT + topOffset . ") to (" . xScreenR + rightOffset . ", " . yScreenB + bottomOffset . ")"
+	local imageFile := imageFilePath . image.file
 
-	if (yScreenT + topOffset > yScreenB + bottomOffset) {
-		msgbox,,% script,% "ImageSearch failed! y top > y bottom!"
+	local xL := xScreenL
+	local yT := yScreenT
+	local xR := xScreenR
+	local yB := yScreenB
+
+	xL += leftOffset ? leftOffset : image.leftOffset
+	yT += topOffset ? topOffset : image.topOffset
+	xR += rightOffset ? rightOffset : image.rightOffset
+	yB += bottomOffset ? bottomOffset : image.bottomOffset
+
+	; msgbox % "file=" . image.file . ", topOffset=" . image.topOffset . ", leftOffset=" . image.leftOffset . ", bottomOffset=" . image.bottomOffset . ", rightOffset=" . image.rightOffset
+	; msgbox % "Searching from (" . xL . ", " . yT . ") to (" . xR . ", " . yB . ")"
+
+	if (xL > xR or yT > yB) {
+		msgbox,,% script,% "ImageSearch failed! xL > xR or yT > yB"
 		exit
 	}
 	reFocus()
-	ImageSearch xPos, yPos, xScreenL + leftOffset, yScreenT + topOffset, xScreenR + rightOffset, yScreenB + bottomOffset, *30 %imageFile%
+	ImageSearch xPos, yPos, xL, yT, xR, yB, *30 %imageFile%
 	if (ErrorLevel = 2) {
 		playWarningSound()
 		msgbox,,% script,% "ImageSearch failed! Could not open: " . %imageFile%

@@ -54,9 +54,8 @@ solomonLevels := 1
 locatorRetries := -1 ; -1 for infinite
 
 ; Test hotkeys:
-; Win+F3 - Locate'n'click clickable
-; Win+F4 - Locate'n'level Solomon
-; Win+F5 - Call the getState function (used by the loopVisionRun function)
+; Win+F3 - Search & locate tests for all images
+; Win+F4 - Call the getState function (used by the loopVisionRun function)
 
 ; -- Midas --------------------------------------------------------------------------------
 
@@ -114,7 +113,7 @@ stopHuntThreshold := 4 ; stop hunt when this many minutes remain of a run
 ; If the script starts on the 2nd ranger too early (before lvl 100) or too late (after lvl 200), adjust this setting.
 firstStintAdjustment := 0 ; (s) Add or remove time (in seconds) to or from the first hero.
 
-activateSkillsAtStart := true ; usually needed in the late game to get going after ascending
+activateSkillsAtStart := false ; usually needed in the late game to get going after ascending
 
 hybridMode := false ; (s) chain a deep run when the speed run finish
 

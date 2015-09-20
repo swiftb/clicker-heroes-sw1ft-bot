@@ -78,30 +78,59 @@ return
 	}
 return
 
-#F3::
-	if (locateImage(clickableImage, x, y)) {
-		msgbox, 260,% script,% "Go fishing at position: " . x . ", " . y . "?"
-		ifmsgbox no
-			exit
-		clickPos(x, y, 1, 1)
+testSearch(image, info:="") {
+	global
+	local extraInfo := info != "" ? " (" . info . ")" : ""
+	msgbox,,% script,% "Search for " . image.file . "?" . extraInfo
+	if (locateImage(image)) {
+		msgbox,,% script,% "Success!"
 	} else {
-		showSplash("Could not locate clickable")
+		msgbox,,% script,% "Failed!"
 	}
+}
+
+testLocate(image, clickCount:=5) {
+	global
+	msgbox,,% script,% "Locate " . image.file . "?"
+	if (locator(image, image.file, x, y, clickCount)) {
+		msgbox,,% script,% "Success!"
+	} else {
+		msgbox,,% script,% "Failed!"
+	}
+}
+
+#F3::
+	msgbox,,% script,% "After clickable/Midas start state expected."
+	testSearch(imgQuality, "high quality")
+	testSearch(imgProgression, "low quality")
+	testSearch(imgLocked, "locked skill")
+	testSearch(imgClickable)
+	switchToCombatTab()
+	testSearch(imgCombat)
+	testSearch(imgHire)
+	testSearch(imgCoin)
+	testSearch(imgSkill, "lvl someone to 10")
+	testSearch(imgDimmedSkill, "lvl someone to 1")
+	testLocate(imgIce, 3)
+	testSearch(imgMetalDetector, "Broyle's skill")
+	testSearch(imgGoldBlade, "Midas last upgrade")
+	testLocate(imgAmenhotep)
+	testSearch(imgAscension)
+	testLocate(imgDK)
+	testSearch(imgFrigidEnchant, "Frostleaf's last upgrade")
+
+	msgbox,,% script,% "Locate " . imgGilded.file . "?"
+	if (locateGilded(x, y, isNew)) {
+		msgbox,,% script,% "Success!"
+	} else {
+		msgbox,,% script,% "Failed!"
+	}
+
+	switchToAncientTab()
+	testLocate(imgSolomon)
 return
 
 #F4::
-	switchToAncientTab()
-	locator(solomonImage, "Solomon", x, y)
-	msgbox,,% script,% "Located Solomon at position: " . x . ", " . y
-	x -= 365
-	y += 28
-	msgbox, 260,% script,% "Click button at position: " . x . ", " . y . "?"
-	ifmsgbox no
-		exit
-	clickPos(x, y, 1, 1)
-return
-
-#F5::
 	showSplash("State = " . getState())
 return
 
@@ -351,17 +380,16 @@ initRun() {
 	} else {
 		local foundDK := false
 		local x := 0, xButton := 0, yButton := 0
-		local topOffset := 170, rightOffset := -610
 
-		locateImage(coinImage, xButton, yButton) ; get a x coordinate for the hire/lvl up buttons
+		locateImage(imgCoin, xButton, yButton) ; get a x coordinate for the hire/lvl up buttons
 
 		loop 9 ; pages
 		{
-			foundDK := locateImage(dkImage, xDK, yDK)
+			foundDK := locateImage(imgDK, xDK, yDK)
 			loop 5 ; attempts per page
 			{
-				if (locateImageDown(hireImage, x, yButton,, topOffset,,, rightOffset)
-						or locateImageDown(dimmedSkillImage, x, yButton,, topOffset,,, rightOffset)) {
+				if (locateImage(imgHire, x, yButton)
+						or locateImage(imgDimmedSkill, x, yButton)) {
 					if (foundDK and yButton > yDK) {
 						; Don't level anything below Frostleaf
 						continue
@@ -372,7 +400,7 @@ initRun() {
 				}
 			}
 			if (foundDK) {
-				if (locateImage(frigidEnchantImage)) {
+				if (locateImage(imgFrigidEnchant)) {
 					; Frostleaf has been leveled
 					initiated := true
 				}
@@ -445,7 +473,7 @@ midasStart() {
 	scrollDown(8)
 
 	if (useImageSearch) {
-		locator(iceImage, "Ice Wizard", xl, yl, 2)
+		locator(imgIce, "Ice Wizard", xl, yl, 2)
 		; Offset coordinates to the top lvl up button
 		xl := xl - 271
 		yl := yl + 42 - oLvl*4
@@ -453,9 +481,9 @@ midasStart() {
 
 	local zones := midasExtraZone > 0 ? midasZone2 - midasExtraZone : midasZone2 - midasZone1
 	scrollZoneLeft(zones)
-	unlockSkill(xl, yl+oLvl, metalDetectorImage)
+	unlockSkill(xl, yl+oLvl, imgMetalDetector)
 	sleep % midasDelay2 * 1000
-	unlockSkill(xl, yl+oLvl*3, goldBladeImage)
+	unlockSkill(xl, yl+oLvl*3, imgGoldBlade)
 
 	verticalSkills(xSkill + oSkill*4) ; Metal Detector + Golden Clicks
 	toggleMode()
@@ -504,13 +532,13 @@ getState() {
 	if (getCurrentZone() = 0) {
 		return -1 ; vision, but not in browser
 	}
-	if (!locateImage(coinImage)) {
+	if (!locateImage(imgCoin)) {
 		return 0 ; vision, but not finding anything
 	}
-	if (!locateImage(progressionImage) and getCurrentZone() < 100) {
+	if (!locateImage(imgProgression) and getCurrentZone() < 100) {
 		return hasClickable() ? 2 : 1 ; ascended with (2) or without (1) clickable
 	}
-	if (locateImage(hireImage)) {
+	if (locateImage(imgHire)) {
 		return 3 ; not initialized
 	}
 	local endZone := endLvlActive > 0 ? endLvlActive : endLvlIdle
@@ -591,7 +619,7 @@ visionRun(initiated:=true) {
 	startMonitoring()
 	startProgress("Vision Run", zone // barUpdateDelay, endZone // barUpdateDelay)
 
-	if (initiated and locateImage(lockedImage)) {
+	if (initiated and locateImage(imgLocked)) {
 		showDebugSplash("Trigger delayed re-initialization")
 		initiated := false
 	}
@@ -608,14 +636,14 @@ visionRun(initiated:=true) {
 		}
 		if (mod(t, 15) = 0) {
 			; Make sure we are progressing
-			if (!locateImage(progressionImage)) {
+			if (!locateImage(imgProgression)) {
 				showDebugSplash("Toggle progression mode")
 				toggleMode()
 			}
 			if (!initiated and zone > initZone) {
 				; When enough gold, re-init
 				showDebugSplash("Delayed re-initialization")
-				if (initRun() and !locateImage(lockedImage)) {
+				if (initRun() and !locateImage(imgLocked)) {
 					showDebugSplash("Initiated!")
 					initiated := true
 				}
@@ -661,11 +689,13 @@ visionRun(initiated:=true) {
 		if (mod(t, lvlUpDelay) = 0) {
 			if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
 				if (skillSearch) {
-					skillSearch := false
 					; Aquire possible new skills
-					while (locateImage(skillImage, xSkill, ySkill)) {
+					while (locateImage(imgSkill, xSkill, ySkill)) {
 						clickPos(xSkill, ySkill, 1, 1)
 						sleep % 500
+					}
+					if (!locateImageDown(imgDimmedSkill, x, yButton)) {
+						skillSearch := false
 					}
 				}
 				; ... when we can afford to do so
@@ -1069,9 +1099,9 @@ ascend(autoYes:=false) {
 	switchToCombatTab()
 	scrollDown(ascDownClicks)
 
-	if (useImageSearch and locator(amenhotepImage, "Amenhotep", x, y)) {
-		if (!locateImage(ascensionImage)) {
-			unlockSkill(x - 349, y, ascensionImage)
+	if (useImageSearch and locator(imgAmenhotep, "Amenhotep", x, y)) {
+		if (!locateImage(imgAscension)) {
+			unlockSkill(x - 349, y, imgAscension)
 		}
 	}
 	verticalSkills(xSkill + oSkill*3) ; ASCENSION
@@ -1211,7 +1241,7 @@ handleAutorun() {
 
 hasClickable() {
 	global
-	return useImageSearch ? locateImage(clickableImage) : 0
+	return useImageSearch ? locateImage(imgClickable) : 0
 }
 
 ; Try to find the first gilded hero/ranger we can lvl up
@@ -1223,7 +1253,7 @@ locateGilded(byref xPos, byref yPos, byref isNew) {
 
 	scrollToBottom()
 
-	while (upLocator(gildedImage, "Gilded hero", xAbs, yAbs, 5, 1, startAt)) {
+	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, 5, 1, startAt)) {
 		local xPixel := xAbs + 83 ; HI[R]E
 		local yPixel := yAbs + 38
 		if (matchPixelColor(dimmedYellowColor, xPixel, yPixel)) {
@@ -1245,7 +1275,7 @@ solomonLeveler(levels) {
 
 	if (useImageSearch) {
 		switchToAncientTab()
-		if (locator(solomonImage, "Solomon", x, y)) {
+		if (locator(imgSolomon, "Solomon", x, y)) {
 			; Offset coordinates to the lvl up button
 			x -= 365
 			y += 28
@@ -1275,9 +1305,9 @@ checkMousePosition:
 
 			if (x > xL && y > yT && x < xR && y < yB) {
 				playNotificationSound()
-				if (useImageSearch and locateImage(combatImage)) {
+				if (useImageSearch and locateImage(imgProgression)) {
 					msgbox,,% script,Click safety pause engaged. Resume?
-					if (!locateImage(combatImage)) {
+					if (!locateImage(imgCombat)) {
 						switchToCombatTab()
 					}
 					isResuming := true
@@ -1290,7 +1320,7 @@ checkMousePosition:
 return
 
 checkWindowVisibility:
-	if (!locateImage(coinImage) or !locateImage(progressionImage)) {
+	if (!locateImage(imgCoin) or !locateImage(imgProgression)) {
 		WinActivate, % winName
 	}
 return
