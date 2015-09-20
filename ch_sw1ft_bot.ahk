@@ -582,7 +582,7 @@ visionRun(initiated:=true) {
 	local endZone := endLvlActive > 0 ? endLvlActive : endLvlIdle
 
 	local comboDelay := deepRunCombo[1]
-	local comboIndex := 2
+	comboIndex := 2
 	local stopHuntZone := endZone - ceil(stopHuntThreshold * 250 / 7)
 	local t := 0
 
@@ -599,6 +599,7 @@ visionRun(initiated:=true) {
 	loop
 	{
 		if (exitThread) {
+			SetTimer, comboTimer, off
 			clickerStop()
 			stopProgress()
 			stopMonitoring()
@@ -644,14 +645,11 @@ visionRun(initiated:=true) {
 					; Yup, start hammering!
 					showDebugSplash("Start external clicker")
 					clickerStart() ; ~38 CPS
+					Gosub, comboTimer
+					SetTimer, comboTimer, % comboDelay * 1000 + 100
 					isClickerRunning := true
 				}
 				clickPos(xMonster, yMonster) ; ~1 CPS
-			}
-			if (mod(t, comboDelay) = 0) {
-				showDebugSplash("Activate combo")
-				activateSkills(deepRunCombo[comboIndex])
-				comboIndex := comboIndex < deepRunCombo.MaxIndex() ? comboIndex+1 : 2
 			}
 		; If option enabled, activate skills once at start
 		} else if (zone < irisLevel + 5 and activateSkillsAtStart and !hasActivatedSkills) {
@@ -690,6 +688,7 @@ visionRun(initiated:=true) {
 		zone := getCurrentZone()
 	} until zone >= endZone
 
+	SetTimer, comboTimer, off
 	clickerStop()
 	stopProgress()
 	stopMonitoring()
@@ -1294,4 +1293,9 @@ checkWindowVisibility:
 	if (!locateImage(coinImage) or !locateImage(progressionImage)) {
 		WinActivate, % winName
 	}
+return
+
+comboTimer:
+	activateSkills(deepRunCombo[comboIndex])
+	comboIndex := comboIndex < deepRunCombo.MaxIndex() ? comboIndex+1 : 2
 return

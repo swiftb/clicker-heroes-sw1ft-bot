@@ -18,6 +18,11 @@ comboGoldenLuck := [2.5*60, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", 
 comboHybridIdle := [15*60, "2-3-4-5-7-6-9-8"] ; energize >
 comboHybridActive := [30, "5-2-4-6-7", "", "", "3-8-9", "", "", "2", "", "", "3-7", "", "1-2"] ; > golden clicks, 6 minutes
 
+comboMidas := [2.5*60, "8-9-6-2", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2", "2-4-5"]
+
+; Midas: 1-4-5                  0:30                      3:00                 5:30                  8:00                   10:30                13:00                     15:30               17:00       18:00 Ascend
+comboMidas2 := [30, "8-9-6", "2-3-4-5-7", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-3-4", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-4-3-5-8-9", "", "", "3-5-7", "", "1-2", "", ""]
+
 activeClicker := true ; set to false to add Clickstorm
 testMode := true
 
@@ -34,11 +39,11 @@ F2::
 return
 
 F3::
-	comboTester(comboGoldenLuck)
+	comboTester(comboMidas)
 return
 
 F4::
-	comboTester(comboHybridActive)
+	comboTester(comboMidas2)
 return
 
 F5::
@@ -48,26 +53,27 @@ return
 comboTester(combo) {
 	global activeClicker, testMode
 
-	seconds := 31*60
+	seconds := 60*60
 	t := 0
 
 	comboDelay := combo[1]
 	comboIndex := 2
 
+	s := "    " ; Reddit friendly formatting
 	output := ""
 
 	while(t < seconds)
 	{
 		if (mod(t, comboDelay) = 0) {
 			if (testMode and comboIndex = 2 and A_Index > 1) {
-				output .= formatSeconds(t) . " : " . "repeat"
+				output .= s . formatSeconds(t) . " : " . "repeat"
 				break
 			}
 			skills := activeClicker ? combo[comboIndex] : StrReplace(combo[comboIndex], "2", "1-2")
 			if (!testMode) {
 				activateSkills(skills)
 			}
-			output .= formatSeconds(t) . " : " . skills . "`r`n"
+			output .= s . formatSeconds(t) . " : " . skills . "`r`n"
 			comboIndex := comboIndex < combo.MaxIndex() ? comboIndex+1 : 2
 		}
 		t += 1
