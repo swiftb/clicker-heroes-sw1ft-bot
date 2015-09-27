@@ -46,6 +46,9 @@ barUpdateDelay := 30 ; time (in seconds) between progress bar updates
 coinPickUpDelay := 6 ; time (in seconds) needed to pick up all coins from a clickable
 nextHeroDelay := 6 ; extra gold farm delay (in seconds) between heroes
 
+scrollDelay := 275 ; base delay (in ms)
+scrollClickDelay := 20 ; delay per click (in ms)
+
 dialogBoxClass := "#32770"
 
 blueColor := 0x60BEFF
@@ -64,29 +67,38 @@ CZRO := CZLO - chWidth
 
 imageFilePath := "images\"
 
+imgSmile := {file:"smile.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 imgQuality := {file:"quality.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 imgProgression := {file:"progression.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 
-imgLocked := {file:"locked.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 imgClickable := {file:"clickable.png", topOffset:CZTO, leftOffset:CZLO, bottomOffset:0, rightOffset:0}
+
+imgSkillBar := {file:"skill_bar.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
+imgSkillLocked := {file:"skill_locked.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 
 imgCombat := {file:"combat.png", topOffset:0, leftOffset:0, bottomOffset:CZBO, rightOffset:CZRO}
 
 imgHire := {file:"hire.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgCoin := {file:"coin.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgGilded := {file:"gilded.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
-imgSkill := {file:"skill.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgDimmedSkill := {file:"skill_dimmed.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgSkill := {file:"skill.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgClickstorm := {file:"clickstorm.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgMetalDetector := {file:"metal_detector.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgGoldBlade := {file:"gold_blade.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgGoldenClicks := {file:"golden_clicks.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgAscension := {file:"ascension.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgFrigidEnchant := {file:"frigid_enchant.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
-imgAmenhotep := {file:"amenhotep.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgCid := {file:"cid.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgMercedes := {file:"mercedes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgReferi := {file:"referi.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgBeastlord := {file:"beastlord.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgDK := {file:"dk.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgIce := {file:"ice.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgSolomon := {file:"solomon.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+
+imgGilded := {file:"gilded.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+
+imgBuyUpgrades := {file:"upgrades.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 ; -- Coordinates --------------------------------------------------------------------------
 
@@ -173,8 +185,9 @@ oSkill := 36 ; offset to next skill
 ySkillTop := 279 ; at top
 ySkill2nd := 410 ; at bottom
 
+xPrevZone := 679
 xMiddleZone := 858
-xNextZone := 1042
+xNextZone := 1044
 yZone := 70
 
 ; -----------------------------------------------------------------------------------------
@@ -195,7 +208,7 @@ IfNotExist, ch_bot_lib_settings.ahk
 
 getClickable(idle:=0) {
 	global
-
+	local xPos, yPos
 	if (idle = 0) {
 		; Break idle on purpose to get the same amount of gold every run
 		loop 3 {
@@ -214,10 +227,10 @@ getClickable(idle:=0) {
 
 clientCheck() {
 	global
-	WinGet, activeWinId, ID, A ; remember current active window...
 	if (A_TitleMatchMode = 3) {
 		calculateSteamAspectRatio() ; Steam
 	} else {
+		local xPos, yPos
 		calculateBrowserOffsets() ; Browser
 		fullScreenOption := false
 
@@ -226,11 +239,11 @@ clientCheck() {
 			clickPos(xPos, yPos, 1, 1)
 		}
 	}
-	WinActivate, ahk_id %activeWinId% ; ... and restore focus back
 }
 
 calculateBrowserOffsets() {
 	global
+	local w, h
 	winName := "Lvl.*Clicker Heroes.*" . browser
 	IfWinExist, % winName
 	{
@@ -254,6 +267,7 @@ calculateBrowserOffsets() {
 
 calculateSteamAspectRatio() {
 	global
+	local w, h
 	IfWinExist, % winName
 	{
 		WinActivate
@@ -319,25 +333,25 @@ switchToRelicTab() {
 scrollToTop() {
 	global
 	clickPos(xScroll, yUp, top2BottomClicks)
-	sleep % 275 + top2BottomClicks * 20
+	sleep % scrollDelay + top2BottomClicks * scrollClickDelay
 }
 
 scrollToBottom() {
 	global
 	clickPos(xScroll, yDown, top2BottomClicks)
-	sleep % 275 + top2BottomClicks * 20
+	sleep % scrollDelay + top2BottomClicks * scrollClickDelay
 }
 
 scrollUp(clickCount:=1) {
 	global
 	clickPos(xScroll, yUp, clickCount)
-	sleep % 275 + clickCount * 20
+	sleep % scrollDelay + clickCount * scrollClickDelay
 }
 
 scrollDown(clickCount:=1) {
 	global
 	clickPos(xScroll, yDown, clickCount)
-	sleep % 275 + clickCount * 20
+	sleep % scrollDelay + clickCount * scrollClickDelay
 }
 
 ; Scroll down fix when at bottom and scroll bar don't update correctly
@@ -465,10 +479,10 @@ stopProgress() {
 }
 
 formatSeconds(s) {
-    time := 19990101 ; *Midnight* of an arbitrary date.
-    time += %s%, seconds
+	time := 19990101 ; *Midnight* of an arbitrary date.
+	time += %s%, seconds
 	FormatTime, timeStr, %time%, HH:mm:ss
-    return timeStr
+	return timeStr
 }
 
 secondsSince(startTime) {
@@ -483,6 +497,7 @@ toggleFlag(flagName, byref flag) {
 
 screenShot() {
 	global
+	local activeWinId
 	if (A_TitleMatchMode = 3) { ; Steam only
 		WinGet, activeWinId, ID, A ; remember current active window...
 		WinActivate, % winName
@@ -492,23 +507,30 @@ screenShot() {
 	}
 }
 
-scrollZoneLeft(zones) {
+scrollToZone(fromZone, toZone) {
 	global
-	clickPos(xNextZone, yZone, zones)
-	sleep % 300 + zones * 20
-	clickPos(xMiddleZone, yZone)
+	local currentZone := getCurrentZone()
+	local zones := currentZone > 0 ? toZone - currentZone : toZone - fromZone
+	local xZone := zones > 0 ? xNextZone : xPrevZone
+
+	if (zones != 0) {
+		clickPos(xZone, yZone, abs(zones))
+		sleep % scrollDelay + 25 + abs(zones) * scrollClickDelay
+		clickPos(xMiddleZone, yZone)
+		sleep % zzz
+	}
 }
 
-horizontalSkills(y, skills) {
+horizontalSkills(x, y, skills, absolute:=0) {
 	global
-	local x := xSkill
 
 	loop % skills
 	{
-		clickPos(x, y)
+		clickPos(x, y, 1, absolute)
 		sleep 25
 		x += oSkill
 	}
+	sleep % zzz * 2
 }
 
 verticalSkills(x) {
@@ -525,11 +547,11 @@ verticalSkills(x) {
 
 getCurrentZone() {
 	global
-
+	local title, currentZone
 	if (A_TitleMatchMode = "regex") {
-	    WinGetTitle, title, % winName
-	    currentZone := SubStr(title, 5, InStr(title, "-") - 6)
-	    return currentZone
+		WinGetTitle, title, % winName
+		currentZone := SubStr(title, 5, InStr(title, "-") - 6)
+		return currentZone
 	} else {
 		return 0
 	}
@@ -546,17 +568,16 @@ reFocus() {
 ; screen. The CH window is required to be visible and in default size for this to work.
 ; -----------------------------------------------------------------------------------------
 
-upLocator(image, what, byref xPos, byref yPos, clickCount:=5, absolute:=0, startAt:=0) {
-	return locator(image, what, xPos, yPos, clickCount, absolute, startAt, 1)
+upLocator(image, what, byref xPos, byref yPos, clickCount:=5, retries:=-1, absolute:=0, startAt:=0) {
+	return locator(image, what, xPos, yPos, clickCount, retries, absolute, startAt, 1)
 }
 
 ; Try to locate the given image one screen at a time
-locator(image, what, byref xPos, byref yPos, clickCount:=5, absolute:=0, startAt:=0, directionUp:=0) {
+locator(image, what, byref xPos, byref yPos, clickCount:=5, retries:=-1, absolute:=0, startAt:=0, directionUp:=0) {
 	global
 
 	local attempts := ceil(45 / clickCount)
 	local attempt := 0
-	local retries := locatorRetries
 
 	while (!locateImage(image, xPos, yPos, absolute, startAt, directionUp)) {
 		if (++attempt <= attempts) {
@@ -626,6 +647,10 @@ locateImageDown(image, byref xPos:="", byref yPos:="", absolute:=0, topOffset:=0
 	global
 	local imageFile := imageFilePath . image.file
 
+	if (yScreenB = 0) {
+		return 0 ; CH not started
+	}
+
 	local xL := xScreenL
 	local yT := yScreenT
 	local xR := xScreenR
@@ -640,7 +665,7 @@ locateImageDown(image, byref xPos:="", byref yPos:="", absolute:=0, topOffset:=0
 	; msgbox % "Searching from (" . xL . ", " . yT . ") to (" . xR . ", " . yB . ")"
 
 	if (xL > xR or yT > yB) {
-		msgbox,,% script,% "ImageSearch failed! xL > xR or yT > yB"
+		msgbox,,% script,% "ImageSearch failed! xL (" . xL . ") > xR (" . xR . ") or yT (" . yT  . ") > yB (" . yB . ")"
 		exit
 	}
 	reFocus()

@@ -50,9 +50,6 @@ endLvlActive := 0
 levelSolomon := false ; feed solomon after ascending?
 solomonLevels := 1
 
-; Scrolling image search
-locatorRetries := -1 ; -1 for infinite
-
 ; Test hotkeys:
 ; Win+F3 - Search & locate tests for all images
 ; Win+F4 - Call the getState function (used by the loopVisionRun function)
@@ -62,36 +59,37 @@ locatorRetries := -1 ; -1 for infinite
 useMidasStart := false ; pref. used with the useImageSearch option
 
 ; Config syntax:
-; [<boss zone 1>, <delay 1>, <extra boss zone>, <extra delay>, <zone 2>, <delay 2>]
+; [<zone 1>, <delay 1>, <extra zone>, <extra delay>, <zone 2>, <delay 2>]
 
-; Midas Start Procedure:
+; Midas Start Procedure (with useImageSearch = false):
 
-; * Scroll to "boss zone 1" > Lvl Cid to 100 > Buy Clickstorm (1) > Scroll down and lvl Natalia to 1 > "delay 1"
-; * (Optional) Scroll to "extra boss zone" > Lvl Natalias to 100 > Buy Natalias upgrades > "extra delay"
+; * Scroll to "zone 1" > Lvl Cid to 150 > Buy Clickstorm (1) > Scroll down and lvl Natalia x 1 > "delay 1" > Lvl Natalia x 100
+; * (Optional) Scroll to "extra zone" > Buy Natalia's upgrades > "extra delay"
 
 ; We want to reach this point with an accumulated gold (ag) amount between one of these thresholds:
 ; 160T (Abaddon) <- ag -> 1350T (Ma Zhu) <- ag -> 12000T (Amenhotep) <- ag -> 150q (Beastlord)
 ; Target amounts:  755T                    6675T                      81000T
 
-; At each threshold, a new hero will spawn and trigger a movement in the scrollbar.
-; If that happens just as we try to scroll down to Broyle and Midas, the start will fail.
-; Hence why we try to be between two thresholds in gold.
+; Siya 28000: 175Q (Aphrodite) <- ag -> 7000Q (Shinatobe)
 
-; * Scroll down > Scroll to "zone 2" > Lvl Broyle to 100 > "delay 2"
-; * Lvl Midas to 100 > Buy Metal Detector (4) and Golden Clicks (5) -- Total cost ~60000T
+; At each threshold, a new hero will spawn and trigger a movement in the scrollbar.
+; If that happens just as we try to scroll down to Broyle and Midas, the start will fail (unless useImageSearch = true).
+
+; * Scroll down > Scroll to "zone 2" > Lvl Broyle x 100 > "delay 2"
+; * Lvl Midas x 100 > Buy Metal Detector (4) and Golden Clicks (5) -- Total cost ~60000T
 ; * Activate Progression Mode > Activate skills 1-4-5 > Coin pickup delay (6 seconds)
 
 ; Example configs:
 
-; Two zones                          useImageSearch = true
-; Siya 14000: [60, 7, 0, 0, 79, 5] ; [63, 6, 0, 0, 83, 4]
-; Siya 7000:  [55, 6, 0, 0, 79, 5] ; [59, 6, 0, 0, 79, 4]
+; useImageSearch = false           | useImageSearch = true
+; Siya 28000: [65, 6, 0, 0, 86, 0] | [66, 5, 0, 0, 86, 0] ~18s
+; Siya 14000: [60, 7, 0, 0, 83, 4] | [63, 6, 0, 0, 83, 0]
+; Siya 7000:  [55, 9, 0, 0, 79, 5] | [59, 6, 0, 0, 79, 0]
 
-; Three zones
-; Siya 3500: [50, 5, 60, 4, 74, 5] ; [56, 6, 0, 0, 76, 4]
-; Siya 2000: [50, 6, 60, 6, 69, 5] ; [53, 6, 0, 0, 73, 4]
-; Siya 200:                          [44, 7, 56, 5, 64, 4]
-; Siya 100:                          [42, 8, 53, 7, 64, 7]
+; Siya 3500: [50, 5, 60, 4, 76, 4] | [56, 6, 0, 0, 76, 0]
+; Siya 2000: [50, 6, 60, 6, 73, 4] | [53, 6, 0, 0, 73, 4]
+; Siya 400:                        | [47, 5, 57, 4, 67, 4]
+; Siya 100:                        | [43, 6, 53, 6, 63, 5] (requires idle)
 
 midasZoneConfig := [56, 6, 0, 0, 76, 4]
 ; Note: Your Iris level must be equal or higher than zone 2
@@ -113,7 +111,7 @@ stopHuntThreshold := 4 ; stop hunt when this many minutes remain of a run
 ; If the script starts on the 2nd ranger too early (before lvl 100) or too late (after lvl 200), adjust this setting.
 firstStintAdjustment := 0 ; (s) Add or remove time (in seconds) to or from the first hero.
 
-activateSkillsAtStart := false ; usually needed in the late game to get going after ascending
+activateSkillsAtStart := true ; usually needed in the late game to get going after ascending
 
 hybridMode := false ; (s) chain a deep run when the speed run finish
 
