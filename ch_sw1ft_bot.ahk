@@ -525,7 +525,7 @@ midasStart() {
 
 		toggleMode()
 		activateSkills("1-4-5")
-		sleep 3500
+		sleep % coinPickUpDelay * 1000
 		zClick(xl, yl-oLvl, 1, 1) ; Midas 125
 	}
 	stopMonitoring()
