@@ -637,6 +637,10 @@ visionRun() {
 	global
 	exitThread := false
 	isResuming := false
+
+	showSplash("Starting vision run...", 1, 0)
+	startMonitoring()
+	reFocus()
 	
 	local isInitiated := false
 	local isClickerRunning := false
@@ -656,9 +660,6 @@ visionRun() {
 	local comboDelay := deepRunCombo[1]
 	comboIndex := 2
 
-	showSplash("Starting vision run...", 1, 0)
-
-	startMonitoring()
 	startProgress("Vision Run", zone // barUpdateDelay, endZone // barUpdateDelay)
 
 	loop
