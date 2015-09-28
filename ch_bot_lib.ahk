@@ -261,7 +261,7 @@ calculateBrowserOffsets() {
 		xScreenR := xScreenL + chWidth
 		yScreenB := yScreenT + chHeight
 	} else {
-		showWarningSplash("Clicker Heroes started in browser?")
+		showWarningSplash("Clicker Heroes started in " . browser . "?")
 	}
 }
 
@@ -308,7 +308,7 @@ calculateSteamAspectRatio() {
 		xScreenR := fullScreenOption ? xWinPos + w : xWinPos + w - chMargin
 		yScreenB := fullScreenOption ? yWinPos + h : yWinPos + h - chMargin
 	} else {
-		showWarningSplash("Clicker Heroes started?")
+		showWarningSplash("Clicker Heroes started in Steam?")
 	}
 }
 

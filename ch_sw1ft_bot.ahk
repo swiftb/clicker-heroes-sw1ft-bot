@@ -62,58 +62,6 @@ handleAutorun()
 ; -- Hotkeys (+=Shift, !=Alt, ^=Ctrl, #=Win)
 ; -----------------------------------------------------------------------------------------
 
-F1::
-	loop 2
-	{
-		scrollDown(5)
-		ctrlClick(xLvl, 315)
-		sleep 500
-		scrollUp(5)
-		ctrlClick(xLvl, 260)
-		sleep 500
-	}
-return
-
-F2::
-	loop 2
-	{
-		scrollToBottom()
-		ctrlClick(xLvl, 285)
-		sleep 500
-		scrollToTop()
-		ctrlClick(xLvl, 260)
-		sleep 500
-	}
-return
-
-F3::
-	zones := 0
-	loop 2
-	{
-		scrollToZone(10, 20)
-		zones += getCurrentZone() . " "
-		sleep 500
-		scrollToZone(20, 10)
-		zones += getCurrentZone() . " "
-		sleep 500
-	}
-	msgbox % "zones = " . zones . " (" . 2*(20+10) . ")"
-return
-
-F4::
-	zones := 0
-	loop 2
-	{
-		scrollToZone(10, 80)
-		zones += getCurrentZone() . " "
-		sleep 500
-		scrollToZone(80, 10)
-		zones += getCurrentZone() . " "
-		sleep 500
-	}
-	msgbox % "zones = " . zones . " (" . 2*(80+10) . ")"
-return
-
 ; -----------------------------------------------------------------------------------------
 ; -- Experimental testing -----------------------------------------------------------------
 
