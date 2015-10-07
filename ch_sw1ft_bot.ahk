@@ -478,7 +478,6 @@ midasStart() {
 		}
 		scrollToZone(1, midasZone1)
 		ctrlClick(xl, yl) ; Cid x 100
-		zClick(xl, yl, 2) ; Cid x 50
 		clickPos(xSkill + oSkill, ySkillTop) ; Clickstorm
 		sleep % zzz
 
@@ -494,9 +493,9 @@ midasStart() {
 		}
 		scrollDown(8)
 		scrollToZone(fromZone, midasZone2)
-		ctrlClick(xl, yl+oLvl)
+		ctrlClick(xl, yl+oLvl) ; Broyle x 100
 		sleep % midasDelay2 * 1000
-		ctrlClick(xl, yl+oLvl*3)
+		ctrlClick(xl, yl+oLvl*3) ; Midas x 100
 		verticalSkills(xSkill + oSkill*4) ; Metal Detector + Golden Clicks
 
 		toggleMode()
@@ -780,8 +779,9 @@ loopSpeedRun() {
 	{
 		if (useMidasStart) {
 			midasStart()
+			getClickable()
 		} else {
-			getClickable(useImageSearch)
+			getClickable()
 			sleep % coinPickUpDelay * 1000
 		}
 		initRun()
@@ -839,11 +839,6 @@ speedRun() {
 	local lastStintTime := srDuration - firstStintTime - midStintTime - totalClickDelay
 	stints += 1
 
-	totalTimeLeft := firstStintTime + midStintTime + lastStintTime
-	if (hybridMode) {
-		totalTimeLeft += deepRunTime * 60
-	}
-
 	local lastStintButton := gildedRanger = 9 ? 3 : 2 ; special case for Astraea
 
 	if (debug)
@@ -854,6 +849,9 @@ speedRun() {
 		output .= s . "irisLevel = " . irisLevel . nl
 		output .= s . "optimalLevel = " . optimalLevel . nl
 		output .= s . "speedRunTime = " . speedRunTime . nl
+		if (hybridMode) {
+			output .= s . "deepRunTime = " . deepRunTime . nl
+		}
 		output .= s . "gildedRanger = " . rangers[gildedRanger] . nl
 		output .= s . "-----------------------------" . nl
 		output .= s . "initDownClicks = "
@@ -872,10 +870,6 @@ speedRun() {
 		output .= s . "midStintTime = " . formatSeconds(midStintTime) . nl
 		output .= s . "lastStintTime = " . formatSeconds(lastStintTime) . nl
 		output .= s . "totalClickDelay = " . formatSeconds(totalClickDelay) . nl
-		if (hybridMode) {
-			output .= s . "deepRunTime = " . deepRunTime . nl
-		}
-		output .= s . "totalTimeLeft = " . formatSeconds(totalTimeLeft) . nl
 
 		clipboard := % output
 		msgbox % output
@@ -924,10 +918,9 @@ lvlUp(seconds, buyUpgrades, button, stint, stints) {
 	}
 	maxClick(xLvl, y)
 
-	local stopHuntIndex := totalTimeLeft - stopHuntThreshold * 60
 	local t := 0
 
-	loop
+	loop % seconds
 	{
 		if (exitThread) {
 			stopProgress()
@@ -938,23 +931,10 @@ lvlUp(seconds, buyUpgrades, button, stint, stints) {
 		if (mod(t, lvlUpDelay) = 0) {
 			ctrlClick(xLvl, y, 1, 0)
 		}
-		if (useImageSearch and mod(t, clickableHuntDelay) = 0 and t < stopHuntIndex) {
-			getClickable(useImageSearch)
-		}
 		t += 1
 		updateProgress(t // barUpdateDelay, seconds - t)
 		sleep 1000
-
-		if (t >= seconds) {
-			if (!hybridMode and !useMidasStart and !hasClickable()) {
-				seconds += 30
-			} else {
-				break
-			}
-		}
 	}
-	totalTimeLeft -= seconds
-
 	stopProgress()
 	stopMonitoring()
 }
@@ -978,7 +958,7 @@ deepRun() {
 	local stopHuntIndex := drDuration - stopHuntThreshold * 60
 	local t := 0
 
-	loop
+	loop % drDuration
 	{
 		if (exitThread) {
 			clickerStop()
@@ -1003,14 +983,6 @@ deepRun() {
 		t += 1
 		updateProgress(t // barUpdateDelay, drDuration - t)
 		sleep 1000
-
-		if (t >= drDuration) {
-			if (!useMidasStart and !hasClickable()) {
-				drDuration += 30
-			} else {
-				break
-			}
-		}
 	}
 
 	clickerStop()

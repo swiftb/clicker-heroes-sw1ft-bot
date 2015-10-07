@@ -31,14 +31,12 @@ gildedRanger := 6 ; the number of your main guilded ranger
 ;   - can resume (after a click safety pause or if you reload the script)
 ;   - ignores time, levels to given zone lvls
 ;   - finds gilded heroes/rangers automatically
+;   - picks up clickables without breaking idle
 ;   - can recover from failed initiations (level cid --> frostleaf)
 ;   - works with gilded Samurai (Siya > 100) or later
 ; * enable the use of the solomonLeveler function
-; * focus the window every 20s if it can't locate either a coin or the progression icon 
 ; * enhance the midasStart, initRun and ascend functions
-; * pick up clickables without breaking idle
-; * [old speed/hybrid runs] wait for clickables before ascending, unless useMidasStart is set to true
-useImageSearch := true ; requires browser low quality mode (having issues with Steam)
+useImageSearch := true ; requires browser client in low quality mode
 
 ; Vision run
 endLvlIdle := optimalLevel
