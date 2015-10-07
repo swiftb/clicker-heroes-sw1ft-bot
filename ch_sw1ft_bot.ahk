@@ -19,6 +19,8 @@ minLibVersion=1.4
 
 script := scriptName . " v" . scriptVersion
 
+clickerName := "monster_clicker.ahk - AutoHotkey"
+
 scheduleReload := false
 scheduleStop := false
 
@@ -140,8 +142,19 @@ testLocate(image, clickCount:=5) {
 	msgbox,,% script,% "Done."
 return
 
-#F4::
-	showSplash("State = " . getState())
+#F6::
+	critical
+	raid() ; free raid
+return
+
+#F7::
+	critical
+	raid(1) ; paid raid
+return
+
+#F8::
+	critical
+	raid(1, raidAttempts) ; paid raids
 return
 
 ; -----------------------------------------------------------------------------------------
@@ -683,9 +696,6 @@ visionRun() {
 				}
 				skillSearch := true
 				isResuming := false
-			} else {
-				showWarningSplash("Could not locate any gilded hero!")
-				exit
 			}
 		}
 		if (mod(t, 15) = 0) {
@@ -1034,9 +1044,24 @@ sendClickerMsg(msg) {
 	global
 	if (deepRunClicks) {
 		DetectHiddenWindows, on
-		PostMessage, %msg%,,,,monster_clicker.ahk - AutoHotkey
+		PostMessage, %msg%,,,,% clickerName
 		DetectHiddenWindows, off
 	}
+}
+
+getClickerStatus() {
+	global
+	if (deepRunClicks) {
+		DetectHiddenWindows, on
+		SendMessage, %WM_CLICKER_STATUS%,,,,% clickerName
+		DetectHiddenWindows, off
+		if (ErrorLevel != "FAIL") {
+			return ErrorLevel
+		} else {
+			showDebugSplash("SendMessage failed! monster_clicker.ahk started?")
+		}
+	}
+	return 0
 }
 
 openSaveDialog() {
@@ -1192,6 +1217,57 @@ buyAvailableUpgrades() {
 	sleep % zzz * 3
 }
 
+raid(doSpend:=0, attempts:=1) {
+	global
+	local xBtn := 0, yBtn := 0, raidDuration := 34 * 1000
+	local isClickerRunning := getClickerStatus()
+
+	switchToClanTab()
+	sleep 1000
+	clickAwayImage(imgClanRaid)
+
+	if (!isClickerRunning) {
+		clickerStart()
+		sleep 2500
+	}
+	loop % attempts
+	{
+		if (clickAwayImage(imgClanCollect)) {
+			break
+		}
+		if (doSpend) {
+			if (locateImage(imgClanFightAgain, xBtn, yBtn)) {
+				while (!locateImage(imgYes)) {
+					clickPos(xBtn, yBtn, 1, 1)
+					sleep 250
+				}
+				clickAwayImage(imgYes)
+				clickAwayImage(imgClanFight)
+				sleep % raidDuration
+			}
+		} else {
+			if (clickAwayImage(imgClanFight)) {
+				sleep % raidDuration
+			}
+		}
+	}
+	if (!isClickerRunning) {
+		clickerStop()
+	}
+}
+
+clickAwayImage(image) {
+	if (locateImage(image)) {
+		while (locateImage(image, x, y)) {
+			clickPos(x, y, 1, 1)
+			sleep 250
+		}
+		sleep 1000
+		return 1
+	}
+	return 0
+}
+
 ; Move "gildCount" gilds to given ranger
 regild(ranger, gildCount) {
 	global
@@ -1296,7 +1372,7 @@ locateGilded(byref xPos, byref yPos, byref isNew) {
 		scrollToBottom()
 	}
 
-	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, 5, -1, 1, startAt)) {
+	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, 5, 2, 1, startAt)) {
 		local xPixel := xAbs + 83 ; HI[R]E
 		local yPixel := yAbs + 38
 		if (matchPixelColor(dimmedYellowColor, xPixel, yPixel)) {

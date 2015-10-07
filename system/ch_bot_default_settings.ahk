@@ -52,7 +52,12 @@ solomonLevels := 1
 
 ; Test hotkeys:
 ; Win+F3 - Search & locate tests for all images
-; Win+F4 - Call the getState function (used by the loopVisionRun function)
+
+; Win+F6 - One free raid
+; Win+F7 - One paid raid
+; Win+F8 - raidAttempts paid raids
+
+raidAttempts := 5
 
 ; -- Midas --------------------------------------------------------------------------------
 
@@ -101,7 +106,7 @@ midasZoneConfig := [56, 6, 0, 0, 76, 4]
 ; -- Experimental -------------------------------------------------------------------------
 ; -----------------------------------------------------------------------------------------
 
-clickableHuntDelay := 10 ; hunt for a clickable every 10s
+clickableHuntDelay := 8 ; hunt for a clickable every 8s
 stopHuntThreshold := 4 ; stop hunt when this many minutes remain of a run
 
 ; -- Speed/Vision run ----------------------------------------------------------------------------

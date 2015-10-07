@@ -41,10 +41,10 @@ hBorder := 0
 vBorder := 0
 
 zzz := 175 ; sleep delay (in ms) after a click
-lvlUpDelay := 5 ; time (in seconds) between lvl up clicks
+lvlUpDelay := 4 ; time (in seconds) between lvl up clicks
 barUpdateDelay := 30 ; time (in seconds) between progress bar updates
-coinPickUpDelay := 6 ; time (in seconds) needed to pick up all coins from a clickable
-nextHeroDelay := 6 ; extra gold farm delay (in seconds) between heroes
+coinPickUpDelay := 5 ; time (in seconds) needed to pick up all coins from a clickable
+nextHeroDelay := 5 ; extra gold farm delay (in seconds) between heroes
 
 scrollDelay := 275 ; base delay (in ms)
 scrollClickDelay := 20 ; delay per click (in ms)
@@ -100,6 +100,13 @@ imgGilded := {file:"gilded.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, r
 
 imgBuyUpgrades := {file:"upgrades.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
+imgClanRaid := {file:"clan_raid.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgClanFight := {file:"clan_fight.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgClanFightAgain := {file:"clan_fight_again.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgClanCollect := {file:"clan_collect.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+
+imgYes := {file:"yes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:0}
+
 ; -- Coordinates --------------------------------------------------------------------------
 
 ; Top LVL UP button when scrolled to the bottom
@@ -117,6 +124,7 @@ xCombatTab := 50
 xStatsTab := 212
 xAncientTab := 296
 xRelicTab := 380
+xClanTab := 464
 yTab := 130
 
 xRelic := 103
@@ -235,7 +243,7 @@ clientCheck() {
 		fullScreenOption := false
 
 		if (useImageSearch and locateImage(imgQuality, xPos, yPos)) {
-			showSplash("Switching to low quality...", 1, 0)
+			showDebugSplash("Switching to low quality...")
 			clickPos(xPos, yPos, 1, 1)
 		}
 	}
@@ -327,6 +335,12 @@ switchToAncientTab() {
 switchToRelicTab() {
 	global
 	clickPos(xRelicTab, yTab)
+	sleep % zzz * 2
+}
+
+switchToClanTab() {
+	global
+	clickPos(xClanTab, yTab)
 	sleep % zzz * 2
 }
 
@@ -588,7 +602,7 @@ locator(image, what, byref xPos, byref yPos, clickCount:=5, retries:=-1, absolut
 				scrollDown(clickCount)
 			}
 		} else if (retries < 0 or --retries > 0) {
-			showSplash("Could not locate " . what . "! Trying again...")
+			showDebugSplash("Could not locate " . what . "! Trying again...")
 			clientCheck()
 			clickerInitialize()
 			if (directionUp) {

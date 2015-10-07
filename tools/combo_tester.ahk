@@ -11,17 +11,24 @@ SetTitleMatchMode, regex ; Steam [3] or browser [regex] version?
 ; winName=Clicker Heroes ; Steam
 winName=Lvl.*Clicker Heroes.* ; browser
 
+; Deep run skill combo tests
+; https://redd.it/3il3tx
+
+; T > 8h
 comboEDR := [2.5*60, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
+
+; 3h < T < 8h
 comboEGolden := [2.5*60, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"] ; energize 3 (dmg) or 5 (gold)
+
+; T < 3h
 comboGoldenLuck := [2.5*60, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
 
-comboHybridIdle := [15*60, "2-3-4-5-7-6-9-8"] ; energize >
+; Hybrid combo
+comboHybridIdle := [15*60, "1-2-3-4-5-7-6-9-8"] ; energize >
 comboHybridActive := [30, "5-2-4-6-7", "", "", "3-8-9", "", "", "2", "", "", "3-7", "", "1-2"] ; > golden clicks, 6 minutes
 
-comboMidas := [2.5*60, "8-9-6-2", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2", "2-4-5"]
-
-; Midas: 1-4-5                  0:30                      3:00                 5:30                  8:00                   10:30                13:00                     15:30               17:00       18:00 Ascend
-comboMidas2 := [30, "8-9-6", "2-3-4-5-7", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-3-4", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-4-3-5-8-9", "", "", "3-5-7", "", "1-2", "", ""]
+; Midas: 1-4-5                      1:00                      3:30                 6:00                  8:30                   11:00                13:30                     16:00               17:30       18:30 Ascend
+comboMidas := [30, "8-9-6", "", "2-3-4-5-7", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-3-4", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-4-3-5-8-9", "", "", "3-5-7", "", "1-2", "", ""]
 
 activeClicker := true ; set to false to add Clickstorm
 testMode := true
@@ -39,11 +46,11 @@ F2::
 return
 
 F3::
-	comboTester(comboMidas)
+	comboTester(comboHybridActive)
 return
 
 F4::
-	comboTester(comboMidas2)
+	comboTester(comboMidas)
 return
 
 F5::

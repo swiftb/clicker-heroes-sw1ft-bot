@@ -58,6 +58,7 @@ clientCheck()
 OnMessage(WM_CLICKER_START, "MsgMonitor")
 OnMessage(WM_CLICKER_PAUSE, "MsgMonitor")
 OnMessage(WM_CLICKER_STOP, "MsgMonitor")
+OnMessage(WM_CLICKER_STATUS, "MsgMonitor")
 OnMessage(WM_CLICKER_RELOAD, "MsgMonitor")
 OnMessage(WM_CLICKER_INITIALIZE, "MsgMonitor")
 
@@ -92,7 +93,7 @@ clickerStart() {
 	local monsterClicks := 0
 	local startTime := A_TickCount
 
-	showSplash("Starting...")
+	showDebugSplash("Starting...")
 
 	if (clickDuration > 0) {
 		setTimer, stopClicking, % -clickDuration * 60 * 1000 ; run only once
@@ -125,6 +126,11 @@ clickerStop() {
 	keepOnClicking := false
 }
 
+clickerStatus() {
+	global
+	return keepOnClicking
+}
+
 clickerReload() {
 	showSplashAlways("Reloading clicker...", 1)
 	Reload
@@ -141,6 +147,8 @@ MsgMonitor(wParam, lParam, msg) {
  		clickerPause()
 	} else if (msg = WM_CLICKER_STOP) {
 		clickerStop()
+	} else if (msg = WM_CLICKER_STATUS) {
+		return clickerStatus()
 	} else if (msg = WM_CLICKER_RELOAD) {
 		clickerReload()
 	} else if (msg = WM_CLICKER_INITIALIZE) {
