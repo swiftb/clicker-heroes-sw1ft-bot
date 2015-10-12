@@ -720,7 +720,7 @@ visionRun() {
 					clickerStart() ; ~38 CPS
 					isClickerRunning := true
 					Gosub, comboTimer
-					SetTimer, comboTimer, % comboDelay * 1000 + 100
+					SetTimer, comboTimer, % comboDelay * 1000 + 1000
 				}
 				clickPos(xMonster, yMonster) ; Jugg combo safety click
 				sleep 30
@@ -1274,9 +1274,8 @@ activateSkills(skills) {
 	loop,parse,skills,-
 	{
 		ControlSend,,% A_LoopField, % winName
-		sleep 100
+		sleep 50
 	}
-	sleep 1000
 }
 
 startMonitoring() {
