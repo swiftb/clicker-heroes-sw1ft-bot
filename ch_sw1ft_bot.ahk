@@ -1421,7 +1421,7 @@ checkMousePosition:
 return
 
 checkWindowVisibility:
-	if (!locateImage(imgCoin) or !locateImage(imgProgression)) {
+	if (!locateImage(imgSmile)) {
 		WinActivate, % winName
 	}
 return
