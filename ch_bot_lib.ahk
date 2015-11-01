@@ -145,21 +145,24 @@ top2BottomClicks := 45
 xGilded := 135
 yGilded := 582
 
+xGildedDown := 1060
+yGildedDown := 493
+
 xGildedClose := 1090
 yGildedClose := 54
 
 rangers := ["Dread Knight", "Atlas", "Terra", "Phthalo", "Banana", "Lilin", "Cadmia", "Alabaster", "Astraea"]
 
 rangerPositions := {}
-rangerPositions[1] := {x:180, y:435}
-rangerPositions[2] := {x:380, y:435}
-rangerPositions[3] := {x:580, y:435}
-rangerPositions[4] := {x:780, y:435}
-rangerPositions[5] := {x:980, y:435}
-rangerPositions[6] := {x:180, y:495}
-rangerPositions[7] := {x:380, y:495}
-rangerPositions[8] := {x:580, y:495}
-rangerPositions[9] := {x:780, y:495}
+rangerPositions[1] := {x:445, y:355}
+rangerPositions[2] := {x:675, y:355}
+rangerPositions[3] := {x:900, y:355}
+rangerPositions[4] := {x:220, y:425}
+rangerPositions[5] := {x:445, y:425}
+rangerPositions[6] := {x:675, y:425}
+rangerPositions[7] := {x:900, y:425}
+rangerPositions[8] := {x:220, y:490}
+rangerPositions[9] := {x:445, y:490}
 
 ; Buy Available Upgrades button
 xBuy := 370

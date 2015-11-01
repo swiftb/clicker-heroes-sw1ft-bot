@@ -1266,9 +1266,12 @@ regild(ranger, gildCount) {
 	clickPos(xGilded, yGilded)
 	sleep % zzz * 2
 
+	clickPos(xGildedDown, yGildedDown, top2BottomClicks)
+	sleep % scrollDelay + top2BottomClicks * scrollClickDelay
+
 	ControlSend,, {shift down}, % winName
 	clickPos(rangerPositions[ranger].x, rangerPositions[ranger].y, gildCount)
-	sleep % 1000 * gildCount/100*5
+	sleep % 1000 * gildCount/100*6
 	ControlSend,, {shift up}, % winName
 
 	clickPos(xGildedClose, yGildedClose)

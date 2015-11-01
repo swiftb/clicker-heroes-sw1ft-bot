@@ -148,8 +148,8 @@ global debug := false ; when set to "true", you can press Alt+F3 to show some de
 deepRunTime := 60 ; minutes
 
 ; Number of gilds to move over at a time
-reGildCount := 100 ; don't set this higher than 100 if you plan on moving gilds during a deep run
-reGildRanger := gildedRanger + 1 
+reGildCount := 300
+reGildRanger := gildedRanger
 
 deepRunClicks := true ; click the monster during a deep run?
 
