@@ -198,6 +198,13 @@ xMiddleZone := 858
 xNextZone := 1044
 yZone := 70
 
+xNewGild := 1105
+yNewGild := 560
+xOpenGild := 570
+yOpenGild := 360
+xCloseGild := 924
+yCloseGild := 133
+
 ; -----------------------------------------------------------------------------------------
 
 ; Load system default settings

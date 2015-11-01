@@ -278,6 +278,11 @@ return
 	regild(reGildRanger, reGildCount) ; will pause the monster clicker if running
 return
 
+; Open 100 new gilds
+^F9::
+	openNewGilds()
+return
+
 ; Autosave the game
 ^F11::
 	critical
@@ -1187,6 +1192,17 @@ buyAvailableUpgrades() {
 	global
 	clickPos(xBuy, yBuy)
 	sleep % zzz * 3
+}
+
+openNewGilds() {
+	global
+
+	clickPos(xNewGild, yNewGild, 100)
+	sleep 3000
+	clickPos(xOpenGild, yOpenGild)
+	sleep 2000
+	clickPos(xCloseGild, yCloseGild)
+	sleep 250
 }
 
 raid(doSpend:=0, attempts:=1) {
