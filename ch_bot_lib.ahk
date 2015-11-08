@@ -123,7 +123,7 @@ yYes := 445
 xCombatTab := 50
 xStatsTab := 212
 xAncientTab := 296
-xRelicTab := 380
+xRelicTab := 380 + 10 ; Halloween fix
 xClanTab := 464
 yTab := 130
 

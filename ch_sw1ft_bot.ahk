@@ -64,13 +64,203 @@ handleAutorun()
 ; -- Hotkeys (+=Shift, !=Alt, ^=Ctrl, #=Win)
 ; -----------------------------------------------------------------------------------------
 
-; -----------------------------------------------------------------------------------------
-; -- Experimental testing -----------------------------------------------------------------
+; Show the cursor position with Alt+Middle Mouse Button
+!mbutton::
+	mousegetpos, xpos, ypos
+	msgbox,,% script,% "Cursor position: x" xpos-leftMarginOffset " y" ypos-topMarginOffset
+return
 
+; Top margin calculation when clicking in the center of the ancient tab eye
+^mbutton::
+	mousegetpos, xpos, ypos
+	msgbox,,% script,% "Set browserTopMargin to: " . ypos-102
+return
+
+; -- Main Hotkeys -------------------------------------------------------------------------
+
+; Start the Speed run loop with Ctrl+F1
+^F1::
+	loopSpeedRun()
+return
+
+; Start a Deep run with Ctrl+F2 (expecting to start where a Speed run finishes)
+^F2::
+	deepRun()
+return
+
+; Start a Vision run loop with Ctrl+F3
+^F3::
+	loopVisionRun()
+return
+
+; Pause/unpause the script
+Pause::Pause
+return
+
+; Abort any active run or initiated ascension with Alt+Pause
+!Pause::
+	showSplashAlways("Aborting...")
+	exitThread := true
+return
+
+; Schedule a stop after finishing the current run with Shift+Pause
++Pause::
+	toggleFlag("scheduleStop", scheduleStop)
+return
+
+; Reload the script (needed after configuration changes)
+!F5::
+	critical
+	global scheduleReload := true
+	handleScheduledReload()
+return
+
+; Schedule a script reload after finishing the current run, then restart it
++^F5::
+	toggleFlag("scheduleReload", scheduleReload)
+return
+
+; Re-initialize coordinates (needed after moving or re-sizing the client window)
+!F6::
+	critical
+	clientCheck()
+	clickerInitialize()
+return
+
+; -- Supplementary Hotkeys ----------------------------------------------------------------
+
+; Suspend/Unsuspend all other Hotkeys with Ctrl+Esc
+^Esc::Suspend, Toggle
+return
+
+; Open the Ancients Optimizer and auto-import game save data
+^F5::
+	critical
+	openAncientsOptimizer()
+return
+
+; Set previous ranger as re-gild target
+^F6::
+	reGildRanger := reGildRanger > rangers.MinIndex() ? reGildRanger-1 : reGildRanger
+	showSplashAlways("Re-gild ranger set to " . rangers[reGildRanger])
+return
+
+; Set next ranger as re-gild target
+^F7::
+	reGildRanger := reGildRanger < rangers.MaxIndex() ? reGildRanger+1 : reGildRanger
+	showSplashAlways("Re-gild ranger set to " . rangers[reGildRanger])
+return
+
+; Move "reGildCount" gilds to the target ranger
+^F8::
+	critical
+	playNotificationSound()
+	msgbox, 4,% script,% "Move " . reGildCount . " gilds to " . rangers[reGildRanger] . "?"
+	ifmsgbox no
+		return
+	clickerPause()
+	regild(reGildRanger, reGildCount)
+return
+
+; Open new gilds
+^F9::
+	critical
+	clickerPause()
+	openNewGilds()
+return
+
+; Autosave the game
+^F11::
+	critical
+	save()
+return
+
+; Raid once for free with Win+F6
+#F6::
+	critical
+	raid()
+return
+
+; One paid raid
+#F7::
+	critical
+	raid(1)
+return
+
+; Paid raids
+#F8::
+	critical
+	raid(1, raidAttempts)
+return
+
+; Toggle boolean (true/false) flags with Shift+Ctrl+Fx
+
++^F1::
+	toggleFlag("autoAscend", autoAscend)
+return
+
++^F2::
+	toggleFlag("screenShotRelics", screenShotRelics)
+return
+
++^F6::
+	toggleFlag("playNotificationSounds", playNotificationSounds)
+return
+
++^F7::
+	toggleFlag("playWarningSounds", playWarningSounds)
+return
+
++^F8::
+	toggleFlag("showSplashTexts", showSplashTexts)
+return
+
++^F11::
+	toggleFlag("saveBeforeAscending", saveBeforeAscending)
+return
+
++^F12::
+	toggleFlag("debug", debug)
+return
+
+; -- Test Hotkeys -------------------------------------------------------------------------
+
+; Ctrl+Alt+F1 should scroll down to the bottom
+^!F1::
+	scrollToBottom()
+return
+
+; Ctrl+Alt+F2 should switch to the relics tab and then back
+^!F2::
+	switchToRelicTab()
+	switchToCombatTab()
+return
+
+; Alt+F1 to F4 are here to test the individual parts of the full speed run loop
+
+!F1::
+	getClickable()
+return
+
+!F2::
+	initRun()
+return
+
+!F3::
+	switchToCombatTab()
+	speedRun()
+return
+
+!F4::
+	ascend(autoAscend)
+return
+
+; Test one Midas start with Win+F1
 #F1::
 	midasStart()
 return
 
+; Loop Midas start > init run > ascend, twice
 #F2::
 	loop 2
 	{
@@ -103,6 +293,7 @@ testLocate(image, clickCount:=5) {
 	}
 }
 
+; Image search tests
 #F3::
 	msgbox,,% script,% "After clickable/Midas start state expected."
 	testSearch(imgQuality, "Set high quality")
@@ -142,188 +333,6 @@ testLocate(image, clickCount:=5) {
 	msgbox,,% script,% "Done."
 return
 
-#F6::
-	critical
-	raid() ; free raid
-return
-
-#F7::
-	critical
-	raid(1) ; paid raid
-return
-
-#F8::
-	critical
-	raid(1, raidAttempts) ; paid raids
-return
-
-; -----------------------------------------------------------------------------------------
-; -----------------------------------------------------------------------------------------
-
-; Suspend/Unsuspend all other Hotkeys
-^Esc::Suspend, Toggle
-return
-
-; Show the cursor position with Alt+Middle Mouse Button
-!mbutton::
-	mousegetpos, xpos, ypos
-	msgbox,,% script,% "Cursor position: x" xpos-leftMarginOffset " y" ypos-topMarginOffset
-return
-
-; Top margin calculation when clicking in the center of the ancient tab eye
-^mbutton::
-	mousegetpos, xpos, ypos
-	msgbox,,% script,% "Set browserTopMargin to: " . ypos-102
-return
-
-; Pause/Unpause script
-Pause::Pause
-return
-
-; Abort speed/deep/vision runs and auto ascensions with Alt+Pause
-!Pause::
-	showSplashAlways("Aborting...")
-	exitThread := true
-return
-
-; Quick tests:
-; Ctrl+Alt+F1 should scroll down to the bottom
-; Ctrl+Alt+F2 should switch to the relics tab and then back
-
-^!F1::
-	scrollToBottom()
-return
-
-^!F2::
-	switchToRelicTab()
-	switchToCombatTab()
-return
-
-; Alt+F1 to F4 are here to test the individual parts of the full speed run loop
-
-!F1::
-	getClickable()
-return
-
-!F2::
-	initRun()
-return
-
-!F3::
-	switchToCombatTab()
-	speedRun()
-return
-
-!F4::
-	ascend(autoAscend)
-return
-
-; Reload script with Alt+F5
-!F5::
-	global scheduleReload := true
-	handleScheduledReload()
-return
-
-; Re-initialize coordinates
-!F6::
-	clientCheck()
-	clickerInitialize()
-return
-
-; Speed run loop
-^F1::
-	loopSpeedRun()
-return
-
-; Stop looping when current speed run finishes with Shift+Pause
-+Pause::
-	toggleFlag("scheduleStop", scheduleStop)
-return
-
-; Deep run
-; Use (after a speed run)
-^F2::
-	deepRun()
-return
-
-; Vision run loop
-^F3::
-	loopVisionRun()
-return
-
-; Open the Ancients Optimizer and auto-import game save data
-^F5::
-	openAncientsOptimizer()
-return
-
-; Set previous ranger as re-gild target
-^F6::
-	reGildRanger := reGildRanger > rangers.MinIndex() ? reGildRanger-1 : reGildRanger
-	showSplashAlways("Re-gild ranger set to " . rangers[reGildRanger])
-return
-
-; Set next ranger as re-gild target
-^F7::
-	reGildRanger := reGildRanger < rangers.MaxIndex() ? reGildRanger+1 : reGildRanger
-	showSplashAlways("Re-gild ranger set to " . rangers[reGildRanger])
-return
-
-; Move "reGildCount" gilds to the target ranger (will pause the monster clicker if running)
-^F8::
-	critical
-	playNotificationSound()
-	msgbox, 4,% script,% "Move " . reGildCount . " gilds to " . rangers[reGildRanger] . "?"
-	ifmsgbox no
-		return
-	regild(reGildRanger, reGildCount) ; will pause the monster clicker if running
-return
-
-; Open 100 new gilds
-^F9::
-	openNewGilds()
-return
-
-; Autosave the game
-^F11::
-	critical
-	clickerPause()
-	save()
-return
-
-; Toggle boolean (true/false) flags
-
-+^F1::
-	toggleFlag("autoAscend", autoAscend)
-return
-
-+^F2::
-	toggleFlag("screenShotRelics", screenShotRelics)
-return
-
-+^F5::
-	toggleFlag("scheduleReload", scheduleReload)
-return
-
-+^F6::
-	toggleFlag("playNotificationSounds", playNotificationSounds)
-return
-
-+^F7::
-	toggleFlag("playWarningSounds", playWarningSounds)
-return
-
-+^F8::
-	toggleFlag("showSplashTexts", showSplashTexts)
-return
-
-+^F11::
-	toggleFlag("saveBeforeAscending", saveBeforeAscending)
-return
-
-+^F12::
-	toggleFlag("debug", debug)
-return
-
 ; -----------------------------------------------------------------------------------------
 ; -- Functions
 ; -----------------------------------------------------------------------------------------
@@ -342,9 +351,6 @@ configurationAssistant() {
 		initDownClicks := [6,5,6,5,6,3]
 		yLvlInit := 241
 	} else if (irisThreshold(1760)) { ; Alabaster
-		; [6,6,6,5,6,3], 227
-		; [6,5,6,6,6,3], 260
-		; [5,6,6,5,6,3], 293
 		initDownClicks := [6,6,6,5,6,3]
 		yLvlInit := 227
 	} else if (irisThreshold(1510)) { ; Cadmia
@@ -1259,7 +1265,6 @@ clickAwayImage(image) {
 ; Move "gildCount" gilds to given ranger
 regild(ranger, gildCount) {
 	global
-	clickerPause()
 	switchToCombatTab()
 	scrollToBottom()
 

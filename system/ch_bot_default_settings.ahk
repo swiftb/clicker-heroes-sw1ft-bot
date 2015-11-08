@@ -3,40 +3,31 @@
 ; -- Mandatory Configuration
 ; -----------------------------------------------------------------------------------------
 
-irisLevel := 1029 ; try to keep your Iris within 1001 levels of your optimal zone
+irisLevel := 999 ; try to keep your Iris within 1001 levels of your optimal zone
+
+; -- Speed Run ----------------------------------------------------------------------------
 
 ; Clicker Heroes Ancients Optimizer @ http://s3-us-west-2.amazonaws.com/clickerheroes/ancientssoul.html
-
 ; Use the optimizer to set the optimal level and time:
 optimalLevel := 2000
 speedRunTime := 29 ; minutes (usually between 28 and 30 minutes)
 
-; In the Heroes tab you can verify that you are using the optimal ranger.
-gildedRanger := 6 ; the number of your main guilded ranger
+; Siyalatas regilding chart @ https://redd.it/3frj62
 ; 1:Dread Knight, 2:Atlas, 3:Terra, 4:Phthalo, 5:Banana, 6:Lilin, 7:Cadmia, 8:Alabaster, 9:Astraea
+gildedRanger := 6 ; the number of your main guilded ranger
 
-; -----------------------------------------------------------------------------------------
-; -- Optional Settings
-; -----------------------------------------------------------------------------------------
+; Speed Run debug info: Shift+Ctrl+F12 > Alt+F3
 
-; -----------------------------------------------------------------------------------------
-; -- Experimental -------------------------------------------------------------------------
+; -- Deep Run -----------------------------------------------------------------------------
 
-; Note: Steam client not supported (low quality works differently and can't get current lvl)
+deepRunTime := 60 ; minutes
 
-; Set to true (requires the window to be visible) will:
-; * enable the use of the new vision run loop (ctrl+f3)
-;   - can run idle/hybrid/active
-;   - does a midas start if no clickable
-;   - can resume (after a click safety pause or if you reload the script)
-;   - ignores time, levels to given zone lvls
-;   - finds gilded heroes/rangers automatically
-;   - picks up clickables without breaking idle
-;   - can recover from failed initiations (level cid --> frostleaf)
-;   - works with gilded Samurai (Siya > 100) or later
-; * enable the use of the solomonLeveler function
-; * enhance the midasStart, initRun and ascend functions
-useImageSearch := true ; requires browser client in low quality mode
+deepRunClicks := true ; click the monster during a deep run?
+
+; -- Vision Run ---------------------------------------------------------------------------
+
+useImageSearch := false ; requires browser client in low quality mode
+; Test hotkey: Win+F3 - Search & locate tests for all images
 
 ; Vision run
 endLvlIdle := optimalLevel
@@ -46,81 +37,26 @@ endLvlActive := 0
 ; active: set endLvlIdle = 0
 
 levelSolomon := false ; feed solomon after ascending?
-solomonLevels := 1
+solomonLevels := 5
 
-; Test hotkeys:
-; Win+F3 - Search & locate tests for all images
-
-; Win+F6 - One free raid
-; Win+F7 - One paid raid
-; Win+F8 - raidAttempts paid raids
-
-raidAttempts := 5
-
-; -- Midas --------------------------------------------------------------------------------
-
-useMidasStart := false ; pref. used with the useImageSearch option
-
-; Config syntax:
-; [<zone 1>, <delay 1>, <extra zone>, <extra delay>, <zone 2>, <delay 2>]
-
-; Midas Start Procedure (with useImageSearch = false):
-
-; * Scroll to "zone 1" > Lvl Cid to 150 > Buy Clickstorm (1) > Scroll down and lvl Natalia x 1 > "delay 1" > Lvl Natalia x 100
-; * (Optional) Scroll to "extra zone" > Buy Natalia's upgrades > "extra delay"
-
-; We want to reach this point with an accumulated gold (ag) amount between one of these thresholds:
-; 160T (Abaddon) <- ag -> 1350T (Ma Zhu) <- ag -> 12000T (Amenhotep) <- ag -> 150q (Beastlord)
-; Target amounts:  755T                    6675T                      81000T
-
-; Siya 28000: 175Q (Aphrodite) <- ag -> 7000Q (Shinatobe)
-
-; At each threshold, a new hero will spawn and trigger a movement in the scrollbar.
-; If that happens just as we try to scroll down to Broyle and Midas, the start will fail (unless useImageSearch = true).
-
-; * Scroll down > Scroll to "zone 2" > Lvl Broyle x 100 > "delay 2"
-; * Lvl Midas x 100 > Buy Metal Detector (4) and Golden Clicks (5) -- Total cost ~60000T
-; * Activate Progression Mode > Activate skills 1-4-5 > Coin pickup delay (6 seconds)
-
-; Example configs:
-
-; useImageSearch = false           | useImageSearch = true
-; Siya 28000: [65, 6, 0, 0, 86, 0] | [66, 5, 0, 0, 86, 0] ~18s
-; Siya 14000: [60, 7, 0, 0, 83, 4] | [63, 6, 0, 0, 83, 0]
-; Siya 7000:  [55, 9, 0, 0, 79, 5] | [59, 6, 0, 0, 79, 0]
-
-; Siya 3500: [50, 5, 60, 4, 76, 4] | [56, 6, 0, 0, 76, 0]
-; Siya 2000: [50, 6, 60, 6, 73, 4] | [53, 6, 0, 0, 73, 4]
-; Siya 400:                        | [47, 5, 57, 4, 67, 4]
-; Siya 100:                        | [43, 6, 53, 6, 63, 5] (requires idle)
-
-midasZoneConfig := [56, 6, 0, 0, 76, 4]
-; Note: Your Iris level must be equal or higher than zone 2
-
-; Test hotkeys:
-; Win+F1 - One Midas start
-; Win+F2 - Loop Midas start + init run + ascend
-
-; -- Experimental -------------------------------------------------------------------------
+; -----------------------------------------------------------------------------------------
+; -- Optional Settings
 ; -----------------------------------------------------------------------------------------
 
-clickableHuntDelay := 8 ; hunt for a clickable every 8s
-stopHuntThreshold := 4 ; stop hunt when this many minutes remain of a run
+; -- Speed Run ----------------------------------------------------------------------------
 
-; -- Speed/Vision run ----------------------------------------------------------------------------
+; Add or remove time (in seconds) to or from the first hero.
+firstStintAdjustment := 0 ; can be used to temporarily compensate for low Iris levels
 
-; (s) -- Only used by the speed run
+hybridMode := false ; chain a deep run when the speed run finish
 
-; If the script starts on the 2nd ranger too early (before lvl 100) or too late (after lvl 200), adjust this setting.
-firstStintAdjustment := 0 ; (s) Add or remove time (in seconds) to or from the first hero.
+; -- Speed/Vision run ---------------------------------------------------------------------
 
 activateSkillsAtStart := true ; usually needed in the late game to get going after ascending
 
-hybridMode := false ; (s) chain a deep run when the speed run finish
-
 ascDownClicks := 26 ; # of down clicks needed to get the ascension button center:ish (after a full speed run)
 
-autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention!
+autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention! <Shift+Ctrl+F1>
 
 ; Auto Ascend Warning Mode
 ; The following two settings may replace each other or can both be used.
@@ -129,9 +65,9 @@ autoAscendDelay := 0 ; warning timer (in seconds) before ascending
 displayRelicsDuration := 10 ; warning timer (in seconds) before salvaging the junk pile
 
 ; If you run the Steam client with autoAscend, you can screenshot every relic you salvage!
-screenShotRelics := false
+screenShotRelics := false ; <Shift+Ctrl+F2>
 
-saveBeforeAscending := false ; autosave the game
+saveBeforeAscending := false ; autosave the game. <Shift+Ctrl+F11>
 
 ; If the script don't press the save button automatically when running
 ; with "saveBeforeAscending" set to true, change "Button1" to "Button2".
@@ -141,64 +77,44 @@ saveButtonClassNN := "Button2" ; Button1 or Button2
 ; a "already exists" message, change save mode to 2.
 saveMode := 1 ; 1 or 2
 
-global debug := false ; when set to "true", you can press Alt+F3 to show some debug info (also copied into your clipboard)
+; -- Deep/Vision run ----------------------------------------------------------------------
 
-; -- Deep run -----------------------------------------------------------------------------
+clickableHuntDelay := 8 ; hunt for a clickable every 8s
+stopHuntThreshold := 4 ; stop hunt when this many minutes remain of a run
 
-deepRunTime := 60 ; minutes
+; -- Midas --------------------------------------------------------------------------------
 
-; Number of gilds to move over at a time
-reGildCount := 300
-reGildRanger := gildedRanger
+useMidasStart := false ; pref. used with the useImageSearch option
 
-deepRunClicks := true ; click the monster during a deep run?
+; Getting a stable Midas start without visual aid, is hard with low Siyalatas levels.
+; The tricky part is the scroll down from Natalia to Midas. No new heroes must spawn
+; during this time or this step will fail.
 
-; -- Init run -----------------------------------------------------------------------------
+; Config syntax:
+; [<zone 1>, <delay 1>, <extra zone>, <extra delay>, <zone 2>, <delay 2>]
 
-; The assistant will automatically try to set the correct initDownClicks and yLvlInit settings.
-; It will also assist with Iris level recommendations.
-useConfigurationAssistant := true
+midasZoneConfig := [56, 6, 0, 0, 76, 4]
 
-; A list of clicks needed to scroll down 4 heroes at a time, starting from the top.
-initDownClicks := [0,0,0,0,0,0]
+; Example configs:
 
-; This y coordinate is supposed to keep itself inside the top lvl up button when scrolling down according to the above "clicking pattern".
-yLvlInit := 000
+; useImageSearch = false           | useImageSearch = true
+; Siya 28000: [65, 6, 0, 0, 86, 0] | [66, 5, 0, 0, 86, 0]
+; Siya 14000: [60, 7, 0, 0, 83, 4] | [63, 6, 0, 0, 83, 0]
+; Siya 7000:  [55, 9, 0, 0, 79, 5] | [59, 6, 0, 0, 79, 0]
+; Siya 3500: [50, 5, 60, 4, 76, 4] | [56, 6, 0, 0, 76, 0]
+; Siya 2000: [50, 6, 60, 6, 73, 4] | [53, 6, 0, 0, 73, 4]
+; Siya 400:                        | [47, 5, 57, 4, 67, 4]
 
-; Manual configuration (if not using the assistant):
-; 1. Ascend with a "clickable" available.
-; 2. Click Alt+F1 (the script should pick up the clickable).
-; 3. Scroll down to the bottom. What ranger is last?
-; 4. From the list below, pick the matching settings:
-
-; Astraea      [6,5,6,5,6,3], 241 (Iris > 2010)
-; Alabaster    [6,6,6,5,6,3], 227 (Iris > 1760)
-; Alabaster    [6,5,6,6,6,3], 260 (Iris > 1760)
-; Alabaster    [5,6,6,5,6,3], 293 (Iris > 1760)
-; Cadmia       [6,6,6,6,6,3], 240 (Iris > 1510)
-; Lilin        [6,6,6,6,6,3], 285 (Iris > 1260)
-; Banana       [6,7,6,7,6,3], 240 (Iris > 1010)
-; Phthalo      [6,7,7,6,7,3], 273 (Iris > 760)
-; Terra        [7,7,7,7,7,3], 240 (Iris > 510)
-; Atlas        [7,7,7,8,7,3], 273 (Iris > 260)
-; Dread Knight [7,8,7,8,7,4], 257
-
-; E.g. if Phthalo is last, you set initDownClicks to [6,7,7,6,7,3] and yLvlInit to 273.
-; In this case your Iris level should be somewhere between 760 and 1010.
-
-; 5. Now click Alt+F2 (the script should level up and upgrade all heroes from Cid to Frostleaf).
-
-; If some heroes where missed, make sure you have picked the suggested setting for your Iris level.
-; If you are close to one of these Iris irisThresholds, you should move above it with some margin. 
-; E.g if your Iris is at 489, you should level it to at least 529, pick the setting for Terra,
-; reload the script (Alt+F5), ascend with a clickable and try Alt+F2 again.
+; Test hotkeys:
+; Win+F1 - One Midas start
+; Win+F2 - Loop Midas start + init run + ascend
 
 ; -- Look & Feel --------------------------------------------------------------------------
 
 ; true or false
-global playNotificationSounds := false
-global playWarningSounds := true
-global showSplashTexts := true ; Note that some splash texts will always be shown
+global playNotificationSounds := false ; <Shift+Ctrl+F6>
+global playWarningSounds := true ; <Shift+Ctrl+F7>
+global showSplashTexts := true ; Note that some splash texts will always be shown. <Shift+Ctrl+F8>
 global showProgressBar := true
 
 ; Splash text window width and position
@@ -226,9 +142,65 @@ yProgressBar := 20
 ; Test with tools/combo_tester.ahk
 
 comboStart := [15*60, "8-1-2-3-4-5-7-6-9"]
+
 comboEDR := [2.5*60, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
-comboEGolden := [2.5*60, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"] ; energize 3 (dmg) or 5 (gold)
+comboEGolden := [2.5*60, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"]
 comboGoldenLuck := [2.5*60, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
+
+; Hybrid combo
+comboHybridIdle := [15*60, "1-2-3-4-5-7-6-9-8"] ; energize >
+comboHybridActive := [30, "5-2-4-6-7", "", "", "3-8-9", "", "", "2", "", "", "3-7", "", "1-2"] ; > golden clicks, 6 minutes
+
+; Midas: 1-4-5                      1:00                      3:30                 6:00                  8:30                   11:00                13:30                     16:00               17:30       18:30 Ascend
+comboMidas := [30, "8-9-6", "", "2-3-4-5-7", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-3-4", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-4-3-5-8-9", "", "", "3-5-7", "", "1-2", "", ""]
 
 speedRunStartCombo := comboStart
 deepRunCombo := comboGoldenLuck
+
+; -- Init run -----------------------------------------------------------------------------
+
+; The assistant will automatically try to set the correct initDownClicks and yLvlInit settings.
+; It will also assist with Iris level recommendations.
+useConfigurationAssistant := true
+
+; A list of clicks needed to scroll down 4 heroes at a time, starting from the top.
+initDownClicks := [0,0,0,0,0,0]
+
+; This y coordinate is supposed to keep itself inside the top lvl up button when scrolling down according to the above "clicking pattern".
+yLvlInit := 000
+
+; Manual configuration (if not using the assistant):
+; 1. Ascend with a "clickable" available.
+; 2. Click Alt+F1 (the script should pick up the clickable).
+; 3. Scroll down to the bottom. What ranger is last?
+; 4. From the list below, pick the matching settings:
+
+; Astraea      [6,5,6,5,6,3], 241 (Iris > 2010)
+; Alabaster    [6,6,6,5,6,3], 227 (Iris > 1760)
+; Cadmia       [6,6,6,6,6,3], 240 (Iris > 1510)
+; Lilin        [6,6,6,6,6,3], 285 (Iris > 1260)
+; Banana       [6,7,6,7,6,3], 240 (Iris > 1010)
+; Phthalo      [6,7,7,6,7,3], 273 (Iris > 760)
+; Terra        [7,7,7,7,7,3], 240 (Iris > 510)
+; Atlas        [7,7,7,8,7,3], 273 (Iris > 260)
+; Dread Knight [7,8,7,8,7,4], 257
+
+; E.g. if Phthalo is last, you set initDownClicks to [6,7,7,6,7,3] and yLvlInit to 273.
+; In this case your Iris level should be somewhere between 760 and 1010.
+
+; 5. Now click Alt+F2 (the script should level up and upgrade all heroes from Cid to Frostleaf).
+
+; If some heroes where missed, make sure you have picked the suggested setting for your Iris level.
+; If you are close to one of these Iris irisThresholds, you should move above it with some margin. 
+; E.g if your Iris is at 489, you should level it to at least 529, pick the setting for Terra,
+; reload the script (Alt+F5), ascend with a clickable and try Alt+F2 again.
+
+; -----------------------------------------------------------------------------------------
+
+; Number of gilds to move over at a time
+reGildCount := 300
+reGildRanger := gildedRanger
+
+raidAttempts := 5 ; Requires useImageSearch set to true
+
+global debug := false ; Extra debug splash texts <Shift+Ctrl+F12>
