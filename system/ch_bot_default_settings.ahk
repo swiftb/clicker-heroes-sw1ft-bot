@@ -195,6 +195,8 @@ yLvlInit := 000
 ; E.g if your Iris is at 489, you should level it to at least 529, pick the setting for Terra,
 ; reload the script (Alt+F5), ascend with a clickable and try Alt+F2 again.
 
+initPlanB := false ; alternate hero upgrade process
+
 ; -----------------------------------------------------------------------------------------
 
 ; Number of gilds to move over at a time

@@ -5,6 +5,7 @@
 **Q:** The bot missed to buy some of the early heroes!?  
 **A1:** Make sure you don't have any heroes or rangers minimized.  
 **A2:** If you reload the script with <kbd>Alt+F5</kbd> and get a "Threshold proximity warning". Up your Iris to (at least) the suggested level.
+**A3:** As a last resort, enable the `initPlanB` option.
 
 **Q:** Why didn’t the bot level my gilded ranger?  
 **A:** Use the Siyalatas [regilding chart][] to make sure you are gilded correctly and the [Ancients Calculator][] to optimally level your Ancients. Any transitional hero/ranger used by the bot must also be gilded.  

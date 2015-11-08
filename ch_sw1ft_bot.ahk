@@ -404,13 +404,29 @@ initRun() {
 	reFocus()
 
 	if (!useImageSearch) {
-		upgrade(initDownClicks[1],2,,2) ; cid --> brittany
-		upgrade(initDownClicks[2]) ; fisherman --> leon
-		upgrade(initDownClicks[3]) ; seer --> mercedes
-		upgrade(initDownClicks[4],,,,2) ; bobby --> king
-		upgrade(initDownClicks[5],2,,,2) ; ice --> amenhotep
-		upgrade(initDownClicks[6],,,2) ; beastlord --> shinatobe
-		upgrade(0,,,,,true) ; grant & frostleaf
+		if (initPlanB) {
+			local y
+			local clicks := irisLevel > 1500 ? 6 : 7
+
+			loop 7
+			{
+				y := 213
+				loop
+				{
+					ctrlClick(xLvl, y, 2)
+					y += 74
+				} until y > 669
+				scrollDown(clicks)
+			}
+		} else {
+			upgrade(initDownClicks[1],2,,2) ; cid --> brittany
+			upgrade(initDownClicks[2]) ; fisherman --> leon
+			upgrade(initDownClicks[3]) ; seer --> mercedes
+			upgrade(initDownClicks[4],,,,2) ; bobby --> king
+			upgrade(initDownClicks[5],2,,,2) ; ice --> amenhotep
+			upgrade(initDownClicks[6],,,2) ; beastlord --> shinatobe
+			upgrade(0,,,,,true) ; grant & frostleaf
+		}
 	} else {
 		local foundDK := false
 		local xButton, yButton, xDK, yDK, x
