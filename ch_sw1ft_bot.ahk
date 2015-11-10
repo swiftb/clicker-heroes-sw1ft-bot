@@ -405,19 +405,13 @@ initRun() {
 
 	if (!useImageSearch) {
 		if (initPlanB) {
-			local y
-			local clicks := irisLevel > 1500 ? 6 : 7
-
-			loop 7
+			local clicks := irisLevel > 1600 ? 6 : 7
+			loop 6
 			{
-				y := 213
-				loop
-				{
-					ctrlClick(xLvl, y, 2)
-					y += 74
-				} until y > 669
+				upgrade2(2)
 				scrollDown(clicks)
 			}
+			upgrade2()
 		} else {
 			upgrade(initDownClicks[1],2,,2) ; cid --> brittany
 			upgrade(initDownClicks[2]) ; fisherman --> leon
@@ -475,6 +469,17 @@ upgrade(times, cc1:=1, cc2:=1, cc3:=1, cc4:=1, skip:=false) {
 	ctrlClick(xLvl, yLvlInit + oLvl*3, cc4)
 
 	scrollDown(times)
+}
+
+upgrade2(clickCount:=1) {
+	global
+	local y := 213
+
+	loop
+	{
+		ctrlClick(xLvl, y, clickCount)
+		y += 74
+	} until y > 669
 }
 
 midasStart() {
