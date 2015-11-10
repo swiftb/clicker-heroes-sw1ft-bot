@@ -1290,10 +1290,10 @@ regild(ranger, gildCount) {
 	clickPos(xGildedDown, yGildedDown, top2BottomClicks)
 	sleep % scrollDelay + top2BottomClicks * scrollClickDelay
 
-	ControlSend,, {shift down}, % winName
+	ControlSend,, {shift down}, ahk_id %chWinId%
 	clickPos(rangerPositions[ranger].x, rangerPositions[ranger].y, gildCount)
 	sleep % 1000 * gildCount/100*6
-	ControlSend,, {shift up}, % winName
+	ControlSend,, {shift up}, ahk_id %chWinId%
 
 	clickPos(xGildedClose, yGildedClose)
 	sleep % zzz * 2
@@ -1303,7 +1303,7 @@ regild(ranger, gildCount) {
 toggleMode(toggle:=1) {
 	global
 	if (toggle) {
-		ControlSend,, {a down}{a up}, % winName
+		ControlSend,, {sc01E}, ahk_id %chWinId% ; {a}, {vk41} or {sc01E}
 		sleep % zzz
 	}
 }
@@ -1313,7 +1313,7 @@ activateSkills(skills) {
 	reFocus()
 	loop,parse,skills,-
 	{
-		ControlSend,,% A_LoopField, % winName
+		ControlSend,,% A_LoopField, ahk_id %chWinId%
 		sleep 50
 	}
 }
@@ -1462,7 +1462,7 @@ return
 
 checkWindowVisibility:
 	if (!locateImage(imgSmile)) {
-		WinActivate, % winName
+		WinActivate, ahk_id %chWinId%
 	}
 return
 
