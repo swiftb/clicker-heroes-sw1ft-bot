@@ -1044,28 +1044,32 @@ clickerInitialize() {
 	sendClickerMsg(WM_CLICKER_INITIALIZE)
 }
 
-sendClickerMsg(msg) {
-	global
-	if (deepRunClicks) {
-		DetectHiddenWindows, on
-		PostMessage, %msg%,,,,% clickerName
-		DetectHiddenWindows, off
-	}
+getClickerStatus() {
+	return sendClickerMsg(WM_CLICKER_STATUS, 1)
 }
 
-getClickerStatus() {
+sendClickerMsg(msg, wait:=0) {
 	global
+	local reply := 0
 	if (deepRunClicks) {
+		local tmm := A_TitleMatchMode
+		local dhw := A_DetectHiddenWindows
+		SetTitleMatchMode, 2
 		DetectHiddenWindows, on
-		SendMessage, %WM_CLICKER_STATUS%,,,,% clickerName
-		DetectHiddenWindows, off
-		if (ErrorLevel != "FAIL") {
-			return ErrorLevel
+		if (!wait) {
+			PostMessage, %msg%,,,,% clickerName
 		} else {
-			showDebugSplash("SendMessage failed! monster_clicker.ahk started?")
+			SendMessage, %msg%,,,,% clickerName
+			if (ErrorLevel != "FAIL") {
+				reply := ErrorLevel
+			} else {
+				showWarningSplash("SendMessage failed! monster_clicker.ahk started?")
+			}
 		}
+		DetectHiddenWindows,% dhw
+		SetTitleMatchMode,% tmm
 	}
-	return 0
+	return reply
 }
 
 openSaveDialog() {
