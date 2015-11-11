@@ -3,7 +3,7 @@
 ; -- Mandatory Configuration
 ; -----------------------------------------------------------------------------------------
 
-irisLevel := 999 ; try to keep your Iris within 1001 levels of your optimal zone
+irisLevel := 1029 ; try to keep your Iris within 1001 levels of your optimal zone
 
 ; -- Speed Run ----------------------------------------------------------------------------
 

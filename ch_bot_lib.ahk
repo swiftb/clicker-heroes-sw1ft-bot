@@ -388,9 +388,9 @@ scrollWayDown(clickCount:=1) {
 
 maxClick(xCoord, yCoord, clickCount:=1, absolute:=0) {
 	global
-	ControlSend,, {shift down}{q down}, % winName
+	ControlSend,, {shift down}{sc010 down}, ahk_id %chWinId% ; {q}, {vk51} or {sc010}
 	clickPos(xCoord, yCoord, clickCount, absolute)
-	ControlSend,, {q up}{shift up}, % winName
+	ControlSend,, {sc010 up}{shift up}, ahk_id %chWinId%
 	sleep % zzz
 }
 
@@ -406,9 +406,9 @@ ctrlClick(xCoord, yCoord, clickCount:=1, sleepSome:=1, absolute:=0) {
 
 zClick(xCoord, yCoord, clickCount:=1, absolute:=0) {
 	global
-	ControlSend,, {z down}, % winName
+	ControlSend,, {sc02C down}, ahk_id %chWinId% ; {z}, {vk5A} or {sc02C}
 	clickPos(xCoord, yCoord, clickCount, absolute)
-	ControlSend,, {z up}, % winName
+	ControlSend,, {sc02C up}, ahk_id %chWinId%
 	sleep % zzz
 }
 
@@ -524,7 +524,7 @@ screenShot() {
 	local activeWinId
 	if (A_TitleMatchMode = 3) { ; Steam only
 		WinGet, activeWinId, ID, A ; remember current active window...
-		WinActivate, % winName
+		WinActivate, ahk_id %chWinId%
 		send {f12 down}{f12 up} ; screenshot
 		sleep % zzz
 		WinActivate, ahk_id %activeWinId% ; ... and restore focus back
@@ -573,7 +573,7 @@ getCurrentZone() {
 	global
 	local title, currentZone
 	if (A_TitleMatchMode = "regex") {
-		WinGetTitle, title, % winName
+		WinGetTitle, title, ahk_id %chWinId%
 		currentZone := SubStr(title, 5, InStr(title, "-") - 6)
 		return currentZone
 	} else {

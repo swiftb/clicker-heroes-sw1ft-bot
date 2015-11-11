@@ -405,19 +405,13 @@ initRun() {
 
 	if (!useImageSearch) {
 		if (initPlanB) {
-			local y
-			local clicks := irisLevel > 1500 ? 6 : 7
-
-			loop 7
+			local clicks := irisLevel > 1600 ? 6 : 7
+			loop 6
 			{
-				y := 213
-				loop
-				{
-					ctrlClick(xLvl, y, 2)
-					y += 74
-				} until y > 669
+				upgrade2(2)
 				scrollDown(clicks)
 			}
+			upgrade2()
 		} else {
 			upgrade(initDownClicks[1],2,,2) ; cid --> brittany
 			upgrade(initDownClicks[2]) ; fisherman --> leon
@@ -475,6 +469,17 @@ upgrade(times, cc1:=1, cc2:=1, cc3:=1, cc4:=1, skip:=false) {
 	ctrlClick(xLvl, yLvlInit + oLvl*3, cc4)
 
 	scrollDown(times)
+}
+
+upgrade2(clickCount:=1) {
+	global
+	local y := 213
+
+	loop
+	{
+		ctrlClick(xLvl, y, clickCount)
+		y += 74
+	} until y > 669
 }
 
 midasStart() {
@@ -1039,28 +1044,32 @@ clickerInitialize() {
 	sendClickerMsg(WM_CLICKER_INITIALIZE)
 }
 
-sendClickerMsg(msg) {
-	global
-	if (deepRunClicks) {
-		DetectHiddenWindows, on
-		PostMessage, %msg%,,,,% clickerName
-		DetectHiddenWindows, off
-	}
+getClickerStatus() {
+	return sendClickerMsg(WM_CLICKER_STATUS, 1)
 }
 
-getClickerStatus() {
+sendClickerMsg(msg, wait:=0) {
 	global
+	local reply := 0
 	if (deepRunClicks) {
+		local tmm := A_TitleMatchMode
+		local dhw := A_DetectHiddenWindows
+		SetTitleMatchMode, 2
 		DetectHiddenWindows, on
-		SendMessage, %WM_CLICKER_STATUS%,,,,% clickerName
-		DetectHiddenWindows, off
-		if (ErrorLevel != "FAIL") {
-			return ErrorLevel
+		if (!wait) {
+			PostMessage, %msg%,,,,% clickerName
 		} else {
-			showDebugSplash("SendMessage failed! monster_clicker.ahk started?")
+			SendMessage, %msg%,,,,% clickerName
+			if (ErrorLevel != "FAIL") {
+				reply := ErrorLevel
+			} else {
+				showWarningSplash("SendMessage failed! monster_clicker.ahk started?")
+			}
 		}
+		DetectHiddenWindows,% dhw
+		SetTitleMatchMode,% tmm
 	}
-	return 0
+	return reply
 }
 
 openSaveDialog() {
@@ -1290,10 +1299,10 @@ regild(ranger, gildCount) {
 	clickPos(xGildedDown, yGildedDown, top2BottomClicks)
 	sleep % scrollDelay + top2BottomClicks * scrollClickDelay
 
-	ControlSend,, {shift down}, % winName
+	ControlSend,, {shift down}, ahk_id %chWinId%
 	clickPos(rangerPositions[ranger].x, rangerPositions[ranger].y, gildCount)
 	sleep % 1000 * gildCount/100*6
-	ControlSend,, {shift up}, % winName
+	ControlSend,, {shift up}, ahk_id %chWinId%
 
 	clickPos(xGildedClose, yGildedClose)
 	sleep % zzz * 2
@@ -1303,7 +1312,7 @@ regild(ranger, gildCount) {
 toggleMode(toggle:=1) {
 	global
 	if (toggle) {
-		ControlSend,, {a down}{a up}, % winName
+		ControlSend,, {sc01E}, ahk_id %chWinId% ; {a}, {vk41} or {sc01E}
 		sleep % zzz
 	}
 }
@@ -1313,7 +1322,7 @@ activateSkills(skills) {
 	reFocus()
 	loop,parse,skills,-
 	{
-		ControlSend,,% A_LoopField, % winName
+		ControlSend,,% A_LoopField, ahk_id %chWinId%
 		sleep 50
 	}
 }
@@ -1462,7 +1471,7 @@ return
 
 checkWindowVisibility:
 	if (!locateImage(imgSmile)) {
-		WinActivate, % winName
+		WinActivate, ahk_id %chWinId%
 	}
 return
 
