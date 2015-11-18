@@ -634,7 +634,7 @@ getState() {
 loopVisionRun() {
 	global
 	local state := 0
-	showSplashAlways("Starting vision runs...")
+	showSplash("Starting vision runs...")
 
 	loop
 	{
@@ -806,7 +806,7 @@ visionRun() {
 loopSpeedRun() {
 	global
 	local mode := hybridMode ? "hybrid" : "speed"
-	showSplashAlways("Starting " . mode . " runs...")
+	showSplash("Starting " . mode . " runs...")
 	loop
 	{
 		if (useMidasStart) {
