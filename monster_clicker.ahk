@@ -5,8 +5,10 @@
 ; Hotkeys:
 
 ; Shift+F1 to start
-; Shift+Pause to stop
-; Shift+F5 to reload the script
+; Shift+F2 to pause
+; Shift+F3 to stop
+; Shift+F5 to reload the script (needed after configuration changes)
+; Shift+F6 to re-initialize coordinates (needed after moving or re-sizing the client window)
 
 ; Built in click speed throttle when moving mouse cursor inside the Clicker Heroes window.
 ; -----------------------------------------------------------------------------------------------------
