@@ -86,13 +86,11 @@ imgSkill := {file:"skill.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rig
 imgClickstorm := {file:"clickstorm.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgMetalDetector := {file:"metal_detector.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgGoldenClicks := {file:"golden_clicks.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgAscension := {file:"ascension.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgFrigidEnchant := {file:"frigid_enchant.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgCid := {file:"cid.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgMercedes := {file:"mercedes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgReferi := {file:"referi.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgBeastlord := {file:"beastlord.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgDK := {file:"dk.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgSolomon := {file:"solomon.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
@@ -115,6 +113,10 @@ yLvl := 285
 oLvl := 107 ; offset to next button
 
 buttonSize := 34
+
+; 0.23 ascend button
+xAscend := 1121
+yAscend := 322
 
 ; Ascend Yes button
 xYes := 500
@@ -176,7 +178,7 @@ yMonster := 164
 
 ; Safety zones (script will pause when entering)
 safetyZones := {}
-safetyZones[1] := {x1:8, y1:104, x2:506, y2:153} ; tabs
+safetyZones[1] := {x1:8, y1:104, x2:575, y2:153} ; tabs
 safetyZones[2] := {x1:1096, y1:29, x2:1144, y2:74} ; settings
 safetyZones[3] := {x1:773, y1:600, x2:949, y2:670} ; shop
 safetyZones[4] := {x1:79, y1:554, x2:194, y2:612} ; gilded

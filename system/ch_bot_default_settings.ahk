@@ -54,8 +54,6 @@ hybridMode := false ; chain a deep run when the speed run finish
 
 activateSkillsAtStart := true ; usually needed in the late game to get going after ascending
 
-ascDownClicks := 26 ; # of down clicks needed to get the ascension button center:ish (after a full speed run)
-
 autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention! <Shift+Ctrl+F1>
 
 ; Auto Ascend Warning Mode
@@ -93,7 +91,7 @@ useMidasStart := false ; pref. used with the useImageSearch option
 ; Config syntax:
 ; [<zone 1>, <delay 1>, <extra zone>, <extra delay>, <zone 2>, <delay 2>]
 
-midasZoneConfig := [56, 6, 0, 0, 76, 4]
+midasZoneConfig := [56, 6, 0, 0, 76, 0]
 
 ; Example configs:
 

@@ -14,7 +14,7 @@
 
 #### Idle
 
-    irisLevel := 999
+    irisLevel := 1029
     speedRunTime := 29
 
     activateSkillsAtStart := true
@@ -56,7 +56,7 @@
 
 #### Idle
 
-    irisLevel := 999
+    irisLevel := 1029
     endLvlIdle := optimalLevel
     endLvlActive := 0
 
