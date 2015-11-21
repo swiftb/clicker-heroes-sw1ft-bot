@@ -1182,7 +1182,7 @@ salvageJunkPile() {
 
 	if (autoAscend) {
 		if (screenShotRelics || displayRelicsDuration > 0) {
-			clickPos(xRelic, yRelic) ; focus
+			clickPos(xRelic, yRelic) ; focus (will show the upgrade screen in 0.23)
 		}
 
 		if (screenShotRelics) {
@@ -1199,6 +1199,8 @@ salvageJunkPile() {
 		}
 
 		if (screenShotRelics || displayRelicsDuration > 0) {
+			clickPos(xUpgradeNo, yUpgradeNo) ; don't upgrade
+			sleep % zzz
 			clickPos(xRelic+100, yRelic) ; remove focus
 		}
 	}

@@ -132,6 +132,9 @@ yTab := 130
 xRelic := 103
 yRelic := 380
 
+xUpgradeNo := 660
+yUpgradeNo := 530
+
 xSalvageJunk := 280
 ySalvageJunk := 470
 
