@@ -393,9 +393,9 @@ scrollWayDown(clickCount:=1) {
 
 maxClick(xCoord, yCoord, clickCount:=1, absolute:=0) {
 	global
-	ControlSend,, {shift down}{sc010 down}, ahk_id %chWinId% ; {q}, {vk51} or {sc010}
+	ControlSend,, {shift down}{vk51 down}, ahk_id %chWinId% ; {q}, {vk51} or {sc010}
 	clickPos(xCoord, yCoord, clickCount, absolute)
-	ControlSend,, {sc010 up}{shift up}, ahk_id %chWinId%
+	ControlSend,, {vk51 up}{shift up}, ahk_id %chWinId%
 	sleep % zzz
 }
 
@@ -411,9 +411,9 @@ ctrlClick(xCoord, yCoord, clickCount:=1, sleepSome:=1, absolute:=0) {
 
 zClick(xCoord, yCoord, clickCount:=1, absolute:=0) {
 	global
-	ControlSend,, {sc02C down}, ahk_id %chWinId% ; {z}, {vk5A} or {sc02C}
+	ControlSend,, {vk5A down}, ahk_id %chWinId% ; {z}, {vk5A} or {sc02C}
 	clickPos(xCoord, yCoord, clickCount, absolute)
-	ControlSend,, {sc02C up}, ahk_id %chWinId%
+	ControlSend,, {vk5A up}, ahk_id %chWinId%
 	sleep % zzz
 }
 
@@ -619,7 +619,6 @@ locator(image, what, byref xPos, byref yPos, clickCount:=5, retries:=-1, absolut
 		} else if (retries < 0 or --retries > 0) {
 			showDebugSplash("Could not locate " . what . "! Trying again...")
 			clientCheck()
-			clickerInitialize()
 			if (directionUp) {
 				scrollToBottom()
 			} else {

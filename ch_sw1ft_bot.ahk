@@ -1304,7 +1304,7 @@ regild(ranger, gildCount) {
 toggleMode(toggle:=1) {
 	global
 	if (toggle) {
-		ControlSend,, {sc01E}, ahk_id %chWinId% ; {a}, {vk41} or {sc01E}
+		ControlSend,, {vk41}, ahk_id %chWinId% ; {a}, {vk41} or {sc01E}
 		sleep % zzz
 	}
 }
