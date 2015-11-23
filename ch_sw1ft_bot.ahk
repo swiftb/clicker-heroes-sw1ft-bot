@@ -314,8 +314,6 @@ testLocate(image, clickCount:=5) {
 	testLocate(imgReferi, 2)
 	testSearch(imgMetalDetector, "Lvl Broyle to 100")
 	testSearch(imgGoldenClicks, "Lvl Midas to 100")
-	testLocate(imgBeastlord)
-	testSearch(imgAscension, "Lvl Amenhotep to 150")
 	testLocate(imgDK)
 	testSearch(imgFrigidEnchant, "Lvl Frostleaf to 100")
 
@@ -1168,16 +1166,8 @@ ascend(autoYes:=false) {
 
 	salvageJunkPile() ; must salvage junk relics before ascending
 	toggleMode()
-	switchToCombatTab()
-	scrollDown(ascDownClicks)
 
-	if (useImageSearch and locator(imgBeastlord, "Beastlord", x, y)) {
-		if (!locateImage(imgAscension)) {
-			buySkill(imgAscension, x-279, y+60-oLvl, 4, 4)
-		}
-	}
-	verticalSkills(xSkill + oSkill*3) ; ASCENSION
-
+	clickPos(xAscend, yAscend) ; 0.23 ascend button
 	sleep % zzz * 4
 	clickPos(xYes, yYes)
 	sleep % zzz * 2
@@ -1192,7 +1182,7 @@ salvageJunkPile() {
 
 	if (autoAscend) {
 		if (screenShotRelics || displayRelicsDuration > 0) {
-			clickPos(xRelic, yRelic) ; focus
+			clickPos(xRelic, yRelic) ; focus (will show the upgrade screen in 0.23)
 		}
 
 		if (screenShotRelics) {
@@ -1209,6 +1199,8 @@ salvageJunkPile() {
 		}
 
 		if (screenShotRelics || displayRelicsDuration > 0) {
+			clickPos(xUpgradeNo, yUpgradeNo) ; don't upgrade
+			sleep % zzz
 			clickPos(xRelic+100, yRelic) ; remove focus
 		}
 	}
@@ -1312,7 +1304,7 @@ regild(ranger, gildCount) {
 toggleMode(toggle:=1) {
 	global
 	if (toggle) {
-		ControlSend,, {sc01E}, ahk_id %chWinId% ; {a}, {vk41} or {sc01E}
+		ControlSend,, {vk41}, ahk_id %chWinId% ; {a}, {vk41} or {sc01E}
 		sleep % zzz
 	}
 }

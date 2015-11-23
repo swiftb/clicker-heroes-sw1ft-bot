@@ -16,9 +16,6 @@
 **Q:** Even with `activateSkillsAtStart` set to `false` the Speed run is breaking idle at the start. Is that a bug?  
 **A:** No, without image recognition to spot the clickables, it just clicks on all known spawn locations. Then to prevent a toggling behaviour, it actually breaks idle on purpose.
 
-**Q:** The bot failed to ascend!?  
-**A:** Adjust the `ascDownClicks` setting.
-
 **Q:** Why did the bot seem to get stuck after ascending?  
 **A1:** It needs a *clickable* to get going, so leave them alone!  
 **A2:** If `activateSkillsAtStart` is set to `false`, you might need a higher Chronos to not get stuck at the start before Idle kicks in.

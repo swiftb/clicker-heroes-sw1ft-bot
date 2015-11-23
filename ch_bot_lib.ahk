@@ -86,13 +86,11 @@ imgSkill := {file:"skill.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rig
 imgClickstorm := {file:"clickstorm.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgMetalDetector := {file:"metal_detector.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgGoldenClicks := {file:"golden_clicks.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgAscension := {file:"ascension.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgFrigidEnchant := {file:"frigid_enchant.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgCid := {file:"cid.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgMercedes := {file:"mercedes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgReferi := {file:"referi.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgBeastlord := {file:"beastlord.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgDK := {file:"dk.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgSolomon := {file:"solomon.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
@@ -116,6 +114,10 @@ oLvl := 107 ; offset to next button
 
 buttonSize := 34
 
+; 0.23 ascend button
+xAscend := 1121
+yAscend := 322
+
 ; Ascend Yes button
 xYes := 500
 yYes := 445
@@ -129,6 +131,9 @@ yTab := 130
 
 xRelic := 103
 yRelic := 380
+
+xUpgradeNo := 660
+yUpgradeNo := 530
 
 xSalvageJunk := 280
 ySalvageJunk := 470
@@ -176,7 +181,7 @@ yMonster := 164
 
 ; Safety zones (script will pause when entering)
 safetyZones := {}
-safetyZones[1] := {x1:8, y1:104, x2:506, y2:153} ; tabs
+safetyZones[1] := {x1:8, y1:104, x2:575, y2:153} ; tabs
 safetyZones[2] := {x1:1096, y1:29, x2:1144, y2:74} ; settings
 safetyZones[3] := {x1:773, y1:600, x2:949, y2:670} ; shop
 safetyZones[4] := {x1:79, y1:554, x2:194, y2:612} ; gilded
@@ -388,9 +393,9 @@ scrollWayDown(clickCount:=1) {
 
 maxClick(xCoord, yCoord, clickCount:=1, absolute:=0) {
 	global
-	ControlSend,, {shift down}{sc010 down}, ahk_id %chWinId% ; {q}, {vk51} or {sc010}
+	ControlSend,, {shift down}{vk51 down}, ahk_id %chWinId% ; {q}, {vk51} or {sc010}
 	clickPos(xCoord, yCoord, clickCount, absolute)
-	ControlSend,, {sc010 up}{shift up}, ahk_id %chWinId%
+	ControlSend,, {vk51 up}{shift up}, ahk_id %chWinId%
 	sleep % zzz
 }
 
@@ -406,9 +411,9 @@ ctrlClick(xCoord, yCoord, clickCount:=1, sleepSome:=1, absolute:=0) {
 
 zClick(xCoord, yCoord, clickCount:=1, absolute:=0) {
 	global
-	ControlSend,, {sc02C down}, ahk_id %chWinId% ; {z}, {vk5A} or {sc02C}
+	ControlSend,, {vk5A down}, ahk_id %chWinId% ; {z}, {vk5A} or {sc02C}
 	clickPos(xCoord, yCoord, clickCount, absolute)
-	ControlSend,, {sc02C up}, ahk_id %chWinId%
+	ControlSend,, {vk5A up}, ahk_id %chWinId%
 	sleep % zzz
 }
 
@@ -614,7 +619,6 @@ locator(image, what, byref xPos, byref yPos, clickCount:=5, retries:=-1, absolut
 		} else if (retries < 0 or --retries > 0) {
 			showDebugSplash("Could not locate " . what . "! Trying again...")
 			clientCheck()
-			clickerInitialize()
 			if (directionUp) {
 				scrollToBottom()
 			} else {

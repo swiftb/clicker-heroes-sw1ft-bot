@@ -104,13 +104,17 @@ Note: If your Windows account don't have administrator rights, you might have to
 
 ## Configuration
 
-* In Clicker Heroes, turn off the __Show relic found popups__ option
+* In Clicker Heroes, turn off:
+    - __Show damage texts__ (can cause progression mode issues if left on)
+    - __Show relic found popups__
 * The Speed run requires that all heroes and rangers are kept expanded
 * The Vision run allow for the following heroes to be be minimized: Brittany, Samurai (if not gilded), Forest Seer, Ma Zhu, Athena and any unused ranger besides Dread Knight.
 * Use a decent text editor, like Sublime Text or Notepad++ when you configure this bot.
 * [Common Setups](common_setups.md)
 
 ### Mandatory lib settings
+
+    ch_bot_lib_settings.ahk
 
 These only need to be changed if you run the browser client.
 
@@ -131,6 +135,8 @@ Known issues:
 * The script can't handle any extra _stuff_ on the left side, e.g. a bookmark list.
 
 ### Mandatory bot settings
+
+    ch_bot_settings.ahk
 
 | Variable | Explanation |
 | -------- | ----------- |
