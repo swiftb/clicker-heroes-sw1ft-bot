@@ -4,7 +4,7 @@
 
 **Q:** The bot missed to buy some of the early heroes!?  
 **A1:** Make sure you don't have any heroes or rangers minimized.  
-**A2:** If you reload the script with <kbd>Alt+F5</kbd> and get a "Threshold proximity warning". Up your Iris to (at least) the suggested level.
+**A2:** If you reload the script with <kbd>Alt+F5</kbd> and get a "Threshold proximity warning". Up your Iris to (at least) the suggested level.  
 **A3:** As a last resort, enable the `initPlanB` option.
 
 **Q:** Why didn’t the bot level my gilded ranger?  
@@ -16,11 +16,9 @@
 **Q:** Even with `activateSkillsAtStart` set to `false` the Speed run is breaking idle at the start. Is that a bug?  
 **A:** No, without image recognition to spot the clickables, it just clicks on all known spawn locations. Then to prevent a toggling behaviour, it actually breaks idle on purpose.
 
-**Q:** The bot failed to ascend!?  
-**A:** Adjust the `ascDownClicks` setting.
-
 **Q:** Why did the bot seem to get stuck after ascending?  
-**A:** It needs a *clickable* to get going, so leave them alone!
+**A1:** It needs a *clickable* to get going, so leave them alone!  
+**A2:** If `activateSkillsAtStart` is set to `false`, you might need a higher Chronos to not get stuck at the start before Idle kicks in.
 
 **Q:** Is the Speed run always 3 stages?  
 **A:** No. Depending on your Iris, it can be 1-3 stages. One if Iris is high enough to start right away on your gilded ranger. Two if the time needed to reach the gilded ranger is less than ~9 minutes, otherwise three.
@@ -67,7 +65,7 @@
 
 **Q1:** Can I turn off sounds?  
 **Q2:** Can I move the text splash windows or the progress bar?  
-**A:** Yes. Under __Optional Settings__, you’ll find the __Look & Feel__ section. The monster clicker has similar settings.  
+**A1:** Yes. Under __Optional Settings__, you’ll find the __Look & Feel__ section. The monster clicker has similar settings.  
 **A2:** Screenshot sounds in Steam can also be turned off: Right-click __Steam__ in your toolbar and uncheck __Play a sound__ under __Settings > In-Game__
 
 **Q:** I just can’t get the bot to work and none of the answers above did help. What should I do?  

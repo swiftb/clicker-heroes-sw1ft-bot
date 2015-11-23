@@ -54,8 +54,6 @@ hybridMode := false ; chain a deep run when the speed run finish
 
 activateSkillsAtStart := true ; usually needed in the late game to get going after ascending
 
-ascDownClicks := 26 ; # of down clicks needed to get the ascension button center:ish (after a full speed run)
-
 autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention! <Shift+Ctrl+F1>
 
 ; Auto Ascend Warning Mode
@@ -93,7 +91,7 @@ useMidasStart := false ; pref. used with the useImageSearch option
 ; Config syntax:
 ; [<zone 1>, <delay 1>, <extra zone>, <extra delay>, <zone 2>, <delay 2>]
 
-midasZoneConfig := [56, 6, 0, 0, 76, 4]
+midasZoneConfig := [56, 6, 0, 0, 76, 0]
 
 ; Example configs:
 
@@ -151,8 +149,8 @@ comboGoldenLuck := [2.5*60, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", 
 comboHybridIdle := [15*60, "1-2-3-4-5-7-6-9-8"] ; energize >
 comboHybridActive := [30, "5-2-4-6-7", "", "", "3-8-9", "", "", "2", "", "", "3-7", "", "1-2"] ; > golden clicks, 6 minutes
 
-; Midas: 1-4-5                      1:00                      3:30                 6:00                  8:30                   11:00                13:30                     16:00               17:30       18:30 Ascend
-comboMidas := [30, "8-9-6", "", "2-3-4-5-7", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-3-4", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-4-3-5-8-9", "", "", "3-5-7", "", "1-2", "", ""]
+; Midas: 1-4-5                                2:30                 5:00                 7:30                 10:00                  12:30                    15:00                        17:30
+comboMidas := [30, "9-3-8-6", "2", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2", "", "4", "", "", "2-5", "", "", "", "", "", "3", "", "", "8-9-3-5", "", "", "2-4-7", "", "1", "", ""]
 
 speedRunStartCombo := comboStart
 deepRunCombo := comboGoldenLuck
