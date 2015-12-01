@@ -120,7 +120,7 @@ yAscend := 322
 
 ; Ascend Yes button
 xYes := 500
-yYes := 445
+yYes := 510 ; redesigned ascend window
 
 xCombatTab := 50
 xStatsTab := 212
