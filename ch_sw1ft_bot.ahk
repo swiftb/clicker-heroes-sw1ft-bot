@@ -558,7 +558,10 @@ midasStart() {
 			scrollDown(18)
 		}
 		scrollToZone(fromZone, midasZone2)
-		locator(imgReferi, "Referi", xl, yl, 2)
+		if (!locator(imgReferi, "Referi", xl, yl, 2, 1)) {
+			showDebugSplash("Failed Midas start!")
+			return
+		}
 		xl -= 155
 		yl += 60
 		buySkill(imgMetalDetector, xl, yl-oLvl*3, 5, 5)
@@ -725,6 +728,8 @@ visionRun() {
 				}
 				skillSearch := true
 				isResuming := false
+			} else {
+				showWarningSplash("No transitional ranger gilded?")
 			}
 		}
 		if (mod(t, 15) = 0) {
@@ -1384,7 +1389,7 @@ locateGilded(byref xPos, byref yPos, byref isNew) {
 		scrollToBottom()
 	}
 
-	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, 5, 2, 1, startAt)) {
+	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, 5, 1, 1, startAt)) {
 		local xPixel := xAbs + 83 ; HI[R]E
 		local yPixel := yAbs + 38
 		if (matchPixelColor(dimmedYellowColor, xPixel, yPixel)) {
