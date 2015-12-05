@@ -104,6 +104,7 @@ imgClanFightAgain := {file:"clan_fight_again.png", topOffset:CZTO, leftOffset:0,
 imgClanCollect := {file:"clan_collect.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgYes := {file:"yes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:0}
+imgClose := {file:"close.png", topOffset:0, leftOffset:800, bottomOffset:-400, rightOffset:0}
 
 ; -- Coordinates --------------------------------------------------------------------------
 
@@ -183,7 +184,7 @@ yMonster := 164
 safetyZones := {}
 safetyZones[1] := {x1:8, y1:104, x2:575, y2:153} ; tabs
 safetyZones[2] := {x1:1096, y1:29, x2:1144, y2:74} ; settings
-safetyZones[3] := {x1:773, y1:600, x2:949, y2:670} ; shop
+safetyZones[3] := {x1:678, y1:600, x2:949, y2:670} ; sale + shop
 safetyZones[4] := {x1:79, y1:554, x2:194, y2:612} ; gilded
 
 ; The wrench
@@ -212,6 +213,9 @@ xOpenGild := 570
 yOpenGild := 360
 xCloseGild := 924
 yCloseGild := 133
+
+xBuyRubiesClose := 1081
+yBuyRubiesClose := 96
 
 ; -----------------------------------------------------------------------------------------
 

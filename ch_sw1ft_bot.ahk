@@ -299,6 +299,7 @@ testLocate(image, clickCount:=5) {
 	testSearch(imgQuality, "Set high quality")
 	testSearch(imgSmile, "Set low quality")
 	testSearch(imgProgression, "Toggle progression mode")
+	testSearch(imgClose, "Open Shop > Get More! window")
 	testSearch(imgClickable)
 	switchToCombatTab()
 	testSearch(imgCombat)
@@ -691,6 +692,7 @@ visionRun() {
 	local isClickerRunning := false
 	local hasActivatedSkills := false
 
+	local xClose := 0, yClose := 0
 	local xBtn := 0, yBtn := 0, isNew := 0
 	local xSkill := 0, ySkill := 0, skillSearch := false
 
@@ -729,7 +731,12 @@ visionRun() {
 				skillSearch := true
 				isResuming := false
 			} else {
-				showWarningSplash("No transitional ranger gilded?")
+				; If any, close auto-opened buy more rubies window
+				if (locateImage(imgClose, xClose, yClose)) {
+					clickPos(xClose, yClose, 1, 1)
+				} else {
+					showWarningSplash("No transitional ranger gilded?")
+				}
 			}
 		}
 		if (mod(t, 15) = 0) {
@@ -773,7 +780,7 @@ visionRun() {
 					; Aquire possible new skills
 					while (locateImage(imgSkill, xSkill, ySkill)) {
 						clickPos(xSkill, ySkill, 1, 1)
-						sleep % 500
+						sleep 500
 					}
 					if (!locateImage(imgDimmedSkill)) {
 						skillSearch := false
@@ -963,6 +970,10 @@ lvlUp(seconds, buyUpgrades, button, stint, stints) {
 			showSplashAlways("Speed run aborted!")
 			exit
 		}
+		; Close possible auto-opened buy more rubies window
+		if (mod(t, 30) = 0) {
+			clickPos(xBuyRubiesClose, yBuyRubiesClose)
+		}
 		if (mod(t, lvlUpDelay) = 0) {
 			ctrlClick(xLvl, y, 1, 0)
 		}
@@ -1001,6 +1012,10 @@ deepRun() {
 			stopMonitoring()
 			showSplashAlways("Deep run aborted!")
 			exit
+		}
+		; Close possible auto-opened buy more rubies window
+		if (mod(t, 30) = 0) {
+			clickPos(xBuyRubiesClose, yBuyRubiesClose)
 		}
 		if (deepRunClicks) {
 			clickPos(xMonster, yMonster)
