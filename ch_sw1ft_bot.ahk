@@ -762,7 +762,7 @@ visionRun() {
 					clickerStart() ; ~38 CPS
 					isClickerRunning := true
 					Gosub, comboTimer
-					SetTimer, comboTimer, % comboDelay * 1000 + 1000
+					SetTimer, comboTimer, % comboDelay * 1000 + 250
 				}
 				clickPos(xMonster, yMonster) ; Jugg combo safety click
 				sleep 30
@@ -774,26 +774,27 @@ visionRun() {
 			hasActivatedSkills := true
 		}
 		; Level up...
-		if (mod(t, lvlUpDelay) = 0) {
-			if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
-				if (skillSearch) {
-					; Aquire possible new skills
-					while (locateImage(imgSkill, xSkill, ySkill)) {
-						clickPos(xSkill, ySkill, 1, 1)
-						sleep 500
-					}
-					if (!locateImage(imgDimmedSkill)) {
-						skillSearch := false
-					}
+		if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
+			if (skillSearch) {
+				; Aquire possible new skills
+				while (locateImage(imgSkill, xSkill, ySkill)) {
+					clickPos(xSkill, ySkill, 1, 1)
+					sleep 500
 				}
-				; ... when we can afford to do so
-				ctrlClick(xBtn, yBtn, 1, 1, 1)
-			} else if (!matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
-				if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
-					; ... or not, lost sight of our gilded hero
-					showDebugSplash("Lost sight of our gilded hero")
-					isResuming := true
+				if (!locateImage(imgDimmedSkill)) {
+					skillSearch := false
 				}
+			}
+			; ... when we can afford to do so
+			ctrlClick(xBtn, yBtn, 2, 1, 1)
+		} else if (!matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
+			if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
+				; ... or not, lost sight of our gilded hero
+				showDebugSplash("Lost sight of our gilded hero")
+				if (!locateImage(imgCombat)) {
+					switchToCombatTab()
+				}
+				isResuming := true
 			}
 		}
 		; Let's go fishing!
@@ -1335,7 +1336,7 @@ activateSkills(skills) {
 	loop,parse,skills,-
 	{
 		ControlSend,,% A_LoopField, ahk_id %chWinId%
-		sleep 50
+		sleep 25
 	}
 }
 
