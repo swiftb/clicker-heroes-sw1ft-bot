@@ -14,7 +14,7 @@
 **A:** Most likely caused by a low Iris. Make sure to (as a minimum) level it up to be within 1000 levels of your *optimal zone*. The `firstStintAdjustment` setting can temporarily be used to _compensate_ (35 levels ~= 60s) for this.
 
 **Q:** Even with `activateSkillsAtStart` set to `false` the Speed run is breaking idle at the start. Is that a bug?  
-**A:** No, without image recognition to spot the clickables, it just clicks on all known spawn locations. Then to prevent a toggling behaviour, it actually breaks idle on purpose.
+**A:** No, without image recognition to spot the clickables, it just clicks on all known spawn locations. Then to prevent a toggling behavior, it actually breaks idle on purpose.
 
 **Q:** Why did the bot seem to get stuck after ascending?  
 **A1:** It needs a *clickable* to get going, so leave them alone!  

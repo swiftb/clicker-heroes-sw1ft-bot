@@ -11,6 +11,7 @@ A mid/late game bot for [Clicker Heroes][Reddit].
 * [Configuration](#configuration)
 * [Starting a run](#starting-a-run)
 * [Hotkeys](#main-hotkeys)
+* [Questions or comments?](#questions-or-comments)
 
 ## General Features
 
@@ -269,7 +270,7 @@ Check the [FAQ](FAQ.md) or visit the original script [home][] on Reddit.
 [AutoHotkey]: http://ahkscript.org/
 [Rules of Thumb]: http://redd.it/339m3j
 [Ancients Calculator]: http://hsoptimizer.github.io/ancient/
-[Ancients Optimizer]: http://s3-us-west-2.amazonaws.com/clickerheroes/ancientssoul.html
+[Ancients Optimizer]: http://philni.neocities.org/ancientssoul.html
 [regilding chart]: https://redd.it/3frj62
 [Clickables]: http://clickerheroes.wikia.com/wiki/Clickables
 [home]: http://redd.it/3a3bmy
