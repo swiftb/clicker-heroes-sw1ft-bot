@@ -1,5 +1,15 @@
 # Common Setups
 
+Example settings for different styles of play.
+
+## Overview
+
+* [Speed Run](#speed-run)
+* [Deep Run](#deep-run)
+* [Vision Run](#vision-run)
+* [Do not disturb](#do-not-disturb)
+* [Dual monitors](#dual-monitors)
+
 ## Global Settings
 
     optimalLevel := 2000

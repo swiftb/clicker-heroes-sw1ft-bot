@@ -11,6 +11,7 @@ A mid/late game bot for [Clicker Heroes][Reddit].
 * [Configuration](#configuration)
 * [Starting a run](#starting-a-run)
 * [Hotkeys](#main-hotkeys)
+* [Questions or comments?](#questions-or-comments)
 
 ## General Features
 
