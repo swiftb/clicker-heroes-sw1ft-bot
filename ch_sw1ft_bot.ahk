@@ -737,6 +737,10 @@ visionRun() {
 					clickPos(xClose, yClose, 1, 1)
 				} else {
 					showWarningSplash("No transitional ranger gilded?")
+					; Restart
+					scrollToZone(zone, irisLevel - 1)
+					toggleMode()
+					break
 				}
 			}
 		}
