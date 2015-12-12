@@ -315,6 +315,7 @@ testLocate(image, clickCount:=5) {
 	testLocate(imgReferi, 2)
 	testSearch(imgMetalDetector, "Lvl Broyle to 100")
 	testSearch(imgGoldenClicks, "Lvl Midas to 100")
+	testSearch(imgAscend, "Lvl Amenhotep to 150")
 	testLocate(imgDK)
 	testSearch(imgFrigidEnchant, "Lvl Frostleaf to 100")
 
@@ -443,7 +444,7 @@ initRun() {
 				}
 			}
 			if (foundDK) {
-				if (locateImage(imgFrigidEnchant)) {
+				if (locateImage(imgFrigidEnchant) and locateImage(imgAscend)) {
 					hasLeveledHeroes := true
 				}
 				break
@@ -1182,7 +1183,10 @@ ascend(autoYes:=false) {
 		playWarningSound()
 		msgbox, 260,% script,Salvage Junk Pile & Ascend? ; default no
 		ifmsgbox no
+		{
+			stopMonitoring()
 			exit
+		}
 	}
 
 	salvageJunkPile() ; must salvage junk relics before ascending

@@ -70,6 +70,7 @@ imageFilePath := "images\"
 imgSmile := {file:"smile.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 imgQuality := {file:"quality.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 imgProgression := {file:"progression.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
+imgAscend := {file:"ascend.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 
 imgClickable := {file:"clickable.png", topOffset:CZTO, leftOffset:CZLO, bottomOffset:0, rightOffset:0}
 
