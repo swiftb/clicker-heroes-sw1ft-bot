@@ -1,5 +1,15 @@
 # Common Setups
 
+Example settings for different styles of play.
+
+## Overview
+
+* [Speed Run](#speed-run)
+* [Deep Run](#deep-run)
+* [Vision Run](#vision-run)
+* [Do not disturb](#do-not-disturb)
+* [Dual monitors](#dual-monitors)
+
 ## Global Settings
 
     optimalLevel := 2000
@@ -103,12 +113,13 @@
 
     comboHybridIdle := [15*60, "1-2-3-4-5-7-6-9-8"] ; energize >
    
-    comboHybridActive := [30, "5-2-4-6-7", "", "", "3-8-9", "", "", "2", "", "", "3-7", "", "1-2"] ; > golden clicks, 6 minutes active
+    comboHybridActive := [30, "5", "", "", "3", "", "", "8-9-2-5-7", "4", "", "3", "", "1-2"] ; > golden clicks, 6 minutes
 
-    00:00 : 5-2-4-6-7
-    01:30 : 3-8-9
-    03:00 : 2
-    04:30 : 3-7
+    00:00 : 5
+    01:30 : 3
+    03:00 : 8-9-2-5-7
+    03:30 : 4
+    04:30 : 3
     05:30 : 1-2
 
     ; ~18 minutes active

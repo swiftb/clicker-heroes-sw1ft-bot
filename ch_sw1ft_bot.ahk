@@ -299,6 +299,7 @@ testLocate(image, clickCount:=5) {
 	testSearch(imgQuality, "Set high quality")
 	testSearch(imgSmile, "Set low quality")
 	testSearch(imgProgression, "Toggle progression mode")
+	testSearch(imgClose, "Open Shop > Get More! window")
 	testSearch(imgClickable)
 	switchToCombatTab()
 	testSearch(imgCombat)
@@ -314,6 +315,7 @@ testLocate(image, clickCount:=5) {
 	testLocate(imgReferi, 2)
 	testSearch(imgMetalDetector, "Lvl Broyle to 100")
 	testSearch(imgGoldenClicks, "Lvl Midas to 100")
+	testSearch(imgAscend, "Lvl Amenhotep to 150")
 	testLocate(imgDK)
 	testSearch(imgFrigidEnchant, "Lvl Frostleaf to 100")
 
@@ -442,7 +444,7 @@ initRun() {
 				}
 			}
 			if (foundDK) {
-				if (locateImage(imgFrigidEnchant)) {
+				if (locateImage(imgFrigidEnchant) and locateImage(imgAscend)) {
 					hasLeveledHeroes := true
 				}
 				break
@@ -558,7 +560,10 @@ midasStart() {
 			scrollDown(18)
 		}
 		scrollToZone(fromZone, midasZone2)
-		locator(imgReferi, "Referi", xl, yl, 2)
+		if (!locator(imgReferi, "Referi", xl, yl, 2, 1)) {
+			showDebugSplash("Failed Midas start!")
+			return
+		}
 		xl -= 155
 		yl += 60
 		buySkill(imgMetalDetector, xl, yl-oLvl*3, 5, 5)
@@ -688,6 +693,7 @@ visionRun() {
 	local isClickerRunning := false
 	local hasActivatedSkills := false
 
+	local xClose := 0, yClose := 0
 	local xBtn := 0, yBtn := 0, isNew := 0
 	local xSkill := 0, ySkill := 0, skillSearch := false
 
@@ -725,6 +731,17 @@ visionRun() {
 				}
 				skillSearch := true
 				isResuming := false
+			} else {
+				; If any, close auto-opened buy more rubies window
+				if (locateImage(imgClose, xClose, yClose)) {
+					clickPos(xClose, yClose, 1, 1)
+				} else {
+					showWarningSplash("No transitional ranger gilded?")
+					; Restart
+					scrollToZone(zone, irisLevel - 1)
+					toggleMode()
+					break
+				}
 			}
 		}
 		if (mod(t, 15) = 0) {
@@ -750,7 +767,7 @@ visionRun() {
 					clickerStart() ; ~38 CPS
 					isClickerRunning := true
 					Gosub, comboTimer
-					SetTimer, comboTimer, % comboDelay * 1000 + 1000
+					SetTimer, comboTimer, % comboDelay * 1000 + 250
 				}
 				clickPos(xMonster, yMonster) ; Jugg combo safety click
 				sleep 30
@@ -762,26 +779,27 @@ visionRun() {
 			hasActivatedSkills := true
 		}
 		; Level up...
-		if (mod(t, lvlUpDelay) = 0) {
-			if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
-				if (skillSearch) {
-					; Aquire possible new skills
-					while (locateImage(imgSkill, xSkill, ySkill)) {
-						clickPos(xSkill, ySkill, 1, 1)
-						sleep % 500
-					}
-					if (!locateImage(imgDimmedSkill)) {
-						skillSearch := false
-					}
+		if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
+			if (skillSearch) {
+				; Aquire possible new skills
+				while (locateImage(imgSkill, xSkill, ySkill)) {
+					clickPos(xSkill, ySkill, 1, 1)
+					sleep 500
 				}
-				; ... when we can afford to do so
-				ctrlClick(xBtn, yBtn, 1, 1, 1)
-			} else if (!matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
-				if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
-					; ... or not, lost sight of our gilded hero
-					showDebugSplash("Lost sight of our gilded hero")
-					isResuming := true
+				if (!locateImage(imgDimmedSkill)) {
+					skillSearch := false
 				}
+			}
+			; ... when we can afford to do so
+			ctrlClick(xBtn, yBtn, 2, 1, 1)
+		} else if (!matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
+			if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
+				; ... or not, lost sight of our gilded hero
+				showDebugSplash("Lost sight of our gilded hero")
+				if (!locateImage(imgCombat)) {
+					switchToCombatTab()
+				}
+				isResuming := true
 			}
 		}
 		; Let's go fishing!
@@ -958,6 +976,10 @@ lvlUp(seconds, buyUpgrades, button, stint, stints) {
 			showSplashAlways("Speed run aborted!")
 			exit
 		}
+		; Close possible auto-opened buy more rubies window
+		if (mod(t, 30) = 0) {
+			clickPos(xBuyRubiesClose, yBuyRubiesClose)
+		}
 		if (mod(t, lvlUpDelay) = 0) {
 			ctrlClick(xLvl, y, 1, 0)
 		}
@@ -996,6 +1018,10 @@ deepRun() {
 			stopMonitoring()
 			showSplashAlways("Deep run aborted!")
 			exit
+		}
+		; Close possible auto-opened buy more rubies window
+		if (mod(t, 30) = 0) {
+			clickPos(xBuyRubiesClose, yBuyRubiesClose)
 		}
 		if (deepRunClicks) {
 			clickPos(xMonster, yMonster)
@@ -1161,7 +1187,10 @@ ascend(autoYes:=false) {
 		playWarningSound()
 		msgbox, 260,% script,Salvage Junk Pile & Ascend? ; default no
 		ifmsgbox no
+		{
+			stopMonitoring()
 			exit
+		}
 	}
 
 	salvageJunkPile() ; must salvage junk relics before ascending
@@ -1315,7 +1344,7 @@ activateSkills(skills) {
 	loop,parse,skills,-
 	{
 		ControlSend,,% A_LoopField, ahk_id %chWinId%
-		sleep 50
+		sleep 25
 	}
 }
 
@@ -1384,7 +1413,7 @@ locateGilded(byref xPos, byref yPos, byref isNew) {
 		scrollToBottom()
 	}
 
-	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, 5, 2, 1, startAt)) {
+	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, 5, 1, 1, startAt)) {
 		local xPixel := xAbs + 83 ; HI[R]E
 		local yPixel := yAbs + 38
 		if (matchPixelColor(dimmedYellowColor, xPixel, yPixel)) {
