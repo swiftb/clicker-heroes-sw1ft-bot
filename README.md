@@ -109,7 +109,7 @@ Note: If your Windows account don't have administrator rights, you might have to
     - __Show damage texts__ (can cause progression mode issues if left on)
     - __Show relic found popups__
 * The Speed run requires that all heroes and rangers are kept expanded
-* The Vision run allow for the following heroes to be be minimized: Brittany, Samurai (if not gilded), Forest Seer, Ma Zhu, Athena and any unused ranger besides Dread Knight.
+* The Vision run allow for the following heroes to be be minimized: Brittany, Samurai, Forest Seer, Ma Zhu, Athena and any unused ranger besides Dread Knight.
 * Use a decent text editor, like Sublime Text or Notepad++ when you configure this bot.
 * [Common Setups](common_setups.md)
 
@@ -122,10 +122,10 @@ These only need to be changed if you run the browser client.
 | Variable | Explanation |
 | -------- | ----------- |
 `SetTitleMatchMode` | **`3`** for Steam or **`regex`** for browser version <sup>(1)</sup>
-`browser` | Browser name (e.g. Firefox)
+`browser` | Browser name (e.g. Opera)
 `browserTopMargin`  | Browser top margin <sup>(2)</sup>
 
-(1) Browser recommendation: Run Clicker Heroes in Firefox, then use Chrome or some other browser for your normal surfing activities.
+(1) Browser recommendation: Run Clicker Heroes in Opera, then use Chrome or some other browser for your normal surfing activities.
 
 (2) Make sure the Clicker Heroes window have focus, then click <kbd>Ctrl+Middle Mouse Button</kbd> dead center in the ancient tab eye like this: ![](images/ancient_eye_click.png?raw=true). Update the top margin and reload the script with <kbd>Alt+F5</kbd>, then position your mouse cursor at the top left corner (of the CH area) and click <kbd>Alt+Middle Mouse Button</kbd>. If the setting is correct, it should look like this:
 ![](images/top_corner_alt_mmb.png?raw=true)
@@ -143,21 +143,18 @@ Known issues:
 | -------- | ----------- |
 `irisLevel`    | Set to your Iris level in game
 
-**Important!** If the script notifies or warns you about your Iris level, follow it's recommendations. Ignoring to do so, will most likely cause the script to fail.
-
 #### Mandatory Speed run settings
 
 | Variable | Explanation |
 | -------- | ----------- |
-`optimalLevel` | Your optimal zone level <sup>(3)</sup>
 `speedRunTime` | The duration of the speed run <sup>(3)</sup>
 `gildedRanger` | The number of your gilded ranger <sup>(4)</sup>
 
 (3) Set according to the [Ancients Optimizer][] (open with <kbd>Ctrl+F5</kbd>).
 
-(4) **1**:Dread Knight, **2**:Atlas, **3**:Terra, **4**:Phthalo, **5**:Banana, **6**:Lilin, **7**:Cadmia, **8**:Alabaster, **9**:Astraea
+(4) **1**:Dread Knight, **2**:Atlas, **3**:Terra, **4**:Phthalo, **5**:Banana, **6**:Lilin, **7**:Cadmia, **8**:Alabaster, **9**:Astraea, **10**:Chiron, **11**:Moloch, **12**:Bomber Max, **13**:Gog, **14**:Wepwawet
 
-**Important!** Use the Siyalatas [regilding chart][] to make sure you are gilded correctly. The script will also use one or two heroes prior to your gilded ranger. Giving them one gild each should be enough to guarantee maximum “insta-kill” speed.
+**Important!** Use the Siyalatas [regilding chart][] to make sure you are gilded correctly. Any transitional hero/ranger used by the bot must also be gilded.
 
 #### Mandatory Deep run settings
 
@@ -273,5 +270,5 @@ Check the [FAQ](FAQ.md) or visit the original script [home][] on Reddit.
 [Ancients Optimizer]: http://philni.neocities.org/ancientssoul.html
 [regilding chart]: https://redd.it/3frj62
 [Clickables]: http://clickerheroes.wikia.com/wiki/Clickables
-[home]: http://redd.it/3a3bmy
+[home]: https://redd.it/3wxwfu
 [latest release]: https://github.com/swiftb/clicker-heroes-sw1ft-bot/releases/latest
