@@ -7,13 +7,13 @@ irisLevel := 1029 ; try to keep your Iris within 1001 levels of your optimal zon
 
 ; -- Speed Run ----------------------------------------------------------------------------
 
-; Clicker Heroes Ancients Optimizer @ http://s3-us-west-2.amazonaws.com/clickerheroes/ancientssoul.html
-; Use the optimizer to set the optimal level and time:
-optimalLevel := 2000
-speedRunTime := 29 ; minutes (usually between 28 and 30 minutes)
+; Clicker Heroes Ancients Optimizer @ http://philni.neocities.org/ancientssoul.html
+; Use the optimizer to set the time:
+speedRunTime := 29 ; minutes
 
 ; Siyalatas regilding chart @ https://redd.it/3frj62
 ; 1:Dread Knight, 2:Atlas, 3:Terra, 4:Phthalo, 5:Banana, 6:Lilin, 7:Cadmia, 8:Alabaster, 9:Astraea
+; 10:Chiron, 11:Moloch, 12:Bomber Max, 13:Gog, 14:Wepwawet
 gildedRanger := 6 ; the number of your main guilded ranger
 
 ; Speed Run debug info: Shift+Ctrl+F12 > Alt+F3
@@ -30,7 +30,7 @@ useImageSearch := false ; requires browser client in low quality mode
 ; Test hotkey: Win+F3 - Search & locate tests for all images
 
 ; Vision run
-endLvlIdle := optimalLevel
+endLvlIdle := 2000
 endLvlActive := 0
 ; idle:   set endLvlActive = 0 (set activateSkillsAtStart to false for 100% idle)
 ; hybrid: set endLvlActive > endLvlIdle
@@ -45,8 +45,8 @@ solomonLevels := 5
 
 ; -- Speed Run ----------------------------------------------------------------------------
 
-; Add or remove time (in seconds) to or from the first hero.
-firstStintAdjustment := 0 ; can be used to temporarily compensate for low Iris levels
+firstStintAdjustment := 0 ; add or remove time (in seconds) to or from the first hero
+firstStintButton := 1 ; 1 or 2
 
 hybridMode := false ; chain a deep run when the speed run finish
 
@@ -154,46 +154,6 @@ comboMidas := [30, "9-3-8-6", "2", "", "", "", "", "2", "", "", "", "", "2", "",
 
 speedRunStartCombo := comboStart
 deepRunCombo := comboGoldenLuck
-
-; -- Init run -----------------------------------------------------------------------------
-
-; The assistant will automatically try to set the correct initDownClicks and yLvlInit settings.
-; It will also assist with Iris level recommendations.
-useConfigurationAssistant := true
-
-; A list of clicks needed to scroll down 4 heroes at a time, starting from the top.
-initDownClicks := [0,0,0,0,0,0]
-
-; This y coordinate is supposed to keep itself inside the top lvl up button when scrolling down according to the above "clicking pattern".
-yLvlInit := 000
-
-; Manual configuration (if not using the assistant):
-; 1. Ascend with a "clickable" available.
-; 2. Click Alt+F1 (the script should pick up the clickable).
-; 3. Scroll down to the bottom. What ranger is last?
-; 4. From the list below, pick the matching settings:
-
-; Astraea      [6,5,6,5,6,3], 241 (Iris > 2010)
-; Alabaster    [6,6,6,5,6,3], 227 (Iris > 1760)
-; Cadmia       [6,6,6,6,6,3], 240 (Iris > 1510)
-; Lilin        [6,6,6,6,6,3], 285 (Iris > 1260)
-; Banana       [6,7,6,7,6,3], 240 (Iris > 1010)
-; Phthalo      [6,7,7,6,7,3], 273 (Iris > 760)
-; Terra        [7,7,7,7,7,3], 240 (Iris > 510)
-; Atlas        [7,7,7,8,7,3], 273 (Iris > 260)
-; Dread Knight [7,8,7,8,7,4], 257
-
-; E.g. if Phthalo is last, you set initDownClicks to [6,7,7,6,7,3] and yLvlInit to 273.
-; In this case your Iris level should be somewhere between 760 and 1010.
-
-; 5. Now click Alt+F2 (the script should level up and upgrade all heroes from Cid to Frostleaf).
-
-; If some heroes where missed, make sure you have picked the suggested setting for your Iris level.
-; If you are close to one of these Iris irisThresholds, you should move above it with some margin. 
-; E.g if your Iris is at 489, you should level it to at least 529, pick the setting for Terra,
-; reload the script (Alt+F5), ascend with a clickable and try Alt+F2 again.
-
-initPlanB := false ; alternate hero upgrade process
 
 ; -----------------------------------------------------------------------------------------
 

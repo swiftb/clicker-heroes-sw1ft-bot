@@ -158,18 +158,23 @@ yGildedDown := 493
 xGildedClose := 1090
 yGildedClose := 54
 
-rangers := ["Dread Knight", "Atlas", "Terra", "Phthalo", "Banana", "Lilin", "Cadmia", "Alabaster", "Astraea"]
+rangers := ["Dread Knight", "Atlas", "Terra", "Phthalo", "Banana", "Lilin", "Cadmia", "Alabaster", "Astraea", "Chiron", "Moloch", "Bomber Max", "Gog", "Wepwawet"]
 
 rangerPositions := {}
-rangerPositions[1] := {x:445, y:355}
-rangerPositions[2] := {x:675, y:355}
-rangerPositions[3] := {x:900, y:355}
-rangerPositions[4] := {x:220, y:425}
-rangerPositions[5] := {x:445, y:425}
-rangerPositions[6] := {x:675, y:425}
-rangerPositions[7] := {x:900, y:425}
-rangerPositions[8] := {x:220, y:490}
-rangerPositions[9] := {x:445, y:490}
+rangerPositions[1] := {x:445, y:290} ; Dread Knight
+rangerPositions[2] := {x:675, y:290} ; Atlas
+rangerPositions[3] := {x:900, y:290} ; Terra
+rangerPositions[4] := {x:220, y:355} ; Phthalo
+rangerPositions[5] := {x:445, y:355} ; Banana
+rangerPositions[6] := {x:675, y:355} ; Lilin
+rangerPositions[7] := {x:900, y:355} ; Cadmia
+rangerPositions[8] := {x:220, y:425} ; Alabaster
+rangerPositions[9] := {x:445, y:425} ; Astraea
+rangerPositions[10] := {x:675, y:425} ; Chiron
+rangerPositions[11] := {x:900, y:425} ; Moloch
+rangerPositions[12] := {x:220, y:490} ; Bomber Max
+rangerPositions[13] := {x:445, y:490} ; Gog
+rangerPositions[14] := {x:675, y:490} ; Wepwawet
 
 ; Buy Available Upgrades button
 xBuy := 370
