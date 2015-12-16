@@ -14,7 +14,7 @@
 SetControlDelay, -1
 
 scriptName=CH Sw1ft Bot
-scriptVersion=3.0.2
+scriptVersion=3.0.3
 minLibVersion=1.4
 
 script := scriptName . " v" . scriptVersion
