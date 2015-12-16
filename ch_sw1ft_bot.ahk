@@ -613,6 +613,8 @@ visionRun() {
 	local isInitiated := false
 	local isClickerRunning := false
 	local hasActivatedSkills := false
+	local hasBomberBuff := false
+	local hasGogBuff := false
 
 	local xClose := 0, yClose := 0
 	local xBtn := 0, yBtn := 0, isNew := 0
@@ -701,6 +703,11 @@ visionRun() {
 		}
 		; Level up...
 		if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
+			if (!hasBomberBuff and zone > 2930) {
+				getBuff(imgMax, hasBomberBuff, skillSearch)
+			} else if (!hasGogBuff and zone > 3210) {
+				getBuff(imgGog, hasGogBuff, skillSearch)
+			}
 			if (skillSearch) {
 				; Aquire possible new skills
 				while (locateImage(imgSkill, xSkill, ySkill)) {
@@ -738,6 +745,15 @@ visionRun() {
 	stopMonitoring()
 
 	showSplash("Vision run completed.")
+}
+
+getBuff(image, byref hasBuff, byref skillSearch) {
+	scrollToBottom()
+	if (upLocator(image, image.file, xImg, yImg)) {
+		ctrlClick(xImg-320, yImg+43, 2, 1, 1) ; hire
+		skillSearch := true
+	}
+	hasBuff := true
 }
 
 loopSpeedRun() {
