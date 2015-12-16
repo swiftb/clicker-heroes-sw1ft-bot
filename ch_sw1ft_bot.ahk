@@ -749,7 +749,7 @@ visionRun() {
 
 getBuff(image, byref hasBuff, byref skillSearch) {
 	scrollToBottom()
-	if (upLocator(image, image.file, xImg, yImg)) {
+	if (upLocator(image, image.file, xImg, yImg, 5, 1)) {
 		ctrlClick(xImg-320, yImg+43, 2, 1, 1) ; hire
 		skillSearch := true
 	}
