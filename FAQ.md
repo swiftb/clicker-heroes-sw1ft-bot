@@ -39,17 +39,20 @@
 
 ## General
 
+**Q:** Changing the settings files do nothing!?  
+**A:** Make sure you are __NOT__ editing the system default settings. See __Starting the bot__ in the [README](README.md).
+
 **Q:** The bot seem to miss-click, do I need to update any coordinates?  
 **A1:** If you have moved or re-sized the client window, just hit <kbd>Alt+F6</kbd> and try again.  
 **A2:** If you run in the browser, make sure the `browserTopMargin` setting is correct. See __Configuration > Mandatory lib settings__ in the [README](README.md).
 
 **Q:** I run the web client and have focus issues, why?  
-**A:** You need to run CH in one browser (e.g. Opera or Firefox), then do your normal surfing in another (e.g. Chrome).
+**A:** You need to run CH in one browser (e.g. Opera), then do your normal surfing in another (e.g. Chrome).
 
 **Q:** Why do I get an error when trying to run one of the script files?  
-**A:** Make sure you have the latest version of both [AutoHotkey][] and the bot files.
+**A:** Make sure you have the latest version of both [AutoHotkey][] and the bot.
 
-**Q:** With `saveBeforeAscending` enabled, the bot don't seem to click save after changing the file name.  
+**Q:** With `saveBeforeAscending` enabled, the bot don't click save after changing the file name.  
 **A:** Change the `saveButtonClassNN` setting
 
 **Q:** With `saveBeforeAscending` enabled, the bot changes the file name, but Windows fails to see this and tries to save with the default `clickerHeroSave.txt` name.  
