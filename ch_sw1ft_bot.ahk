@@ -812,7 +812,7 @@ speedRun() {
 	local lastStintTime := srDuration - firstStintTime - totalClickDelay
 	stints += 1
 
-	local lastStintButton := gildedRanger = 9 ? 3 : 2 ; special case for Astraea
+	local lastStintButton := gildedRanger = 14 ? 3 : 2 ; special case for Wepwawet
 
 	if (debug)
 	{
@@ -902,7 +902,7 @@ deepRun() {
 	exitThread := false
 
 	local drDuration := deepRunTime * 60
-	local button := gildedRanger = 9 ? 3 : 2 ; special case for Astraea
+	local button := gildedRanger = 14 ? 3 : 2 ; special case for Wepwawet
 	local y := yLvl + oLvl * (button - 1)
 
 	showSplash("Starting deep run...")
