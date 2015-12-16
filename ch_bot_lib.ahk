@@ -70,6 +70,7 @@ imageFilePath := "images\"
 imgSmile := {file:"smile.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 imgQuality := {file:"quality.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 imgProgression := {file:"progression.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
+imgAscend := {file:"ascend.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 
 imgClickable := {file:"clickable.png", topOffset:CZTO, leftOffset:CZLO, bottomOffset:0, rightOffset:0}
 
@@ -92,6 +93,8 @@ imgCid := {file:"cid.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOf
 imgMercedes := {file:"mercedes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgReferi := {file:"referi.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgDK := {file:"dk.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgMax := {file:"max.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgGog := {file:"gog.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgSolomon := {file:"solomon.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgGilded := {file:"gilded.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
@@ -157,18 +160,23 @@ yGildedDown := 493
 xGildedClose := 1090
 yGildedClose := 54
 
-rangers := ["Dread Knight", "Atlas", "Terra", "Phthalo", "Banana", "Lilin", "Cadmia", "Alabaster", "Astraea"]
+rangers := ["Dread Knight", "Atlas", "Terra", "Phthalo", "Banana", "Lilin", "Cadmia", "Alabaster", "Astraea", "Chiron", "Moloch", "Bomber Max", "Gog", "Wepwawet"]
 
 rangerPositions := {}
-rangerPositions[1] := {x:445, y:355}
-rangerPositions[2] := {x:675, y:355}
-rangerPositions[3] := {x:900, y:355}
-rangerPositions[4] := {x:220, y:425}
-rangerPositions[5] := {x:445, y:425}
-rangerPositions[6] := {x:675, y:425}
-rangerPositions[7] := {x:900, y:425}
-rangerPositions[8] := {x:220, y:490}
-rangerPositions[9] := {x:445, y:490}
+rangerPositions[1] := {x:445, y:290} ; Dread Knight
+rangerPositions[2] := {x:675, y:290} ; Atlas
+rangerPositions[3] := {x:900, y:290} ; Terra
+rangerPositions[4] := {x:220, y:355} ; Phthalo
+rangerPositions[5] := {x:445, y:355} ; Banana
+rangerPositions[6] := {x:675, y:355} ; Lilin
+rangerPositions[7] := {x:900, y:355} ; Cadmia
+rangerPositions[8] := {x:220, y:425} ; Alabaster
+rangerPositions[9] := {x:445, y:425} ; Astraea
+rangerPositions[10] := {x:675, y:425} ; Chiron
+rangerPositions[11] := {x:900, y:425} ; Moloch
+rangerPositions[12] := {x:220, y:490} ; Bomber Max
+rangerPositions[13] := {x:445, y:490} ; Gog
+rangerPositions[14] := {x:675, y:490} ; Wepwawet
 
 ; Buy Available Upgrades button
 xBuy := 370

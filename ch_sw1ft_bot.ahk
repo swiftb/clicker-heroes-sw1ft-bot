@@ -44,8 +44,10 @@ if (libVersion != minLibVersion) {
 	ExitApp
 }
 
-if (useConfigurationAssistant) {
-	configurationAssistant()
+if (!useImageSearch and irisLevel < 145) {
+	playWarningSound()
+	msgbox,,% script,% "Your Iris do not fulfill the minimum level requirement of 145 or higher!"
+	exit
 }
 
 clientCheck()
@@ -315,6 +317,7 @@ testLocate(image, clickCount:=5) {
 	testLocate(imgReferi, 2)
 	testSearch(imgMetalDetector, "Lvl Broyle to 100")
 	testSearch(imgGoldenClicks, "Lvl Midas to 100")
+	testSearch(imgAscend, "Lvl Amenhotep to 150")
 	testLocate(imgDK)
 	testSearch(imgFrigidEnchant, "Lvl Frostleaf to 100")
 
@@ -336,64 +339,6 @@ return
 ; -- Functions
 ; -----------------------------------------------------------------------------------------
 
-; Automatically configure initDownClicks and yLvlInit settings.
-configurationAssistant() {
-	global
-
-	if (irisLevel < 145) {
-		playWarningSound()
-		msgbox,,% script,% "Your Iris do not fulfill the minimum level requirement of 145 or higher!"
-		exit
-	}
-
-	if (irisThreshold(2010)) { ; Astraea
-		initDownClicks := [6,5,6,5,6,3]
-		yLvlInit := 241
-	} else if (irisThreshold(1760)) { ; Alabaster
-		initDownClicks := [6,6,6,5,6,3]
-		yLvlInit := 227
-	} else if (irisThreshold(1510)) { ; Cadmia
-		initDownClicks := [6,6,6,6,6,3]
-		yLvlInit := 240
-	} else if (irisThreshold(1260)) { ; Lilin
-		initDownClicks := [6,6,6,6,6,3]
-		yLvlInit := 285
-	} else if (irisThreshold(1010)) { ; Banana
-		initDownClicks := [6,7,6,7,6,3]
-		yLvlInit := 240
-	} else if (irisThreshold(760)) { ; Phthalo
-		initDownClicks := [6,7,7,6,7,3]
-		yLvlInit := 273
-	} else if (irisThreshold(510)) { ; Terra
-		initDownClicks := [7,7,7,7,7,3]
-		yLvlInit := 240
-	} else if (irisThreshold(260)) { ; Atlas
-		initDownClicks := [7,7,7,8,7,3]
-		yLvlInit := 273
-	} else { ; Dread Knight
-		initDownClicks := [7,8,7,8,7,4]
-		yLvlInit := 257
-	}
-
-	if (irisLevel < optimalLevel - 1001) {
-		local levels := optimalLevel - 1001 - irisLevel
-		playNotificationSound()
-		msgbox,,% script,% "Your Iris is " . levels . " levels below the recommended ""optimal level - 1001"" rule."
-	}
-}
-
-; Check if Iris is within a certain threshold that can cause a toggling behaviour between different settings
-irisThreshold(lvl) {
-	global
-	local upperThreshold := lvl + 19
-	local lowerThreshold := lvl - 20
-	if (irisLevel >= lowerThreshold and irisLevel < upperThreshold) {
-		playWarningSound()
-		msgbox,,% script,% "Threshold proximity warning! You should level up your Iris to " . upperThreshold . " or higher."
-	}
-	return irisLevel > lvl
-}
-
 ; Level up and upgrade all heroes
 initRun() {
 	global
@@ -403,23 +348,13 @@ initRun() {
 	reFocus()
 
 	if (!useImageSearch) {
-		if (initPlanB) {
-			local clicks := irisLevel > 1600 ? 6 : 7
-			loop 6
-			{
-				upgrade2(2)
-				scrollDown(clicks)
-			}
-			upgrade2()
-		} else {
-			upgrade(initDownClicks[1],2,,2) ; cid --> brittany
-			upgrade(initDownClicks[2]) ; fisherman --> leon
-			upgrade(initDownClicks[3]) ; seer --> mercedes
-			upgrade(initDownClicks[4],,,,2) ; bobby --> king
-			upgrade(initDownClicks[5],2,,,2) ; ice --> amenhotep
-			upgrade(initDownClicks[6],,,2) ; beastlord --> shinatobe
-			upgrade(0,,,,,true) ; grant & frostleaf
+		local clicks := irisLevel > 1600 ? 6 : 7
+		loop 6
+		{
+			upgrade(2)
+			scrollDown(clicks)
 		}
+		upgrade()
 	} else {
 		local foundDK := false
 		local xButton, yButton, xDK, yDK, x
@@ -443,7 +378,7 @@ initRun() {
 				}
 			}
 			if (foundDK) {
-				if (locateImage(imgFrigidEnchant)) {
+				if (locateImage(imgFrigidEnchant) and locateImage(imgAscend)) {
 					hasLeveledHeroes := true
 				}
 				break
@@ -457,20 +392,7 @@ initRun() {
 	return useImageSearch ? hasLeveledHeroes and locateImage(imgSkillBar) and !locateImage(imgSkillLocked) : 1
 }
 
-upgrade(times, cc1:=1, cc2:=1, cc3:=1, cc4:=1, skip:=false) {
-	global
-
-	if (!skip) {
-		ctrlClick(xLvl, yLvlInit, cc1)
-		ctrlClick(xLvl, yLvlInit + oLvl, cc2)
-	}
-	ctrlClick(xLvl, yLvlInit + oLvl*2, cc3)
-	ctrlClick(xLvl, yLvlInit + oLvl*3, cc4)
-
-	scrollDown(times)
-}
-
-upgrade2(clickCount:=1) {
+upgrade(clickCount:=1) {
 	global
 	local y := 213
 
@@ -691,6 +613,8 @@ visionRun() {
 	local isInitiated := false
 	local isClickerRunning := false
 	local hasActivatedSkills := false
+	local hasBomberBuff := false
+	local hasGogBuff := false
 
 	local xClose := 0, yClose := 0
 	local xBtn := 0, yBtn := 0, isNew := 0
@@ -719,6 +643,19 @@ visionRun() {
 			showSplashAlways("Vision run aborted!")
 			exit
 		}
+		if (mod(t, 15) = 0) {
+			; Make sure we are progressing
+			if (!locateImage(imgProgression)) {
+				showDebugSplash("Toggle progression mode")
+				toggleMode()
+			}
+			if (!isInitiated and zone > initZone) {
+				; If enough gold, run init
+				showDebugSplash("Initializing...")
+				isInitiated := initRun()
+				isResuming := true
+			}
+		}
 		; Traverse bottom up till we find the first gilded hero/ranger we can lvl up
 		if (mod(t, 90) = 0 or isResuming) {
 			if (locateGilded(xBtn, yBtn, isNew)) {
@@ -736,20 +673,11 @@ visionRun() {
 					clickPos(xClose, yClose, 1, 1)
 				} else {
 					showWarningSplash("No transitional ranger gilded?")
+					; Restart
+					scrollToZone(zone, irisLevel - 1)
+					toggleMode()
+					break
 				}
-			}
-		}
-		if (mod(t, 15) = 0) {
-			; Make sure we are progressing
-			if (!locateImage(imgProgression)) {
-				showDebugSplash("Toggle progression mode")
-				toggleMode()
-			}
-			if (!isInitiated and zone > initZone) {
-				; If enough gold, run init
-				showDebugSplash("Initializing...")
-				isInitiated := initRun()
-				isResuming := true
 			}
 		}
 		zone := getCurrentZone()
@@ -775,6 +703,11 @@ visionRun() {
 		}
 		; Level up...
 		if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
+			if (!hasBomberBuff and zone > 2930) {
+				getBuff(imgMax, hasBomberBuff, skillSearch)
+			} else if (!hasGogBuff and zone > 3210) {
+				getBuff(imgGog, hasGogBuff, skillSearch)
+			}
 			if (skillSearch) {
 				; Aquire possible new skills
 				while (locateImage(imgSkill, xSkill, ySkill)) {
@@ -812,6 +745,15 @@ visionRun() {
 	stopMonitoring()
 
 	showSplash("Vision run completed.")
+}
+
+getBuff(image, byref hasBuff, byref skillSearch) {
+	scrollToBottom()
+	if (upLocator(image, image.file, xImg, yImg, 5, 1)) {
+		ctrlClick(xImg-320, yImg+43, 2, 1, 1) ; hire
+		skillSearch := true
+	}
+	hasBuff := true
 }
 
 loopSpeedRun() {
@@ -858,19 +800,7 @@ speedRun() {
 	local zoneLvl := gildedRanger * lMax + lvlAdjustment ; approx zone lvl where we can buy our gilded ranger @ lvl 150
 	local lvls := zoneLvl - irisLevel ; lvl's to get there
 
-	local firstStintButton := 1
 	local firstStintTime := 0
-	local midStintTime := 0
-
-	if (lvls > lMax + 2*60*lMax/tMax) ; add a mid stint if needed
-	{
-		midStintTime := tMax
-		lvls -= lMax
-		stints += 1
-	} else if (lvls > lMax) {
-		firstStintButton := 2
-	}
-	
 	if (lvls > 0)
 	{
 		firstStintTime := ceil(lvls * tMax / lMax)
@@ -879,10 +809,10 @@ speedRun() {
 
 	local srDuration := speedRunTime * 60
 	local totalClickDelay := nextHeroDelay * stints
-	local lastStintTime := srDuration - firstStintTime - midStintTime - totalClickDelay
+	local lastStintTime := srDuration - firstStintTime - totalClickDelay
 	stints += 1
 
-	local lastStintButton := gildedRanger = 9 ? 3 : 2 ; special case for Astraea
+	local lastStintButton := gildedRanger = 14 ? 3 : 2 ; special case for Wepwawet
 
 	if (debug)
 	{
@@ -890,27 +820,18 @@ speedRun() {
 		local s := "    " ; Reddit friendly formatting
 		local output := ""
 		output .= s . "irisLevel = " . irisLevel . nl
-		output .= s . "optimalLevel = " . optimalLevel . nl
 		output .= s . "speedRunTime = " . speedRunTime . nl
 		if (hybridMode) {
 			output .= s . "deepRunTime = " . deepRunTime . nl
 		}
 		output .= s . "gildedRanger = " . rangers[gildedRanger] . nl
-		output .= s . "-----------------------------" . nl
-		output .= s . "initDownClicks = "
-		for i, e in initDownClicks {
-			output .= e " "
-		}
-		output .= nl
-		output .= s . "yLvlInit = " . yLvlInit . nl
 		output .= s . "firstStintAdjustment = " . firstStintAdjustment . "s" . nl
+		output .= s . "firstStintButton = " . firstStintButton . nl
 		output .= s . "-----------------------------" . nl
 		output .= s . "lvlAdjustment = " . lvlAdjustment . nl
 		output .= s . "zoneLvl = " . zoneLvl . nl
 		output .= s . "lvls = " . lvls . nl
-		output .= s . "firstStintButton = " . firstStintButton . nl
 		output .= s . "firstStintTime = " . formatSeconds(firstStintTime) . nl
-		output .= s . "midStintTime = " . formatSeconds(midStintTime) . nl
 		output .= s . "lastStintTime = " . formatSeconds(lastStintTime) . nl
 		output .= s . "totalClickDelay = " . formatSeconds(totalClickDelay) . nl
 
@@ -921,24 +842,11 @@ speedRun() {
 
 	showSplash("Starting speed run...")
 
-	if (irisLevel < 2 * lMax + 10) ; Iris high enough to start with a ranger?
-	{
-		switchToCombatTab()
-		scrollDown(initDownClicks[1])
-		toggleMode(!useMidasStart) ; toggle to progression mode
-		lvlUp(firstStintTime, 0, 3, ++stint, stints) ; nope, let's bridge with Samurai
-		scrollToBottom()
-	} else {
-		scrollToBottom()
-		toggleMode(!useMidasStart) ; toggle to progression mode
-		if (firstStintTime > 0) {
-			lvlUp(firstStintTime, 1, firstStintButton, ++stint, stints)
-			scrollWayDown(3)
-		}
-	}
-	if (midStintTime > 0) {
-		lvlUp(midStintTime, 1, 2, ++stint, stints)
-		scrollWayDown(2)
+	scrollToBottom()
+	toggleMode(!useMidasStart) ; toggle to progression mode
+	if (firstStintTime > 0) {
+		lvlUp(firstStintTime, 1, firstStintButton, ++stint, stints)
+		scrollWayDown(3)
 	}
 	lvlUp(lastStintTime, 1, lastStintButton, ++stint, stints)
 
@@ -972,8 +880,11 @@ lvlUp(seconds, buyUpgrades, button, stint, stints) {
 			exit
 		}
 		; Close possible auto-opened buy more rubies window
-		if (mod(t, 30) = 0) {
+		if (mod(t, 60) = 0) {
 			clickPos(xBuyRubiesClose, yBuyRubiesClose)
+		}
+		if (t = 30) {
+			buyAvailableUpgrades() ; safety upgrade
 		}
 		if (mod(t, lvlUpDelay) = 0) {
 			ctrlClick(xLvl, y, 1, 0)
@@ -991,7 +902,7 @@ deepRun() {
 	exitThread := false
 
 	local drDuration := deepRunTime * 60
-	local button := gildedRanger = 9 ? 3 : 2 ; special case for Astraea
+	local button := gildedRanger = 14 ? 3 : 2 ; special case for Wepwawet
 	local y := yLvl + oLvl * (button - 1)
 
 	showSplash("Starting deep run...")
@@ -1015,7 +926,7 @@ deepRun() {
 			exit
 		}
 		; Close possible auto-opened buy more rubies window
-		if (mod(t, 30) = 0) {
+		if (mod(t, 60) = 0) {
 			clickPos(xBuyRubiesClose, yBuyRubiesClose)
 		}
 		if (deepRunClicks) {
@@ -1182,7 +1093,10 @@ ascend(autoYes:=false) {
 		playWarningSound()
 		msgbox, 260,% script,Salvage Junk Pile & Ascend? ; default no
 		ifmsgbox no
+		{
+			stopMonitoring()
 			exit
+		}
 	}
 
 	salvageJunkPile() ; must salvage junk relics before ascending
@@ -1289,9 +1203,10 @@ raid(doSpend:=0, attempts:=1) {
 }
 
 clickAwayImage(image) {
+	local xImg := 0, yImg := 0
 	if (locateImage(image)) {
-		while (locateImage(image, x, y)) {
-			clickPos(x, y, 1, 1)
+		while (locateImage(image, xImg, yImg)) {
+			clickPos(xImg, yImg, 1, 1)
 			sleep 250
 		}
 		sleep 1000
