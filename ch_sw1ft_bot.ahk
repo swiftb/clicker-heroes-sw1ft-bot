@@ -613,8 +613,8 @@ visionRun() {
 	local isInitiated := false
 	local isClickerRunning := false
 	local hasActivatedSkills := false
-	local hasBomberBuff := false
-	local hasGogBuff := false
+	local hasBomberBuff := gildedRanger = 12 ? true : false
+	local hasGogBuff := gildedRanger = 13 ? true : false
 
 	local xClose := 0, yClose := 0
 	local xBtn := 0, yBtn := 0, isNew := 0
