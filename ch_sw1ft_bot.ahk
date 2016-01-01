@@ -846,7 +846,7 @@ speedRun() {
 	toggleMode(!useMidasStart) ; toggle to progression mode
 	if (firstStintTime > 0) {
 		lvlUp(firstStintTime, 1, firstStintButton, ++stint, stints)
-		scrollWayDown(3)
+		scrollWayDown(5)
 	}
 	lvlUp(lastStintTime, 1, lastStintButton, ++stint, stints)
 
