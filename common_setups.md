@@ -5,14 +5,15 @@ Example settings for different styles of play.
 ## Overview
 
 * [Speed Run](#speed-run)
-* [Deep Run](#deep-run)
 * [Vision Run](#vision-run)
+* [Early Game Vision Run](#early-game-vision-run)
+* [Deep Run](#deep-run)
 * [Do not disturb](#do-not-disturb)
 * [Dual monitors](#dual-monitors)
 
 ## Global Settings
 
-    optimalLevel := 2000
+    gildedRanger := 6 ; Lilin
 
     autoAscend := true
     saveBeforeAscending := true
@@ -20,7 +21,6 @@ Example settings for different styles of play.
 ## Speed Run
 
     useImageSearch := false
-    gildedRanger := 6 ; Lilin
 
 #### Idle
 
@@ -46,19 +46,11 @@ Example settings for different styles of play.
     speedRunStartCombo := comboHybridIdle
     deepRunCombo := comboHybridActive
 
-## Deep Run
-
-    deepRunTime := 60 * 8
-    deepRunClicks := true
-
-    deepRunCombo := comboEDR
-
 ## Vision Run
 
     useImageSearch := true
-    gildedRanger := 6 ; Lilin
 
-    clickableHuntDelay := 8
+    clickableHuntDelay := 5
     stopHuntThreshold := 0
 
     useMidasStart := true
@@ -67,7 +59,7 @@ Example settings for different styles of play.
 #### Idle
 
     irisLevel := 1029
-    endLvlIdle := optimalLevel
+    endLvlIdle := 2000
     endLvlActive := 0
 
     activateSkillsAtStart := false
@@ -76,7 +68,7 @@ Example settings for different styles of play.
 #### Hybrid
 
     irisLevel := 1199
-    endLvlIdle := optimalLevel
+    endLvlIdle := 2000
     endLvlActive := 2200
 
     activateSkillsAtStart := true
@@ -91,12 +83,72 @@ Example settings for different styles of play.
 
     irisLevel := 1669
     endLvlIdle := 0
-    endLvlActive := irisLevel + 630
+    endLvlActive := irisLevel + 1 + 630
 
     activateSkillsAtStart := false
     deepRunClicks := true
 
     deepRunCombo := comboMidas
+
+## Early Game Vision Run
+
+    useImageSearch := true
+    earlyGameMode := true
+
+    deepRunClicks := true
+    deepRunCombo := comboEarlyGame
+
+    clickableHuntDelay := 5
+    stopHuntThreshold := 0
+
+    clickerDuration := 30
+
+#### Idle
+
+    endLvlIdle := 500
+    endLvlActive := 10 ; need this unless Khrysos lvl > 0
+
+    lastFarmZone := 129
+
+#### Active
+
+    endLvlIdle := 0
+    endLvlActive := 500
+
+    lastFarmZone := 139
+
+## Deep Run
+
+    deepRunTime := 60 * 8
+    deepRunClicks := true
+
+    deepRunCombo := comboEDR
+
+## Do not disturb
+
+    autoAscendDelay := 0
+    displayRelicsDuration := 0
+
+    screenShotRelics := false
+    saveBeforeAscending := false
+
+    global playNotificationSounds := false
+    global playWarningSounds := false
+    global showProgressBar := false
+
+    showSeverityLevel := 0 ; ch_bot_lib_settings.ahk
+
+## Dual monitors
+
+#### Left monitor
+
+    xSplash := A_ScreenWidth // 2 - wSplash // 2 - A_ScreenWidth
+    xProgressBar := 20 - A_ScreenWidth
+
+#### Right monitor
+
+    xSplash := A_ScreenWidth // 2 - wSplash // 2 + A_ScreenWidth
+    xProgressBar := 20 + A_ScreenWidth
 
 ## Skill combos
 
@@ -111,6 +163,8 @@ Example settings for different styles of play.
     27:30 : 2
     30:00 : repeat
 
+*****
+
     comboHybridIdle := [15*60, "1-2-3-4-5-7-6-9-8"] ; energize >
    
     comboHybridActive := [30, "5", "", "", "3", "", "", "8-9-2-5-7", "4", "", "3", "", "1-2"] ; > golden clicks, 6 minutes
@@ -121,6 +175,8 @@ Example settings for different styles of play.
     03:30 : 4
     04:30 : 3
     05:30 : 1-2
+
+*****
 
     ; ~18 minutes active
     comboMidas := [30, "9-3-8-6", "2", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2", "", "4", "", "", "2-5", "", "", "", "", "", "3", "", "", "8-9-3-5", "", "", "2-4-7", "", "1", "", ""]
@@ -136,28 +192,3 @@ Example settings for different styles of play.
     15:00 : 8-9-3-5
     16:30 : 2-4-7
     17:30 : 1
-
-## Do not disturb
-
-    autoAscendDelay := 0
-    displayRelicsDuration := 0
-
-    screenShotRelics := false
-    saveBeforeAscending := false
-
-    global playNotificationSounds := false
-    global playWarningSounds := false
-    global showSplashTexts := false
-    global showProgressBar := false
-
-## Dual monitors
-
-#### Left monitor
-
-    xSplash := A_ScreenWidth // 2 - wSplash // 2 - A_ScreenWidth
-    xProgressBar := 20 - A_ScreenWidth
-
-#### Right monitor
-
-    xSplash := A_ScreenWidth // 2 - wSplash // 2 + A_ScreenWidth
-    xProgressBar := 20 + A_ScreenWidth

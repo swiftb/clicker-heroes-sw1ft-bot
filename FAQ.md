@@ -2,11 +2,6 @@
 
 ## Speed Run
 
-**Q:** The bot missed to buy some of the early heroes!?  
-**A1:** Make sure you don't have any heroes or rangers minimized.  
-**A2:** If you reload the script with <kbd>Alt+F5</kbd> and get a "Threshold proximity warning". Up your Iris to (at least) the suggested level.  
-**A3:** As a last resort, enable the `initPlanB` option.
-
 **Q:** Why didn’t the bot level my gilded ranger?  
 **A:** Use the Siyalatas [regilding chart][] to make sure you are gilded correctly and the [Ancients Calculator][] to optimally level your Ancients. Any transitional hero/ranger used by the bot must also be gilded.  
 
@@ -20,8 +15,8 @@
 **A1:** It needs a *clickable* to get going, so leave them alone!  
 **A2:** If `activateSkillsAtStart` is set to `false`, you might need a higher Chronos to not get stuck at the start before Idle kicks in.
 
-**Q:** Is the Speed run always 3 stages?  
-**A:** No. Depending on your Iris, it can be 1-3 stages. One if Iris is high enough to start right away on your gilded ranger. Two if the time needed to reach the gilded ranger is less than ~9 minutes, otherwise three.
+**Q:** Is the Speed run always two stages?  
+**A:** No. Depending on your Iris, it can be one or two stages. One if Iris is high enough to start right away on your gilded ranger, otherwise two.
 
 ## Hybrid/Deep Run
 
@@ -44,17 +39,20 @@
 
 ## General
 
+**Q:** Changing the settings files do nothing!?  
+**A:** Make sure you are __NOT__ editing the system default settings. See __Starting the bot__ in the [README](README.md).
+
 **Q:** The bot seem to miss-click, do I need to update any coordinates?  
 **A1:** If you have moved or re-sized the client window, just hit <kbd>Alt+F6</kbd> and try again.  
 **A2:** If you run in the browser, make sure the `browserTopMargin` setting is correct. See __Configuration > Mandatory lib settings__ in the [README](README.md).
 
 **Q:** I run the web client and have focus issues, why?  
-**A:** You need to run CH in one browser (e.g. Opera or Firefox), then do your normal surfing in another (e.g. Chrome).
+**A:** You need to run CH in one browser (e.g. Opera), then do your normal surfing in another (e.g. Chrome).
 
 **Q:** Why do I get an error when trying to run one of the script files?  
-**A:** Make sure you have the latest version of both [AutoHotkey][] and the bot files.
+**A:** Make sure you have the latest version of both [AutoHotkey][] and the bot.
 
-**Q:** With `saveBeforeAscending` enabled, the bot don't seem to click save after changing the file name.  
+**Q:** With `saveBeforeAscending` enabled, the bot don't click save after changing the file name.  
 **A:** Change the `saveButtonClassNN` setting
 
 **Q:** With `saveBeforeAscending` enabled, the bot changes the file name, but Windows fails to see this and tries to save with the default `clickerHeroSave.txt` name.  
@@ -74,5 +72,5 @@
 [AutoHotkey]: http://ahkscript.org/
 [Ancients Calculator]: http://hsoptimizer.github.io/ancient/
 [regilding chart]: https://redd.it/3frj62
-[home]: http://redd.it/3a3bmy
+[home]: https://redd.it/3wxwfu
 [Clicker Lister]: http://dobruj01.github.io/clicker-lister/

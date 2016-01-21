@@ -26,9 +26,10 @@ SetBatchLines, -1
 
 scriptName=Monster Clicker
 scriptVersion=1.3
-minLibVersion=1.4
+minLibVersion=1.5
 
 script := scriptName . " v" . scriptVersion
+tag := "[Clicker] "
 
 short := 21 ; ms
 long := 2000 ; throttled delay
@@ -51,9 +52,11 @@ IfNotExist, monster_clicker_settings.ahk
 #Include *i monster_clicker_settings.ahk
 
 if (libVersion < minLibVersion) {
-	showWarningSplash("The bot lib version must be " . minLibVersion . " or higher!")
+	showWarningSplash(tag . "The bot lib version must be " . minLibVersion . " or higher!")
 	ExitApp
 }
+
+logVariable("script", script)
 
 clientCheck()
 
@@ -95,7 +98,7 @@ clickerStart() {
 	local monsterClicks := 0
 	local startTime := A_TickCount
 
-	showDebugSplash("Starting...")
+	showSplash(tag . "Start")
 
 	if (clickDuration > 0) {
 		setTimer, stopClicking, % -clickDuration * 60 * 1000 ; run only once
@@ -112,7 +115,7 @@ clickerStart() {
 
 	local elapsedTime := (A_TickCount - startTime) / 1000
 	local clicksPerSecond := round(monsterClicks / elapsedTime, 2)
-	showSplash("Average CPS: " . clicksPerSecond, 3)
+	showSplash(tag . "Duration: " . formatSeconds(elapsedTime) . ", CPS: " . clicksPerSecond)
 }
 
 clickerPause() {
@@ -134,7 +137,7 @@ clickerStatus() {
 }
 
 clickerReload() {
-	showSplashAlways("Reloading clicker...", 1)
+	showUserSplash(tag . "Script Reload", 1)
 	Reload
 }
 

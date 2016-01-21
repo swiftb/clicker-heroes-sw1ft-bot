@@ -15,11 +15,12 @@ SetControlDelay, -1
 
 scriptName=CH Sw1ft Bot
 scriptVersion=3.x
-minLibVersion=1.4
+minLibVersion=1.5
 
 script := scriptName . " v" . scriptVersion
 
-clickerName := "monster_clicker.ahk - AutoHotkey"
+clickerScript := "monster_clicker.ahk"
+clickerName := clickerScript . " - AutoHotkey"
 
 scheduleReload := false
 scheduleStop := false
@@ -44,17 +45,33 @@ if (libVersion != minLibVersion) {
 	ExitApp
 }
 
-if (useConfigurationAssistant) {
-	configurationAssistant()
+if (!useImageSearch and irisLevel < 145) {
+	playWarningSound()
+	msgbox,,% script,% "Your Iris do not fulfill the minimum level requirement of 145 or higher!"
+	exit
 }
+
+SysGet, VirtualScreenWidth, 78
+SysGet, VirtualScreenHeight, 79
+
+logVariable("A_AhkVersion", A_AhkVersion)
+logVariable("A_OSVersion", A_OSVersion)
+logVariable("A_ScreenWidth", A_ScreenWidth)
+logVariable("A_ScreenHeight", A_ScreenHeight)
+if (VirtualScreenWidth > A_ScreenHeight) {
+	logVariable("VirtualScreenWidth", VirtualScreenWidth)
+	logVariable("VirtualScreenHeight", VirtualScreenHeight)
+}
+logVariable("A_ScreenDPI", A_ScreenDPI )
+logVariable("script", script)
 
 clientCheck()
 
 if (deepRunClicks) {
-	Run, "%A_ScriptDir%\monster_clicker.ahk",, UseErrorLevel
+	Run, "%A_ScriptDir%\%clickerScript%",, UseErrorLevel
 	if (ErrorLevel != 0) {
 		playWarningSound()
-		msgbox,,% script,% "Failed to auto-start monster_clicker.ahk (system error code = " . A_LastError . ")!"
+		msgbox,,% script,% "Failed to auto-start " . clickerScript . " (system error code = " . A_LastError . ")!"
 	}
 }
 
@@ -78,17 +95,17 @@ return
 
 ; -- Main Hotkeys -------------------------------------------------------------------------
 
-; Start the Speed run loop with Ctrl+F1
+; Start the Speed Run loop with Ctrl+F1
 ^F1::
 	loopSpeedRun()
 return
 
-; Start a Deep run with Ctrl+F2 (expecting to start where a Speed run finishes)
+; Start a Deep Run with Ctrl+F2 (expecting to start where a Speed Run finishes)
 ^F2::
 	deepRun()
 return
 
-; Start a Vision run loop with Ctrl+F3
+; Start a Vision Run loop with Ctrl+F3
 ^F3::
 	loopVisionRun()
 return
@@ -99,7 +116,7 @@ return
 
 ; Abort any active run or initiated ascension with Alt+Pause
 !Pause::
-	showSplashAlways("Aborting...")
+	showUserSplash("Aborting...")
 	exitThread := true
 return
 
@@ -123,6 +140,7 @@ return
 ; Re-initialize coordinates (needed after moving or re-sizing the client window)
 !F6::
 	critical
+	showUserSplash("Re-initialize coordinates... ")
 	clientCheck()
 	clickerInitialize()
 return
@@ -142,13 +160,13 @@ return
 ; Set previous ranger as re-gild target
 ^F6::
 	reGildRanger := reGildRanger > rangers.MinIndex() ? reGildRanger-1 : reGildRanger
-	showSplashAlways("Re-gild ranger set to " . rangers[reGildRanger])
+	showUserSplash("Re-gild ranger set to " . rangers[reGildRanger])
 return
 
 ; Set next ranger as re-gild target
 ^F7::
 	reGildRanger := reGildRanger < rangers.MaxIndex() ? reGildRanger+1 : reGildRanger
-	showSplashAlways("Re-gild ranger set to " . rangers[reGildRanger])
+	showUserSplash("Re-gild ranger set to " . rangers[reGildRanger])
 return
 
 ; Move "reGildCount" gilds to the target ranger
@@ -199,10 +217,6 @@ return
 	toggleFlag("autoAscend", autoAscend)
 return
 
-+^F2::
-	toggleFlag("screenShotRelics", screenShotRelics)
-return
-
 +^F6::
 	toggleFlag("playNotificationSounds", playNotificationSounds)
 return
@@ -211,16 +225,8 @@ return
 	toggleFlag("playWarningSounds", playWarningSounds)
 return
 
-+^F8::
-	toggleFlag("showSplashTexts", showSplashTexts)
-return
-
 +^F11::
 	toggleFlag("saveBeforeAscending", saveBeforeAscending)
-return
-
-+^F12::
-	toggleFlag("debug", debug)
 return
 
 ; -- Test Hotkeys -------------------------------------------------------------------------
@@ -236,7 +242,7 @@ return
 	switchToCombatTab()
 return
 
-; Alt+F1 to F4 are here to test the individual parts of the full speed run loop
+; Alt+F1 to F4 are here to test the individual parts of the full Speed Run loop
 
 !F1::
 	getClickable()
@@ -255,12 +261,12 @@ return
 	ascend(autoAscend)
 return
 
-; Test one Midas start with Win+F1
+; Test one Midas Start with Win+F1
 #F1::
 	midasStart()
 return
 
-; Loop Midas start > init run > ascend, twice
+; Loop Midas Start > Init Run > Ascend, twice
 #F2::
 	loop 2
 	{
@@ -286,7 +292,7 @@ testLocate(image, clickCount:=5) {
 	global
 	local x, y
 	msgbox,,% script,% "Locate " . image.file . "?"
-	if (locator(image, image.file, x, y, clickCount, 1)) {
+	if (locator(image, image.file, x, y, 1, clickCount)) { ; one retry
 		msgbox,,% script,% "Success! (" . x . ", " . y . ")"
 	} else {
 		msgbox,,% script,% "Failed!"
@@ -317,7 +323,6 @@ testLocate(image, clickCount:=5) {
 	testSearch(imgGoldenClicks, "Lvl Midas to 100")
 	testSearch(imgAscend, "Lvl Amenhotep to 150")
 	testLocate(imgDK)
-	testSearch(imgFrigidEnchant, "Lvl Frostleaf to 100")
 
 	msgbox,,% script,% "Locate " . imgGilded.file . "?"
 	if (locateGilded(x, y, isNew)) {
@@ -337,99 +342,38 @@ return
 ; -- Functions
 ; -----------------------------------------------------------------------------------------
 
-; Automatically configure initDownClicks and yLvlInit settings.
-configurationAssistant() {
-	global
-
-	if (irisLevel < 145) {
-		playWarningSound()
-		msgbox,,% script,% "Your Iris do not fulfill the minimum level requirement of 145 or higher!"
-		exit
-	}
-
-	if (irisThreshold(2010)) { ; Astraea
-		initDownClicks := [6,5,6,5,6,3]
-		yLvlInit := 241
-	} else if (irisThreshold(1760)) { ; Alabaster
-		initDownClicks := [6,6,6,5,6,3]
-		yLvlInit := 227
-	} else if (irisThreshold(1510)) { ; Cadmia
-		initDownClicks := [6,6,6,6,6,3]
-		yLvlInit := 240
-	} else if (irisThreshold(1260)) { ; Lilin
-		initDownClicks := [6,6,6,6,6,3]
-		yLvlInit := 285
-	} else if (irisThreshold(1010)) { ; Banana
-		initDownClicks := [6,7,6,7,6,3]
-		yLvlInit := 240
-	} else if (irisThreshold(760)) { ; Phthalo
-		initDownClicks := [6,7,7,6,7,3]
-		yLvlInit := 273
-	} else if (irisThreshold(510)) { ; Terra
-		initDownClicks := [7,7,7,7,7,3]
-		yLvlInit := 240
-	} else if (irisThreshold(260)) { ; Atlas
-		initDownClicks := [7,7,7,8,7,3]
-		yLvlInit := 273
-	} else { ; Dread Knight
-		initDownClicks := [7,8,7,8,7,4]
-		yLvlInit := 257
-	}
-
-	if (irisLevel < optimalLevel - 1001) {
-		local levels := optimalLevel - 1001 - irisLevel
-		playNotificationSound()
-		msgbox,,% script,% "Your Iris is " . levels . " levels below the recommended ""optimal level - 1001"" rule."
-	}
-}
-
-; Check if Iris is within a certain threshold that can cause a toggling behaviour between different settings
-irisThreshold(lvl) {
-	global
-	local upperThreshold := lvl + 19
-	local lowerThreshold := lvl - 20
-	if (irisLevel >= lowerThreshold and irisLevel < upperThreshold) {
-		playWarningSound()
-		msgbox,,% script,% "Threshold proximity warning! You should level up your Iris to " . upperThreshold . " or higher."
-	}
-	return irisLevel > lvl
-}
-
 ; Level up and upgrade all heroes
-initRun() {
+initRun(initMode:=0) {
 	global
-	local hasLeveledHeroes := false
+	local hasAscendButton := false
+	local hasSkillBar := false
+	local hasNoSkillLocked := false
+
+	showDebugSplash("Init Run @ Lvl " . getCurrentZone())
 
 	switchToCombatTab()
 	reFocus()
 
 	if (!useImageSearch) {
-		if (initPlanB) {
-			local clicks := irisLevel > 1600 ? 6 : 7
-			loop 6
-			{
-				upgrade2(2)
-				scrollDown(clicks)
-			}
-			upgrade2()
-		} else {
-			upgrade(initDownClicks[1],2,,2) ; cid --> brittany
-			upgrade(initDownClicks[2]) ; fisherman --> leon
-			upgrade(initDownClicks[3]) ; seer --> mercedes
-			upgrade(initDownClicks[4],,,,2) ; bobby --> king
-			upgrade(initDownClicks[5],2,,,2) ; ice --> amenhotep
-			upgrade(initDownClicks[6],,,2) ; beastlord --> shinatobe
-			upgrade(0,,,,,true) ; grant & frostleaf
+		local clicks := irisLevel > 1600 ? 6 : 7
+		loop 6
+		{
+			upgrade(2)
+			scrollDown(clicks)
 		}
+		upgrade()
 	} else {
 		local foundDK := false
 		local xButton, yButton, xDK, yDK, x
+		local clickCount := initMode = 1 ? 1 : 2
 
 		locateImage(imgCoin, xButton, yButton) ; get a x coordinate for the hire/lvl up buttons
 
-		loop 9 ; pages
+		loop 10 ; pages
 		{
-			foundDK := locateImage(imgDK, xDK, yDK)
+			if (locateImage(imgDK, xDK, yDK) or locateImage(imgDKG, xDK, yDK)) {
+				foundDK := true
+			}
 			loop 5 ; attempts per page
 			{
 				if (locateImage(imgDimmedSkill, x, yButton)
@@ -438,14 +382,14 @@ initRun() {
 						; Don't level anything below Frostleaf
 						continue
 					}
-					ctrlClick(xButton, yButton, 2, 1, 1)
+					ctrlClick(xButton, yButton, clickCount, 1, 1)
 				} else {
 					break
 				}
 			}
 			if (foundDK) {
-				if (locateImage(imgFrigidEnchant) and locateImage(imgAscend)) {
-					hasLeveledHeroes := true
+				if (locateImage(imgAscend)) {
+					hasAscendButton := true
 				}
 				break
 			}
@@ -455,23 +399,22 @@ initRun() {
 	scrollToBottom()
 	buyAvailableUpgrades()
 
-	return useImageSearch ? hasLeveledHeroes and locateImage(imgSkillBar) and !locateImage(imgSkillLocked) : 1
-}
-
-upgrade(times, cc1:=1, cc2:=1, cc3:=1, cc4:=1, skip:=false) {
-	global
-
-	if (!skip) {
-		ctrlClick(xLvl, yLvlInit, cc1)
-		ctrlClick(xLvl, yLvlInit + oLvl, cc2)
+	if (useImageSearch and initMode = 0) {
+		if (locateImage(imgSkillBar)) {
+			hasSkillBar := true
+		}
+		if (!locateImage(imgSkillLocked)) {
+			hasNoSkillLocked := true
+		}
+		logVariable("hasAscendButton", hasAscendButton, true)
+		logVariable("hasSkillBar", hasSkillBar, true)
+		logVariable("hasNoSkillLocked", hasNoSkillLocked, true)
 	}
-	ctrlClick(xLvl, yLvlInit + oLvl*2, cc3)
-	ctrlClick(xLvl, yLvlInit + oLvl*3, cc4)
 
-	scrollDown(times)
+	return useImageSearch ? hasAscendButton and hasSkillBar and hasNoSkillLocked : 1
 }
 
-upgrade2(clickCount:=1) {
+upgrade(clickCount:=1) {
 	global
 	local y := 213
 
@@ -499,6 +442,8 @@ midasStart() {
 
 	local fromZone := midasExtraZone > 0 ? midasExtraZone : midasZone1
 
+	showDebugSplash("Midas Start")
+
 	switchToCombatTab()
 	startMonitoring()
 	reFocus()
@@ -508,7 +453,7 @@ midasStart() {
 			clickPos(xMonster, yMonster) ; Break idle
 			sleep 30
 		}
-		scrollToZone(1, midasZone1)
+		scrollZone(1, midasZone1)
 		ctrlClick(xl, yl) ; Cid x 100
 		clickPos(xSkill + oSkill, ySkillTop) ; Clickstorm
 		sleep % zzz
@@ -519,12 +464,12 @@ midasStart() {
 		ctrlClick(xl, yl+oLvl) ; Natalia x 100
 
 		if (midasExtraZone > 0) {
-			scrollToZone(midasZone1, midasExtraZone)
+			scrollZone(midasZone1, midasExtraZone)
 			horizontalSkills(xSkill, ySkill2nd, 4)
 			sleep % midasExtraDelay * 1000
 		}
 		scrollDown(8)
-		scrollToZone(fromZone, midasZone2)
+		scrollZone(fromZone, midasZone2)
 		ctrlClick(xl, yl+oLvl) ; Broyle x 100
 		sleep % midasDelay2 * 1000
 		ctrlClick(xl, yl+oLvl*3) ; Midas x 100
@@ -534,34 +479,30 @@ midasStart() {
 		activateSkills("1-4-5")
 		sleep % coinPickUpDelay * 1000
 	} else {
-		if (locateImage(imgProgression)) {
-			showDebugSplash("Toggle farm mode")
-			toggleMode()
-		}
-		scrollToZone(1, midasZone1)
-		locator(imgCid, "Cid", xl, yl)
+		setFarmMode()
+		scrollToZone(midasZone1)
+		locator(imgCid, "Cid", xl, yl, -1) ; endless retries
 		buySkill(imgClickstorm, xl-137, yl+60, 2, 7)
 
 		scrollToBottom()
-		upLocator(imgCoin, "Coin", xl, yl)
+		upLocator(imgCoin, "Coin", xl, yl, -1) ; endless retries
 		ctrlClick(xl, yl, 1, 1, 1)
 		sleep % midasDelay1 * 1000
 		ctrlClick(xl, yl, 1, 1, 1)
 		if (midasExtraZone > 0) {
-			scrollToZone(midasZone1, midasExtraZone)
+			scrollToZone(midasExtraZone)
 			sleep % midasExtraDelay * 1000
 			ctrlClick(xl, yl, 1, 1, 1)
 		}
 		if (locateImage(imgMercedes)) {
 			scrollDown(8)
 		} else {
-			showDebugSplash("Unknown location, relocating...")
 			switchToCombatTab()
 			scrollDown(18)
 		}
-		scrollToZone(fromZone, midasZone2)
-		if (!locator(imgReferi, "Referi", xl, yl, 2, 1)) {
-			showDebugSplash("Failed Midas start!")
+		scrollToZone(midasZone2)
+		if (!locator(imgReferi, "Referi", xl, yl, 1, 2)) { ; one retry
+			showWarningSplash("Failed Midas start!")
 			return
 		}
 		xl -= 155
@@ -570,7 +511,7 @@ midasStart() {
 		sleep % midasDelay2 * 1000
 		buySkill(imgGoldenClicks, xl, yl-oLvl, 5, 6)
 
-		toggleMode()
+		setProgressionMode()
 		activateSkills("1-4-5")
 		sleep % coinPickUpDelay * 1000
 		zClick(xl, yl-oLvl, 1, 1) ; Midas 125
@@ -624,7 +565,7 @@ getState() {
 	if (!locateImage(imgSmile)) {
 		return 0 ; vision, but not finding anything
 	}
-	if (!locateImage(imgProgression) and getCurrentZone() < irisLevel) {
+	if (!earlyGameMode and !locateImage(imgProgression) and getCurrentZone() < irisLevel) {
 		return 1 ; ready to start
 	}
 	if (getCurrentZone() < getEndZone()) {
@@ -636,8 +577,50 @@ getState() {
 
 loopVisionRun() {
 	global
+	if (earlyGameMode) {
+		oldEndLvlIdle := endLvlIdle
+		oldEndLvlActive := endLvlActive
+	}
 	local state := 0
-	showSplash("Starting vision runs...")
+
+	showUserSplash("Starting Vision Runs!")
+
+	logVariable("browser", browser)
+	logVariable("browserTopMargin", browserTopMargin)
+	logVariable("useImageSearch", useImageSearch, true)
+	logVariable("earlyGameMode", earlyGameMode, true)
+	if (!earlyGameMode) {
+		logVariable("irisLevel", irisLevel)
+		logVariable("gildedRanger", rangers[gildedRanger])
+	}
+	logVariable("endLvlIdle", endLvlIdle)
+	logVariable("endLvlActive", endLvlActive)
+	if (!earlyGameMode) {
+		logVariable("useMidasStart", useMidasStart, true)
+		logVariable("forcedMidasStart", forcedMidasStart, true)
+		logArray("midasZoneConfig", midasZoneConfig)
+		if (!isActiveZone(irisLevel)) {
+			logVariable("activateSkillsAtStart", activateSkillsAtStart, true)
+			if (activateSkillsAtStart) {
+				logArray("speedRunStartCombo", speedRunStartCombo)
+			}
+		}
+	}
+	logVariable("deepRunClicks", deepRunClicks, true)
+	if (endLvlActive > 0) {
+		logArray("deepRunCombo", deepRunCombo)
+		logVariable("clickableHuntDelay", clickableHuntDelay)
+		logVariable("stopHuntThreshold", stopHuntThreshold)
+	}
+	logVariable("clickerDuration", clickerDuration)
+	logVariable("saveBeforeAscending", saveBeforeAscending, true)
+	logVariable("autoAscend", autoAscend, true)
+	if (!earlyGameMode) {
+		logVariable("levelSolomon", levelSolomon, true)
+		if (levelSolomon) {
+			logVariable("solomonLevels", solomonLevels)
+		}
+	}
 
 	loop
 	{
@@ -649,24 +632,21 @@ loopVisionRun() {
 			continue
 		}
 		if (state = 1) {
-			if (hasClickable()) {
-				showDebugSplash("(1) Clickable start...")
+			if (!forcedMidasStart and hasClickable()) {
+				showDebugSplash("Clickable start")
 				getClickable(useImageSearch)
 				sleep % coinPickUpDelay * 1000
 				switchToCombatTab()
 				ctrlClick(xLvl, yLvl+oLvl) ; Force progression
-				toggleMode()
+				setProgressionMode()
 			} else {
-				showDebugSplash("(1) Midas start...")
 				midasStart()
 			}
 		}
 		if (getState() = 2) {
-			showDebugSplash("(2) Progressing...")
 			visionRun()
 		}
 		if (getState() = 3) {
-			showDebugSplash("(3) Ascending...")
 			if (saveBeforeAscending) {
 				save()
 			}
@@ -685,49 +665,128 @@ visionRun() {
 	exitThread := false
 	isResuming := false
 
-	showSplash("Starting vision run...", 1, 0)
-	startMonitoring()
-	reFocus()
+	local startTime := A_TickCount
 	
 	local isInitiated := false
 	local isClickerRunning := false
 	local hasActivatedSkills := false
+	local hasBomberBuff := gildedRanger = 12 ? true : false
+	local hasGogBuff := gildedRanger = 13 ? true : false
 
 	local xClose := 0, yClose := 0
 	local xBtn := 0, yBtn := 0, isNew := 0
 	local xSkill := 0, ySkill := 0, skillSearch := false
 
+	local locateGildedDelay := 90
+	local locateBuyUpgradesDelay := 20
+	local progressCheckDelay := 10
+
 	local zone := getCurrentZone()
-	local startZone := zone
-	local initZone := 145
+	zoneTicks := {}
+	local maxZone := zone
+	local initiatedZone := 0
+	farmZone := 0
+	local initZone := 146
 	local endZone := getEndZone()
 	local stopHuntZone := endZone - ceil(stopHuntThreshold * 250 / 7)
 
 	local t := 0
+	local elapsedTime := 0
 
 	local comboDelay := deepRunCombo[1]
 	comboIndex := 2
 
+	if (earlyGameMode) {
+		endLvlIdle := oldEndLvlIdle
+		endLvlActive := oldEndLvlActive
+		locateGildedDelay := 6
+		lvlUpDelay := 6
+	}
+	local startAt := 0
+	local timeToAscend := 0
+	local zoneClearTime := 0
+	secPerMonster := 0
+	farmTime := 0
+	isFarming := false
+
+	local mode := earlyGameMode ? "Early Game Mode " : ""
+	showSplash("Starting " . mode . "Vision Run")
+
+	startMonitoring()
+	reFocus()
+
 	startProgress("Vision Run", zone // barUpdateDelay, endZone // barUpdateDelay)
+
+	SetTimer, zoneTickTimer, 500
 
 	loop
 	{
 		if (exitThread) {
+			zoneTicks := ""
+			SetTimer, zoneTickTimer, off
 			SetTimer, comboTimer, off
 			clickerStop()
 			stopProgress()
 			stopMonitoring()
-			showSplashAlways("Vision run aborted!")
+			showUserSplash("Vision Run aborted!")
 			exit
 		}
-		; Traverse bottom up till we find the first gilded hero/ranger we can lvl up
-		if (mod(t, 90) = 0 or isResuming) {
-			if (locateGilded(xBtn, yBtn, isNew)) {
-				maxClick(xBtn, yBtn, 1, 1)
-				if (isNew) {
-					showDebugSplash("New gilded hero found")
+
+		; Gief moar rubies plox!
+		if (mod(t, clickableHuntDelay) = 0 and zone < stopHuntZone) {
+			getClickable(useImageSearch)
+		}
+
+		; Early game mode until "power 5" zone
+		if (earlyGameMode and zone < power5Zone) {
+			if (mod(t, locateBuyUpgradesDelay) = 0 or isResuming) {
+				; Scroll down when loosing track of the upgrades button
+				if (!locateImage(imgBuyUpgrades)) {
+					scrollToBottom()
 					sleep % coinPickUpDelay
 					buyAvailableUpgrades()
+				}
+				skillSearch := true
+				isResuming := false
+			}
+			if (mod(t, lvlUpDelay) = 0) {
+				; Level heroes bottom up
+				if (locateImageUp(imgCoin, xBtn, yBtn)) {
+					xBtn := 79
+					yBtn -= 8
+				}
+			}
+			if (zone > 30 and zone > initiatedZone and mod(zone-6, 30) = 0 and zone < initZone) {
+				; Lvl earlier heroes at zones 36, 66, 96 and 126
+				initRun(1) ; x 100
+				initiatedZone := zone
+			}
+			; xx4/xx9 zone before boss?
+			if (zone > 10 and zone > farmZone and mod(zone-4, 5) = 0 and zone <= lastFarmZone and !isFarming) {
+				; If the previous zone took 2s or more per monster, start farming
+				zoneClearTime := (zoneTicks[zone] - zoneTicks[zone-1]) / 1000
+				secPerMonster := zoneClearTime / (10 - kumawakamaruLevel)
+				if (secPerMonster >= 2) {
+					farmTime := ceil(secPerMonster * 25) ; 20, 25 or 30?
+					showDebugSplash("Farming for " . farmTime . "s")
+					setFarmMode(1)
+					SetTimer, farmTimer, % -farmTime * 1000, 1
+					isFarming := true
+					farmZone := zone
+				}
+			}
+		} else if (mod(t, locateGildedDelay) = 0 or isResuming) {
+			; Traverse bottom up till we find the first gilded hero/ranger we can lvl up
+			if (locateGilded(xBtn, yBtn, isNew, startAt, earlyGameMode)) {
+				maxClick(xBtn, yBtn, 1, 1)
+				if (isNew) {
+					showDebugSplash("New gilded hero found @ Lvl " . zone)
+					sleep % coinPickUpDelay
+					buyAvailableUpgrades()
+				}
+				if (earlyGameMode) {
+					; Power 5 mode
+					startAt := yBtn + yWinPos - 56
 				}
 				skillSearch := true
 				isResuming := false
@@ -736,104 +795,221 @@ visionRun() {
 				if (locateImage(imgClose, xClose, yClose)) {
 					clickPos(xClose, yClose, 1, 1)
 				} else {
-					showWarningSplash("No transitional ranger gilded?")
+					showWarningSplash("Could not locate any gilded hero! Restarting...")
 					; Restart
-					scrollToZone(zone, irisLevel - 1)
-					toggleMode()
+					scrollToZone(irisLevel - 1)
+					setFarmMode()
 					break
 				}
 			}
 		}
-		if (mod(t, 15) = 0) {
-			; Make sure we are progressing
-			if (!locateImage(imgProgression)) {
-				showDebugSplash("Toggle progression mode")
-				toggleMode()
-			}
-			if (!isInitiated and zone > initZone) {
-				; If enough gold, run init
-				showDebugSplash("Initializing...")
-				isInitiated := initRun()
-				isResuming := true
+
+		if (!isInitiated and zone >= initZone) {
+			; If enough gold, run init
+			isInitiated := initRun()
+			isResuming := true
+		}
+
+		; Make sure we are progressing
+		if (mod(t, progressCheckDelay) = 0) {
+			if (!locateImage(imgProgression) and !isFarming) {
+				if (earlyGameMode and zone > lastFarmZone) {
+					; Brute force through two bosses with skills, then ascend
+					if (++timeToAscend >= 2) {
+						showDebugSplash("Ascend after next boss")
+						endLvlIdle := zone + 1
+						endLvlActive := zone + 1
+						endZone := getEndZone()
+					}
+					showDebugSplash("Push with skills! (" . timeToAscend . "/2) @ Lvl " . zone)
+					if (!isClickerRunning) {
+						clickerStart(clickerDuration)
+					}
+					Gosub, comboTimer
+				}
+				setProgressionMode()
 			}
 		}
-		zone := getCurrentZone()
+
 		; Active zone?
-		if (zone > endLvlIdle) {
+		if (isActiveZone(zone)) {
 			if (deepRunClicks) {
 				if (!isClickerRunning) {
 					; Yup, start hammering!
-					showDebugSplash("Start external clicker")
 					clickerStart() ; ~38 CPS
 					isClickerRunning := true
-					Gosub, comboTimer
-					SetTimer, comboTimer, % comboDelay * 1000 + 250
+					if (!earlyGameMode) {
+						; Save skill combos till after lastFarmZone
+						Gosub, comboTimer
+						SetTimer, comboTimer, % comboDelay * 1000 + 250
+					}
 				}
 				clickPos(xMonster, yMonster) ; Jugg combo safety click
 				sleep 30
 			}
-		; If option enabled, activate skills once at start
-		} else if (zone = startZone and activateSkillsAtStart and !hasActivatedSkills and isInitiated) {
-			showDebugSplash("Activate skills at start")
+		} else if (isClickerRunning) {
+			clickerStop()
+			isClickerRunning := false
+		} else if (zone = irisLevel + 1 and activateSkillsAtStart and !hasActivatedSkills and isInitiated) {
+			; If option enabled, activate skills once at start (if fully initiated)
+			showDebugSplash("Activate skills at start!")
+			clickerStart(clickerDuration)
 			activateSkills(speedRunStartCombo[2])
 			hasActivatedSkills := true
 		}
+
 		; Level up...
-		if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
-			if (skillSearch) {
-				; Aquire possible new skills
-				while (locateImage(imgSkill, xSkill, ySkill)) {
-					clickPos(xSkill, ySkill, 1, 1)
-					sleep 500
+		if (mod(t, lvlUpDelay) = 0 and !isResuming) {
+			if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
+				; Get Bomber Max and Gog global gold and dps buffs when we can
+				if (!hasBomberBuff and zone > 2930) {
+					getBuff(imgMax, hasBomberBuff, skillSearch)
+				} else if (!hasGogBuff and zone > 3210) {
+					getBuff(imgGog, hasGogBuff, skillSearch)
 				}
-				if (!locateImage(imgDimmedSkill)) {
-					skillSearch := false
+				if (skillSearch) {
+					; Aquire possible new skills
+					while (locateImage(imgSkill, xSkill, ySkill)) {
+						clickPos(xSkill, ySkill, 1, 1)
+						sleep 500
+					}
+					if (!locateImage(imgDimmedSkill)) {
+						skillSearch := false
+					}
+				}
+				; ... when we can afford to do so
+				ctrlClick(xBtn, yBtn, 2, 1, 1)
+			} else if (!earlyGameMode and !matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
+				if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
+					; ... or not, lost sight of our gilded hero
+					showDebugSplash("Lost sight of our gilded hero!")
+					if (!locateImage(imgCombat)) {
+						switchToCombatTab()
+					}
+					isResuming := true
 				}
 			}
-			; ... when we can afford to do so
-			ctrlClick(xBtn, yBtn, 2, 1, 1)
-		} else if (!matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
-			if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
-				; ... or not, lost sight of our gilded hero
-				showDebugSplash("Lost sight of our gilded hero")
-				if (!locateImage(imgCombat)) {
-					switchToCombatTab()
-				}
-				isResuming := true
-			}
 		}
-		; Let's go fishing!
-		if (mod(t, clickableHuntDelay) = 0 and zone < stopHuntZone) {
-			getClickable(useImageSearch)
+
+		zone := getCurrentZone()
+		if (zone > maxZone) {
+			maxZone := zone
 		}
+
 		t += 1
 		updateProgress(zone // barUpdateDelay, endZone - zone, 1) ; show lvls remaining
 		sleep 1000
-	} until zone >= endZone
 
+	} until zone > endZone
+
+	if (earlyGameMode) {
+		maxLevels() ; get some extra souls from levels
+	}
+
+	zoneTicks := ""
+	SetTimer, zoneTickTimer, off
 	SetTimer, comboTimer, off
 	clickerStop()
 	stopProgress()
 	stopMonitoring()
 
-	showSplash("Vision run completed.")
+	elapsedTime := (A_TickCount - startTime) / 1000
+	showSplash("Vision Run duration: " . formatSeconds(elapsedTime))
+}
+
+isActiveZone(zone) {
+	global
+	if (zone <= endLvlActive) {
+		if (endLvlIdle < endLvlActive and zone <= endLvlIdle) {
+			return false
+		}
+		return true
+	}
+	return false
+}
+
+getBuff(image, byref hasBuff, byref skillSearch) {
+	scrollToBottom()
+	if (upLocator(image, image.file, xImg, yImg)) {
+		ctrlClick(xImg-320, yImg+43, 2, 1, 1) ; hire
+		skillSearch := true
+	}
+	hasBuff := true
+}
+
+; Max levels early game for some extra souls
+maxLevels() {
+	global
+
+	showDebugSplash("Max levels for souls")
+
+	switchToCombatTab()
+	reFocus()
+
+	local xButton, yButton
+	ControlSend,, {shift down}{vk51 down}, ahk_id %chWinId% ; {q}, {vk51} or {sc010}
+	loop 9 ; pages
+	{
+		loop 10 ; attempts per page
+		{
+			if (locateImage(imgMaxLvl, xButton, yButton)) {
+				clickPos(xButton, yButton, 1, 1)
+			}
+			sleep 300
+		}
+		scrollDown(5)
+	}
+	ControlSend,, {vk51 up}{shift up}, ahk_id %chWinId%
 }
 
 loopSpeedRun() {
 	global
-	local mode := hybridMode ? "hybrid" : "speed"
-	showSplash("Starting " . mode . " runs...")
+	local mode := hybridMode ? "Hybrid" : "Speed"
+	showUserSplash("Starting " . mode . " Runs!")
+
+	if (A_TitleMatchMode = "regex") {
+		logVariable("browser", browser)
+		logVariable("browserTopMargin", browserTopMargin)
+	}
+	logVariable("useImageSearch", useImageSearch, true)
+	logVariable("irisLevel", irisLevel)
+	logVariable("gildedRanger", rangers[gildedRanger])
+	logVariable("speedRunTime", speedRunTime)
+	logVariable("firstStintAdjustment", firstStintAdjustment)
+	logVariable("firstStintButton", firstStintButton)
+	logVariable("useMidasStart", useMidasStart, true)
+	if (useMidasStart) {
+		logArray("midasZoneConfig", midasZoneConfig)
+	}
+	logVariable("activateSkillsAtStart", activateSkillsAtStart, true)
+	if (activateSkillsAtStart) {
+		logArray("speedRunStartCombo", speedRunStartCombo)
+	}
+	logVariable("deepRunClicks", deepRunClicks, true)
+	logVariable("hybridMode", hybridMode, true)
+	if (hybridMode) {
+		logVariable("deepRunTime", deepRunTime)
+		logArray("deepRunCombo", deepRunCombo)
+		logVariable("clickableHuntDelay", clickableHuntDelay)
+		logVariable("stopHuntThreshold", stopHuntThreshold)
+	}
+	logVariable("clickerDuration", clickerDuration)
+	logVariable("saveBeforeAscending", saveBeforeAscending, true)
+	logVariable("autoAscend", autoAscend, true)
+
 	loop
 	{
 		if (useMidasStart) {
 			midasStart()
 			getClickable()
 		} else {
+			showDebugSplash("Clickable start")
 			getClickable()
 			sleep % coinPickUpDelay * 1000
 		}
 		initRun()
 		if (activateSkillsAtStart) {
+			clickerStart(clickerDuration)
 			activateSkills(speedRunStartCombo[2])
 		}
 		speedRun()
@@ -854,6 +1030,7 @@ loopSpeedRun() {
 speedRun() {
 	global
 
+	local startTime := A_TickCount
 	local stint := 0
 	local stints := 0
 	local tMax := 7 * 60 ; seconds
@@ -863,19 +1040,7 @@ speedRun() {
 	local zoneLvl := gildedRanger * lMax + lvlAdjustment ; approx zone lvl where we can buy our gilded ranger @ lvl 150
 	local lvls := zoneLvl - irisLevel ; lvl's to get there
 
-	local firstStintButton := 1
 	local firstStintTime := 0
-	local midStintTime := 0
-
-	if (lvls > lMax + 2*60*lMax/tMax) ; add a mid stint if needed
-	{
-		midStintTime := tMax
-		lvls -= lMax
-		stints += 1
-	} else if (lvls > lMax) {
-		firstStintButton := 2
-	}
-	
 	if (lvls > 0)
 	{
 		firstStintTime := ceil(lvls * tMax / lMax)
@@ -884,70 +1049,27 @@ speedRun() {
 
 	local srDuration := speedRunTime * 60
 	local totalClickDelay := nextHeroDelay * stints
-	local lastStintTime := srDuration - firstStintTime - midStintTime - totalClickDelay
+	local lastStintTime := srDuration - firstStintTime - totalClickDelay
 	stints += 1
 
-	local lastStintButton := gildedRanger = 9 ? 3 : 2 ; special case for Astraea
+	local lastStintButton := gildedRanger = 14 ? 3 : 2 ; special case for Wepwawet
 
-	if (debug)
-	{
-		local nl := "`r`n"
-		local s := "    " ; Reddit friendly formatting
-		local output := ""
-		output .= s . "irisLevel = " . irisLevel . nl
-		output .= s . "optimalLevel = " . optimalLevel . nl
-		output .= s . "speedRunTime = " . speedRunTime . nl
-		if (hybridMode) {
-			output .= s . "deepRunTime = " . deepRunTime . nl
-		}
-		output .= s . "gildedRanger = " . rangers[gildedRanger] . nl
-		output .= s . "-----------------------------" . nl
-		output .= s . "initDownClicks = "
-		for i, e in initDownClicks {
-			output .= e " "
-		}
-		output .= nl
-		output .= s . "yLvlInit = " . yLvlInit . nl
-		output .= s . "firstStintAdjustment = " . firstStintAdjustment . "s" . nl
-		output .= s . "-----------------------------" . nl
-		output .= s . "lvlAdjustment = " . lvlAdjustment . nl
-		output .= s . "zoneLvl = " . zoneLvl . nl
-		output .= s . "lvls = " . lvls . nl
-		output .= s . "firstStintButton = " . firstStintButton . nl
-		output .= s . "firstStintTime = " . formatSeconds(firstStintTime) . nl
-		output .= s . "midStintTime = " . formatSeconds(midStintTime) . nl
-		output .= s . "lastStintTime = " . formatSeconds(lastStintTime) . nl
-		output .= s . "totalClickDelay = " . formatSeconds(totalClickDelay) . nl
+	showSplash("Starting Speed Run")
 
-		clipboard := % output
-		msgbox % output
-		return
-	}
+	logVariable("zoneLvl", formatSeconds(zoneLvl))
+	logVariable("firstStintTime", formatSeconds(firstStintTime))
+	logVariable("lastStintTime", formatSeconds(lastStintTime))
 
-	showSplash("Starting speed run...")
-
-	if (irisLevel < 2 * lMax + 10) ; Iris high enough to start with a ranger?
-	{
-		switchToCombatTab()
-		scrollDown(initDownClicks[1])
-		toggleMode(!useMidasStart) ; toggle to progression mode
-		lvlUp(firstStintTime, 0, 3, ++stint, stints) ; nope, let's bridge with Samurai
-		scrollToBottom()
-	} else {
-		scrollToBottom()
-		toggleMode(!useMidasStart) ; toggle to progression mode
-		if (firstStintTime > 0) {
-			lvlUp(firstStintTime, 1, firstStintButton, ++stint, stints)
-			scrollWayDown(3)
-		}
-	}
-	if (midStintTime > 0) {
-		lvlUp(midStintTime, 1, 2, ++stint, stints)
-		scrollWayDown(2)
+	scrollToBottom()
+	toggleMode(!useMidasStart) ; toggle to progression mode
+	if (firstStintTime > 0) {
+		lvlUp(firstStintTime, 1, firstStintButton, ++stint, stints)
+		scrollWayDown(6)
 	}
 	lvlUp(lastStintTime, 1, lastStintButton, ++stint, stints)
 
-	showSplash("Speed run completed.")
+	local elapsedTime := (A_TickCount - startTime) / 1000
+	showSplash("Speed Run duration: " . formatSeconds(elapsedTime))
 }
 
 lvlUp(seconds, buyUpgrades, button, stint, stints) {
@@ -959,6 +1081,7 @@ lvlUp(seconds, buyUpgrades, button, stint, stints) {
 
 	startMonitoring()
 	startProgress(title, 0, seconds // barUpdateDelay)
+	showDebugSplash(title . " @ Lvl " . getCurrentZone())
 
 	if (buyUpgrades) {
 		ctrlClick(xLvl, y)
@@ -973,12 +1096,15 @@ lvlUp(seconds, buyUpgrades, button, stint, stints) {
 		if (exitThread) {
 			stopProgress()
 			stopMonitoring()
-			showSplashAlways("Speed run aborted!")
+			showUserSplash("Speed Run aborted!")
 			exit
 		}
 		; Close possible auto-opened buy more rubies window
-		if (mod(t, 30) = 0) {
+		if (mod(t, 60) = 0) {
 			clickPos(xBuyRubiesClose, yBuyRubiesClose)
+		}
+		if (t = 30) {
+			buyAvailableUpgrades() ; safety upgrade
 		}
 		if (mod(t, lvlUpDelay) = 0) {
 			ctrlClick(xLvl, y, 1, 0)
@@ -995,11 +1121,12 @@ deepRun() {
 	global
 	exitThread := false
 
+	local startTime := A_TickCount
 	local drDuration := deepRunTime * 60
-	local button := gildedRanger = 9 ? 3 : 2 ; special case for Astraea
+	local button := gildedRanger = 14 ? 3 : 2 ; special case for Wepwawet
 	local y := yLvl + oLvl * (button - 1)
 
-	showSplash("Starting deep run...")
+	showSplash("Starting Deep Run")
 
 	startMonitoring()
 	startProgress("Deep Run Progress", 0, drDuration // barUpdateDelay)
@@ -1008,6 +1135,7 @@ deepRun() {
 	local comboDelay := deepRunCombo[1]
 	local comboIndex := 2
 	local stopHuntIndex := drDuration - stopHuntThreshold * 60
+
 	local t := 0
 
 	loop % drDuration
@@ -1016,11 +1144,11 @@ deepRun() {
 			clickerStop()
 			stopProgress()
 			stopMonitoring()
-			showSplashAlways("Deep run aborted!")
+			showUserSplash("Deep Run aborted!")
 			exit
 		}
 		; Close possible auto-opened buy more rubies window
-		if (mod(t, 30) = 0) {
+		if (mod(t, 60) = 0) {
 			clickPos(xBuyRubiesClose, yBuyRubiesClose)
 		}
 		if (deepRunClicks) {
@@ -1045,11 +1173,15 @@ deepRun() {
 	stopProgress()
 	stopMonitoring()
 
-	showSplash("Deep run ended.")
+	local elapsedTime := (A_TickCount - startTime) / 1000
+	showSplash("Deep Run duration: " . formatSeconds(elapsedTime))
 }
 
-clickerStart() {
+clickerStart(duration := 0) {
 	sendClickerMsg(WM_CLICKER_START)
+	if (duration > 0) {
+		SetTimer, clickerStopTimer, % -duration * 1000
+	}
 }
 
 clickerPause() {
@@ -1058,6 +1190,7 @@ clickerPause() {
 
 clickerStop() {
 	sendClickerMsg(WM_CLICKER_STOP)
+	sleep 1000
 }
 
 clickerReload() {
@@ -1087,7 +1220,7 @@ sendClickerMsg(msg, wait:=0) {
 			if (ErrorLevel != "FAIL") {
 				reply := ErrorLevel
 			} else {
-				showWarningSplash("SendMessage failed! monster_clicker.ahk started?")
+				showWarningSplash("SendMessage failed! " . clickerScript . " started?")
 			}
 		}
 		DetectHiddenWindows,% dhw
@@ -1109,6 +1242,11 @@ save() {
 	global
 	local fileName := "ch" . A_NowUTC . ".txt"
 	local newFileName := ""
+
+	showDebugSplash("Save to " . fileName)
+
+	; Close possible other dialog box
+	ControlSend,, {esc}, ahk_class %dialogBoxClass%
 
 	openSaveDialog()
 
@@ -1179,7 +1317,7 @@ ascend(autoYes:=false) {
 			if (exitThread) {
 				exitThread := false
 				stopMonitoring()
-				showSplashAlways("Ascension aborted!")
+				showUserSplash("Ascension aborted!")
 				exit
 			}
 		}
@@ -1189,12 +1327,14 @@ ascend(autoYes:=false) {
 		ifmsgbox no
 		{
 			stopMonitoring()
+			showUserSplash("Salvage aborted!")
 			exit
 		}
 	}
 
 	salvageJunkPile() ; must salvage junk relics before ascending
-	toggleMode()
+
+	showDebugSplash("Ascend @ Lvl " . getCurrentZone())
 
 	clickPos(xAscend, yAscend) ; 0.23 ascend button
 	sleep % zzz * 4
@@ -1222,7 +1362,7 @@ salvageJunkPile() {
 			showWarningSplash("Salvaging junk in " . displayRelicsDuration . " seconds! (Abort with Alt+Pause)", displayRelicsDuration)
 			if (exitThread) {
 				exitThread := false
-				showSplashAlways("Salvage aborted!")
+				showUserSplash("Salvage aborted!")
 				exit
 			}
 		}
@@ -1234,6 +1374,8 @@ salvageJunkPile() {
 		}
 	}
 
+	showDebugSplash("Salvage Junk Pile")
+
 	clickPos(xSalvageJunk, ySalvageJunk)
 	sleep % zzz * 4
 	clickPos(xDestroyYes, yDestroyYes)
@@ -1242,12 +1384,14 @@ salvageJunkPile() {
 
 buyAvailableUpgrades() {
 	global
-	clickPos(xBuy, yBuy)
+	clickPos(xBuy, yBuy, 2)
 	sleep % zzz * 3
 }
 
 openNewGilds() {
 	global
+
+	showUserSplash("Open new gilds")
 
 	clickPos(xNewGild, yNewGild, 100)
 	sleep 3000
@@ -1259,23 +1403,34 @@ openNewGilds() {
 
 raid(doSpend:=0, attempts:=1) {
 	global
+	exitThread := false
+
 	local xBtn := 0, yBtn := 0, raidDuration := 34 * 1000
-	local isClickerRunning := getClickerStatus()
+	local wasClickerRunning := getClickerStatus()
+
+	local mode := doSpend ? "Paid" : "Free"
+	showUserSplash(mode . " Raid x " . attempts)
 
 	switchToClanTab()
 	sleep 1000
 	clickAwayImage(imgClanRaid)
 
-	if (!isClickerRunning) {
+	if (!wasClickerRunning) {
 		clickerStart()
 		sleep 2500
 	}
 	loop % attempts
 	{
+		if (exitThread) {
+			exitThread := false
+			showUserSplash("Raid aborted!")
+			break
+		}
 		if (clickAwayImage(imgClanCollect)) {
 			break
 		}
 		if (doSpend) {
+			showSplash(mode . " Raid (" . A_Index . "/" . attempts . ")")
 			if (locateImage(imgClanFightAgain, xBtn, yBtn)) {
 				while (!locateImage(imgYes)) {
 					clickPos(xBtn, yBtn, 1, 1)
@@ -1291,15 +1446,16 @@ raid(doSpend:=0, attempts:=1) {
 			}
 		}
 	}
-	if (!isClickerRunning) {
+	if (!wasClickerRunning) {
 		clickerStop()
 	}
 }
 
 clickAwayImage(image) {
+	local xImg := 0, yImg := 0
 	if (locateImage(image)) {
-		while (locateImage(image, x, y)) {
-			clickPos(x, y, 1, 1)
+		while (locateImage(image, xImg, yImg)) {
+			clickPos(xImg, yImg, 1, 1)
 			sleep 250
 		}
 		sleep 1000
@@ -1334,7 +1490,28 @@ toggleMode(toggle:=1) {
 	global
 	if (toggle) {
 		ControlSend,, {vk41}, ahk_id %chWinId% ; {a}, {vk41} or {sc01E}
+		; clickPos(xMode, yMode)
 		sleep % zzz
+	}
+}
+
+setFarmMode(silent:=0) {
+	global
+	if (locateImage(imgProgression)) {
+		toggleMode()
+		if (!silent) {
+			showDebugSplash("Set Farm Mode")
+		}
+	}
+}
+
+setProgressionMode(silent:=0) {
+	global
+	if (!locateImage(imgProgression)) {
+		toggleMode()
+		if (!silent) {
+			showDebugSplash("Set Progression Mode")
+		}
 	}
 }
 
@@ -1368,7 +1545,7 @@ handleScheduledReload(function := "") {
 	global
 	local params := function != "" ? "/autorun " . function : ""
 	if (scheduleReload) {
-		showSplashAlways("Reloading bot... " . params, 3)
+		showUserSplash("Script Reload " . params, 3)
 		Run "%A_AhkPath%" /restart "%A_ScriptFullPath%" %params%
 	}
 }
@@ -1376,7 +1553,7 @@ handleScheduledReload(function := "") {
 handleScheduledStop() {
 	global
 	if (scheduleStop) {
-		showSplashAlways("Scheduled stop. Exiting...")
+		showUserSplash("Scheduled stop. Exiting...")
 		scheduleStop := false
 		exit
 	}
@@ -1401,19 +1578,19 @@ hasClickable() {
 }
 
 ; Try to find the first gilded hero/ranger we can lvl up
-locateGilded(byref xPos, byref yPos, byref isNew) {
+locateGilded(byref xPos, byref yPos, byref isNew, startAt:=0, earlyGameMode:=0) {
 	global
 	isNew := 0
-	local xAbs, yAbs, startAt := 0
+	local xAbs, yAbs
 
-	if (!locateImage(imgBuyUpgrades)) {
+	if (startAt = 0 and !locateImage(imgBuyUpgrades)) {
 		if (!locateImage(imgCombat)) {
 			switchToCombatTab()
 		}
 		scrollToBottom()
 	}
 
-	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, 5, 1, 1, startAt)) {
+	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, 2, 5, 1, startAt, earlyGameMode)) { ; two retries
 		local xPixel := xAbs + 83 ; HI[R]E
 		local yPixel := yAbs + 38
 		if (matchPixelColor(dimmedYellowColor, xPixel, yPixel)) {
@@ -1433,7 +1610,10 @@ locateGilded(byref xPos, byref yPos, byref isNew) {
 solomonLeveler(levels) {
 	global
 	local x, y
+
 	if (useImageSearch) {
+		showSplash("Level Solomon x " . levels)
+
 		switchToAncientTab()
 		if (locator(imgSolomon, "Solomon", x, y)) {
 			; Offset coordinates to the lvl up button
@@ -1481,6 +1661,87 @@ checkSafetyZones() {
 	}
 }
 
+zoneMovedWithin(zone, sec) {
+	loop % sec * 10 {
+		sleep 100
+		zoneMoved := getCurrentZone() - zone
+		if (zoneMoved) {
+			return zoneMoved 
+		}
+	}
+	return 0
+}
+
+farmOrFight() {
+	global
+	local silent := true
+	local bossZone := farmZone + 1
+	local maxTime := 1.5 ; s
+
+	setProgressionMode(silent) ; Toggle progress on, then
+	if (zoneMovedWithin(farmZone, maxTime) > 0) { ; if we reached the boss in time
+		scrollToZone(farmZone) ; scroll back
+		local startTime := A_TickCount
+		if (zoneMovedWithin(farmZone, maxTime) > 0) { ; if fast enough still
+			showDebugSplash("Lvl " . bossZone . " boss fight!")
+			local zoneMoved := zoneMovedWithin(bossZone, 30)
+			local elapsedTime := (A_TickCount - startTime - zzz) // 1000
+			if (zoneMoved > 0) {
+				showDebugSplash("Fight duration: " . elapsedTime . "s")
+				isFarming := false
+				lvlUpDelay := 6 ; reset
+				return
+			} else {
+				showDebugSplash("Failed boss... :(")
+			}
+		}
+	}
+
+	if (zoneTicks.HasKey(bossZone)) {
+		zoneTicks.Delete(bossZone)
+	}
+
+	; Keep farming...
+	if (bossZone >= 110 and secPerMonster >= 5 and locateImage(imgLuckyStrikes)) {
+		; If available, use skills on tough bosses
+		showDebugSplash("Push with skills @ Lvl " . getCurrentZone())
+		isFarming := false
+		if (!getClickerStatus()) {
+			clickerStart(clickerDuration)
+		}
+		setProgressionMode(silent)
+		activateSkills("2-3")
+	} else {
+		setFarmMode(silent)
+		sleep % zzz
+		if (farmZone < getCurrentZone()) {
+			; Make sure we are farming on the correct lvl
+			scrollToZone(farmZone)
+		}
+		showDebugSplash("Keep farming!")
+		SetTimer, farmTimer, % -farmTime * 1000, 1
+		lvlUpDelay := 18 ; up the chance to lvl up next hero
+	}
+}
+
+storeZoneTick() {
+	global
+	local cz := getCurrentZone()
+	local pz := cz - 1
+	local currentTime := A_TickCount
+
+	if (!zoneTicks.HasKey(pz)) {
+		zoneTicks[pz] := currentTime
+	}
+	if (!zoneTicks.HasKey(cz)) {
+		zoneTicks[cz] := currentTime
+		local elapsed := (zoneTicks[cz] - zoneTicks[pz]) / 1000
+		if (mod(cz-4, 5) = 0 and elapsed >= 20) {
+			showDebugSplash("Lvl " . pz . " -> " . cz . " : " . formatSeconds(elapsed))
+		}
+	}
+}
+
 ; -----------------------------------------------------------------------------------------
 ; -- Subroutines
 ; -----------------------------------------------------------------------------------------
@@ -1499,4 +1760,16 @@ return
 comboTimer:
 	activateSkills(deepRunCombo[comboIndex])
 	comboIndex := comboIndex < deepRunCombo.MaxIndex() ? comboIndex+1 : 2
+return
+
+clickerStopTimer:
+	clickerStop()
+return
+
+farmTimer:
+	farmOrFight()
+return
+
+zoneTickTimer:
+	storeZoneTick()
 return
