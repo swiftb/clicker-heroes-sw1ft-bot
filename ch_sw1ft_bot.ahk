@@ -236,9 +236,11 @@ return
 	scrollToBottom()
 return
 
-; Ctrl+Alt+F2 should switch to the relics tab and then back
+; Ctrl+Alt+F2 should switch between all used tabs
 ^!F2::
+	switchToAncientTab()
 	switchToRelicTab()
+	switchToClanTab()
 	switchToCombatTab()
 return
 
