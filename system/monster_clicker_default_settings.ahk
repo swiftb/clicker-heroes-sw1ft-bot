@@ -9,7 +9,6 @@ clickDuration := 0 ; minutes (set to zero for manual/remote operation)
 
 global playNotificationSounds := clickDuration > 0 ? true : false ; no sound when operated remotely
 global playWarningSounds := false
-global showSplashTexts := true
 
 ; Splash text window position
 wSplash := 200

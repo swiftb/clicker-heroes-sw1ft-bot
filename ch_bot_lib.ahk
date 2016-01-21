@@ -5,7 +5,7 @@
 
 CoordMode, Pixel, Screen
 
-libVersion=1.4
+libVersion=1.5
 
 winName := "Clicker Heroes"
 
@@ -46,7 +46,7 @@ barUpdateDelay := 30 ; time (in seconds) between progress bar updates
 coinPickUpDelay := 5 ; time (in seconds) needed to pick up all coins from a clickable
 nextHeroDelay := 5 ; extra gold farm delay (in seconds) between heroes
 
-scrollDelay := 275 ; base delay (in ms)
+scrollDelay := 300 ; base delay (in ms)
 scrollClickDelay := 20 ; delay per click (in ms)
 
 dialogBoxClass := "#32770"
@@ -56,6 +56,8 @@ yellowColor := 0xFECB00
 dimmedYellowColor := 0x7E6500
 goldColor := 0xFFB423
 brightGoldColor := 0xFFD911
+
+severityLevels := {"OFF":0, "WARN":1, "USER":2, "INFO":3, "DEBUG":4}
 
 ; -- Images -------------------------------------------------------------------------------
 
@@ -76,23 +78,25 @@ imgClickable := {file:"clickable.png", topOffset:CZTO, leftOffset:CZLO, bottomOf
 
 imgSkillBar := {file:"skill_bar.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 imgSkillLocked := {file:"skill_locked.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
+imgLuckyStrikes := {file:"lucky_strikes.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 
 imgCombat := {file:"combat.png", topOffset:0, leftOffset:0, bottomOffset:CZBO, rightOffset:CZRO}
 
 imgHire := {file:"hire.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgCoin := {file:"coin.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgMaxLvl := {file:"max_lvl.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgDimmedSkill := {file:"skill_dimmed.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgSkill := {file:"skill.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgClickstorm := {file:"clickstorm.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgMetalDetector := {file:"metal_detector.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgGoldenClicks := {file:"golden_clicks.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgFrigidEnchant := {file:"frigid_enchant.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgCid := {file:"cid.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgMercedes := {file:"mercedes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgReferi := {file:"referi.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgDK := {file:"dk.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgDKG := {file:"dk_g.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgMax := {file:"max.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgGog := {file:"gog.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgSolomon := {file:"solomon.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
@@ -117,6 +121,10 @@ yLvl := 285
 oLvl := 107 ; offset to next button
 
 buttonSize := 34
+
+; Progression/Farm Mode
+xMode := 1121
+yMode := 281
 
 ; 0.23 ascend button
 xAscend := 1121
@@ -270,7 +278,7 @@ clientCheck() {
 		fullScreenOption := false
 
 		if (useImageSearch and locateImage(imgQuality, xPos, yPos)) {
-			showDebugSplash("Switching to low quality...")
+			showDebugSplash("Switching to low quality")
 			clickPos(xPos, yPos, 1, 1)
 		}
 	}
@@ -282,7 +290,7 @@ calculateBrowserOffsets() {
 	winName := "Lvl.*Clicker Heroes.*" . browser
 	IfWinExist, % winName
 	{
-		showSplash("Calculating browser offsets...", 1, 0)
+		showDebugSplash("Calculating browser offsets (" . scriptName . ")")
 		WinActivate
 		WinGetPos, xWinPos, yWinPos, w, h
 		WinGet, chWinId, ID, A
@@ -312,16 +320,16 @@ calculateSteamAspectRatio() {
 		; Fullscreen sanity checks
 		if (fullScreenOption) {
 			if (w <> A_ScreenWidth || h <> A_ScreenHeight) {
-				showWarningSplash("Set the fullScreenOption to false in the bot lib file.")
+				showWarningSplash("The fullScreenOption should be set to false!")
 				return
 			}
 		} else if (w = A_ScreenWidth && h = A_ScreenHeight) {
-			showWarningSplash("Set the fullScreenOption to true in the bot lib file.")
+			showWarningSplash("The fullScreenOption should be set to true!")
 			return
 		}
 
 		if (w != chTotalWidth || h != chTotalHeight) {
-			showSplash("Calculating Steam aspect ratio...", 1, 0)
+			showDebugSplash("Calculating Steam aspect ratio (" . scriptName . ")")
 
 			local winWidth := fullScreenOption ? w : w - 2 * chMargin
 			local winHeight := fullScreenOption ? h : h - chTopMargin - chMargin
@@ -461,23 +469,21 @@ playWarningSound() {
 }
 
 showDebugSplash(text, seconds:=1) {
-	if (debug) {
-		showSplash(text, seconds, 0)
-	}
+	showSplash(text, seconds, 0, "DEBUG")
 }
 
-showSplashAlways(text, seconds:=2) {
-	showSplash(text, seconds, 1, 1)
+showUserSplash(text, seconds:=2) {
+	showSplash(text, seconds, 1, "USER")
 }
 
-showWarningSplash(text, seconds:=5) {
-	showSplash(text, seconds, 2, 1)
+showWarningSplash(text, seconds:=4) {
+	showSplash(text, seconds, 2, "WARN")
 }
 
-showSplash(text, seconds:=2, sound:=1, showAlways:=0) {
+showSplash(text, seconds:=2, sound:=1, level="INFO") {
 	global
 	if (seconds > 0) {
-		if (showSplashTexts or showAlways) {
+		if (severityLevels[level] <= showSeverityLevel) {
 			progress,% "w" wSplash " x" xSplash " y" ySplash " zh0 fs10", %text%,,% script
 		}
 		if (sound = 1) {
@@ -487,6 +493,41 @@ showSplash(text, seconds:=2, sound:=1, showAlways:=0) {
 		}
 		sleep % seconds * 1000
 		progress, off
+	}
+	logger(text, level)
+}
+
+logArray(name, array) {
+	local value := ""
+	loop % array.Length()
+	{
+		value .= array[A_Index]
+		if (A_Index < array.Length()) {
+			value .= ", "
+		}
+	}
+	logVariable(name, "[" . value . "]")
+}
+
+logVariable(name, value, isBool:=0) {
+	if (isBool) {
+		value := value ? "true" : "false"
+	}
+	logger(name . " = " . value, "DEBUG")
+}
+
+; 0:OFF, 1:WARN, 2:USER, 3:INFO, 4:DEBUG
+logger(msg, level) {
+	global
+	local localTime := A_Now
+	local currentDate
+	local currentDateTime
+	local fileName
+	if (severityLevels[level] <= logSeverityLevel) {
+		FormatTime, currentDate, localTime, yyyy-MM-dd
+		FormatTime, currentDateTime, localTime, yyyy-MM-dd HH:mm:ss
+		fileName := "logs\" . currentDate . ".txt"
+		FileAppend, % currentDateTime . "`t" . level . "`t" . msg . "`n", %fileName%
 	}
 }
 
@@ -533,7 +574,7 @@ secondsSince(startTime) {
 toggleFlag(flagName, byref flag) {
 	flag := !flag
 	flagValue := flag ? "On" : "Off"
-	showSplashAlways("Toggled " . flagName . " " . flagValue)
+	showUserSplash("Toggled " . flagName . " " . flagValue)
 }
 
 screenShot() {
@@ -548,10 +589,13 @@ screenShot() {
 	}
 }
 
-scrollToZone(fromZone, toZone) {
+scrollToZone(zone) {
+	scrollZone(getCurrentZone(), zone)
+}
+
+scrollZone(fromZone, toZone) {
 	global
-	local currentZone := getCurrentZone()
-	local zones := currentZone > 0 ? toZone - currentZone : toZone - fromZone
+	local zones := toZone - fromZone
 	local xZone := zones > 0 ? xNextZone : xPrevZone
 
 	if (zones != 0) {
@@ -609,28 +653,30 @@ reFocus() {
 ; screen. The CH window is required to be visible and in default size for this to work.
 ; -----------------------------------------------------------------------------------------
 
-upLocator(image, what, byref xPos, byref yPos, clickCount:=5, retries:=-1, absolute:=0, startAt:=0) {
-	return locator(image, what, xPos, yPos, clickCount, retries, absolute, startAt, 1)
+upLocator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, earlyGameMode:=0) {
+	return locator(image, what, xPos, yPos, retries, clickCount, absolute, startAt, earlyGameMode, 1)
 }
 
 ; Try to locate the given image one screen at a time
-locator(image, what, byref xPos, byref yPos, clickCount:=5, retries:=-1, absolute:=0, startAt:=0, directionUp:=0) {
+locator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, earlyGameMode:=0, directionUp:=0) {
 	global
 
 	local attempts := ceil(45 / clickCount)
 	local attempt := 0
 
 	while (!locateImage(image, xPos, yPos, absolute, startAt, directionUp)) {
-		if (++attempt <= attempts) {
+		if (++attempt <= attempts and !locateImage(imgCid)) {
 			if (directionUp) {
 				scrollUp(clickCount)
 				startAt := 0 ; only offset once
 			} else {
 				scrollDown(clickCount)
 			}
-		} else if (retries < 0 or --retries > 0) {
-			showDebugSplash("Could not locate " . what . "! Trying again...")
-			clientCheck()
+		} else if (retries-- != 0) {
+			if (!earlyGameMode) {
+				showDebugSplash("Could not locate " . what . "! Trying again...")
+				clientCheck()
+			}
 			if (directionUp) {
 				scrollToBottom()
 			} else {
@@ -712,7 +758,7 @@ locateImageDown(image, byref xPos:="", byref yPos:="", absolute:=0, topOffset:=0
 	ImageSearch xPos, yPos, xL, yT, xR, yB, *30 %imageFile%
 	if (ErrorLevel = 2) {
 		playWarningSound()
-		msgbox,,% script,% "ImageSearch failed! Could not open: " . %imageFile%
+		msgbox,,% script,% "ImageSearch failed! Could not open: " . imageFile
 		exit
 	} else if (ErrorLevel = 0 and !absolute) {
 		; Absolute --> Relative
