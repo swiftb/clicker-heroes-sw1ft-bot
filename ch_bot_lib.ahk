@@ -134,11 +134,11 @@ yAscend := 322
 xYes := 500
 yYes := 510 ; redesigned ascend window
 
-xCombatTab := 50
-xStatsTab := 212
-xAncientTab := 296
-xRelicTab := 380 + 10 ; Halloween fix
-xClanTab := 464
+oTab := 69 ; offset to next tab
+xCombatTab := 52
+xAncientTab := xCombatTab + oTab * 3
+xRelicTab := xAncientTab + oTab
+xClanTab := xRelicTab + oTab
 yTab := 130
 
 xRelic := 103
