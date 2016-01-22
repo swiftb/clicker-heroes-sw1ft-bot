@@ -136,9 +136,9 @@ yYes := 510 ; redesigned ascend window
 
 oTab := 69 ; offset to next tab
 xCombatTab := 52
-xAncientTab := xCombatTab + oTab * 3
-xRelicTab := xAncientTab + oTab
-xClanTab := xRelicTab + oTab
+xAncientTab := xCombatTab + oTab*3
+xRelicTab := xCombatTab + oTab*4 + 10 ; Halloween fix
+xClanTab := xCombatTab + oTab*5
 yTab := 130
 
 xRelic := 103
@@ -663,9 +663,11 @@ locator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute
 
 	local attempts := ceil(45 / clickCount)
 	local attempt := 0
+	local keepGoing := true
 
 	while (!locateImage(image, xPos, yPos, absolute, startAt, directionUp)) {
-		if (++attempt <= attempts and !locateImage(imgCid)) {
+		keepGoing := directionUp ? !locateImage(imgCid) : true
+		if (++attempt <= attempts and keepGoing) {
 			if (directionUp) {
 				scrollUp(clickCount)
 				startAt := 0 ; only offset once

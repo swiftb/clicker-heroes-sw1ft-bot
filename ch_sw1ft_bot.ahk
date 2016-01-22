@@ -611,10 +611,10 @@ loopVisionRun() {
 	logVariable("deepRunClicks", deepRunClicks, true)
 	if (endLvlActive > 0) {
 		logArray("deepRunCombo", deepRunCombo)
-		logVariable("clickableHuntDelay", clickableHuntDelay)
-		logVariable("stopHuntThreshold", stopHuntThreshold)
 	}
 	logVariable("clickerDuration", clickerDuration)
+	logVariable("clickableHuntDelay", clickableHuntDelay)
+	logVariable("stopHuntThreshold", stopHuntThreshold)
 	logVariable("saveBeforeAscending", saveBeforeAscending, true)
 	logVariable("autoAscend", autoAscend, true)
 	if (!earlyGameMode) {
@@ -1058,7 +1058,7 @@ speedRun() {
 
 	showSplash("Starting Speed Run")
 
-	logVariable("zoneLvl", formatSeconds(zoneLvl))
+	logVariable("zoneLvl", zoneLvl)
 	logVariable("firstStintTime", formatSeconds(firstStintTime))
 	logVariable("lastStintTime", formatSeconds(lastStintTime))
 
