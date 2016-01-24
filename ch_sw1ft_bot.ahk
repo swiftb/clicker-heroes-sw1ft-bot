@@ -357,7 +357,12 @@ initRun(initMode:=0) {
 	reFocus()
 
 	if (!useImageSearch) {
-		local clicks := irisLevel > 1600 ? 6 : 7
+		local clicks := 7
+		if (irisLevel > 3000) {
+			clicks := 5
+		} else if (irisLevel > 1500) {
+			clicks := 6
+		}
 		loop 6
 		{
 			upgrade(2)
