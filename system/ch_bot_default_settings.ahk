@@ -64,10 +64,17 @@ forcedMidasStart := false ; use only for active play with custom Midas combo
 levelSolomon := false ; feed solomon after ascending?
 solomonLevels := 5
 
+; Enabled will start to log zone data after each completed run
+useZoneDataLogger := false
+zdlStart := irisLevel + 1
+zdlInterval := 35
+
 ; -- Speed/Vision Run ---------------------------------------------------------------------
 
 activateSkillsAtStart := true ; usually needed in the late game to get going after ascending
 
+; If you don't need the full skills duration, lower this setting to get back the idle bonus faster.
+; E.g. when using the Vision Run in early game mode, this setting should be set to 30.
 clickerDuration := 90 ; monster clicker duration (in seconds). 0 = endless
 
 autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention! <Shift+Ctrl+F1>

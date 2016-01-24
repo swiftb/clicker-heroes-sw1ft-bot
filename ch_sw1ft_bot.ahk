@@ -893,13 +893,14 @@ visionRun() {
 			}
 		}
 
+		updateProgress(zone // barUpdateDelay, endZone - zone, 1) ; show lvls remaining
+
 		zone := getCurrentZone()
 		if (zone > maxZone) {
 			maxZone := zone
 		}
 
 		t += 1
-		updateProgress(zone // barUpdateDelay, endZone - zone, 1) ; show lvls remaining
 		sleep 1000
 
 	} until zone > endZone
@@ -908,8 +909,12 @@ visionRun() {
 		maxLevels() ; get some extra souls from levels
 	}
 
-	zoneTicks := ""
 	SetTimer, zoneTickTimer, off
+	if (useZoneDataLogger) {
+		logZoneData(zdlStart, endZone, zdlInterval)
+	}
+	zoneTicks := ""
+
 	SetTimer, comboTimer, off
 	clickerStop()
 	stopProgress()
@@ -969,7 +974,7 @@ loopSpeedRun() {
 	local mode := hybridMode ? "Hybrid" : "Speed"
 	showUserSplash("Starting " . mode . " Runs!")
 
-	if (A_TitleMatchMode = "regex") {
+	if (isBrowserClient()) {
 		logVariable("browser", browser)
 		logVariable("browserTopMargin", browserTopMargin)
 	}
@@ -1335,6 +1340,7 @@ ascend(autoYes:=false) {
 	}
 
 	salvageJunkPile() ; must salvage junk relics before ascending
+	toggleMode()
 
 	showDebugSplash("Ascend @ Lvl " . getCurrentZone())
 
@@ -1344,6 +1350,7 @@ ascend(autoYes:=false) {
 	sleep % zzz * 2
 
 	stopMonitoring()
+	sleep 1000 ; wait a sec
 }
 
 salvageJunkPile() {
@@ -1729,19 +1736,55 @@ farmOrFight() {
 storeZoneTick() {
 	global
 	local cz := getCurrentZone()
-	local pz := cz - 1
-	local currentTime := A_TickCount
+	if (cz > 0) {
+		local pz := cz - 1
+		local currentTime := A_TickCount
 
-	if (!zoneTicks.HasKey(pz)) {
-		zoneTicks[pz] := currentTime
-	}
-	if (!zoneTicks.HasKey(cz)) {
-		zoneTicks[cz] := currentTime
-		local elapsed := (zoneTicks[cz] - zoneTicks[pz]) / 1000
-		if (mod(cz-4, 5) = 0 and elapsed >= 20) {
-			showDebugSplash("Lvl " . pz . " -> " . cz . " : " . formatSeconds(elapsed))
+		if (!zoneTicks.HasKey(pz)) {
+			zoneTicks[pz] := currentTime
+		}
+		if (!zoneTicks.HasKey(cz)) {
+			zoneTicks[cz] := currentTime
+			local elapsed := (zoneTicks[cz] - zoneTicks[pz]) / 1000
+			if (mod(cz-4, 5) = 0 and elapsed >= 20) {
+				showDebugSplash("Lvl " . pz . " -> " . cz . " : " . formatSeconds(elapsed))
+			}
 		}
 	}
+}
+
+logZoneData(zStart, zEnd, zInterval) {
+	global
+	local startZone := zStart < zoneTicks.MinIndex() ? zoneTicks.MinIndex() : zStart
+	local endZone := zEnd > zoneTicks.MaxIndex() ? zoneTicks.MaxIndex() : zEnd
+	local intervals := ceil((endZone - startZone) / zInterval)
+
+	local zone := startZone
+	local prevZone := zone - zInterval
+
+	local totalTime := 0
+	local intervalTime := 0
+
+	local t := "`t" ; tab
+	local nl := "`n" ; new line
+	local zoneData := "Zones: " . startZone . " -> " . endZone . ", Interval: " . zInterval
+	zoneData .= nl . "Zone" . t . "Time" . t . "Diff (s)"
+	zoneData .= nl . zone . t . "00:00:00" . t . "0"
+
+	loop % intervals {
+		zone += zInterval
+		if (zone > endZone) {
+			zone := endZone
+		}
+		prevZone += zInterval
+
+		totalTime := (zoneTicks[zone] - zoneTicks[startZone]) / 1000
+		intervalTime := (zoneTicks[zone] - zoneTicks[prevZone]) / 1000
+
+		zoneData .= nl . zone . t . formatSeconds(totalTime) . t . round(intervalTime, 1)
+	}
+
+	logger(zoneData, "INFO", "_zone_data")
 }
 
 ; -----------------------------------------------------------------------------------------

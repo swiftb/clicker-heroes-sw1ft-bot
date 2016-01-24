@@ -270,7 +270,7 @@ getClickable(idle:=0) {
 
 clientCheck() {
 	global
-	if (A_TitleMatchMode = 3) {
+	if (!isBrowserClient()) {
 		calculateSteamAspectRatio() ; Steam
 	} else {
 		local xPos, yPos
@@ -517,7 +517,7 @@ logVariable(name, value, isBool:=0) {
 }
 
 ; 0:OFF, 1:WARN, 2:USER, 3:INFO, 4:DEBUG
-logger(msg, level) {
+logger(msg, level, fileSuffix:="") {
 	global
 	local localTime := A_Now
 	local currentDate
@@ -526,7 +526,7 @@ logger(msg, level) {
 	if (severityLevels[level] <= logSeverityLevel) {
 		FormatTime, currentDate, localTime, yyyy-MM-dd
 		FormatTime, currentDateTime, localTime, yyyy-MM-dd HH:mm:ss
-		fileName := "logs\" . currentDate . ".txt"
+		fileName := "logs\" . currentDate . fileSuffix . ".txt"
 		FileAppend, % currentDateTime . "`t" . level . "`t" . msg . "`n", %fileName%
 	}
 }
@@ -580,7 +580,7 @@ toggleFlag(flagName, byref flag) {
 screenShot() {
 	global
 	local activeWinId
-	if (A_TitleMatchMode = 3) { ; Steam only
+	if (!isBrowserClient()) { ; Steam only
 		WinGet, activeWinId, ID, A ; remember current active window...
 		WinActivate, ahk_id %chWinId%
 		send {f12 down}{f12 up} ; screenshot
@@ -633,7 +633,7 @@ verticalSkills(x) {
 getCurrentZone() {
 	global
 	local title, currentZone
-	if (A_TitleMatchMode = "regex") {
+	if (isBrowserClient()) {
 		WinGetTitle, title, ahk_id %chWinId%
 		currentZone := SubStr(title, 5, InStr(title, "-") - 6)
 		return currentZone
@@ -646,6 +646,10 @@ reFocus() {
 	global
 	clickPos(xFocus, yFocus)
 	sleep 25
+}
+
+isBrowserClient() {
+	return A_TitleMatchMode = "regex"
 }
 
 ; -----------------------------------------------------------------------------------------
