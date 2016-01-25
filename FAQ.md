@@ -25,6 +25,9 @@
 
 ## Vision Run
 
+**Q:** I get a "Start failed (state = 0)!" warning, what's wrong?  
+**A:** In Windows, use standard 100% (96 DPI) display scaling in (32 bit) True Color
+
 **Q:** The Vision run gets stuck before reaching my gilded ranger!?  
 **A:** You need one transitional hero/ranger (with 1 gild) that the bot can find after the clickable/Midas start.
 
