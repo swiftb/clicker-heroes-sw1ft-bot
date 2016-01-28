@@ -169,15 +169,15 @@ return
 	showUserSplash("Re-gild ranger set to " . rangers[reGildRanger])
 return
 
-; Move "reGildCount" gilds to the target ranger
+; Move all gilds to the target ranger
 ^F8::
 	critical
 	playNotificationSound()
-	msgbox, 4,% script,% "Move " . reGildCount . " gilds to " . rangers[reGildRanger] . "?"
+	msgbox, 4,% script,% "Move all gilds to " . rangers[reGildRanger] . "?"
 	ifmsgbox no
 		return
 	clickerPause()
-	regild(reGildRanger, reGildCount)
+	regild(reGildRanger)
 return
 
 ; Open new gilds
@@ -1478,8 +1478,8 @@ clickAwayImage(image) {
 	return 0
 }
 
-; Move "gildCount" gilds to given ranger
-regild(ranger, gildCount) {
+; Move all gilds to given ranger
+regild(ranger) {
 	global
 	switchToCombatTab()
 	scrollToBottom()
@@ -1490,10 +1490,10 @@ regild(ranger, gildCount) {
 	clickPos(xGildedDown, yGildedDown, top2BottomClicks)
 	sleep % scrollDelay + top2BottomClicks * scrollClickDelay
 
-	ControlSend,, {shift down}, ahk_id %chWinId%
-	clickPos(rangerPositions[ranger].x, rangerPositions[ranger].y, gildCount)
-	sleep % 1000 * gildCount/100*6
-	ControlSend,, {shift up}, ahk_id %chWinId%
+	ControlSend,, {q down}, ahk_id %chWinId%
+	clickPos(rangerPositions[ranger].x, rangerPositions[ranger].y)
+	sleep 1000
+	ControlSend,, {q up}, ahk_id %chWinId%
 
 	clickPos(xGildedClose, yGildedClose)
 	sleep % zzz * 2
