@@ -119,6 +119,7 @@ return
 	showUserSplash("Aborting...")
 	exitThread := true
 return
+Hotkey, !Pause, , P2
 
 ; Schedule a stop after finishing the current run with Shift+Pause
 +Pause::
@@ -127,10 +128,10 @@ return
 
 ; Reload the script (needed after configuration changes)
 !F5::
-	critical
 	global scheduleReload := true
 	handleScheduledReload()
 return
+Hotkey, !F5, , P2
 
 ; Schedule a script reload after finishing the current run, then restart it
 +^F5::
@@ -139,11 +140,11 @@ return
 
 ; Re-initialize coordinates (needed after moving or re-sizing the client window)
 !F6::
-	critical
 	showUserSplash("Re-initialize coordinates... ")
 	clientCheck()
 	clickerInitialize()
 return
+Hotkey, !F6, , P2
 
 ; -- Supplementary Hotkeys ----------------------------------------------------------------
 
@@ -153,9 +154,9 @@ return
 
 ; Open the Ancients Optimizer and auto-import game save data
 ^F5::
-	critical
 	openAncientsOptimizer()
 return
+Hotkey, ^F5, , P1
 
 ; Set previous ranger as re-gild target
 ^F6::
@@ -171,7 +172,6 @@ return
 
 ; Move all gilds to the target ranger
 ^F8::
-	critical
 	playNotificationSound()
 	msgbox, 4,% script,% "Move all gilds to " . rangers[reGildRanger] . "?"
 	ifmsgbox no
@@ -179,37 +179,38 @@ return
 	clickerPause()
 	regild(reGildRanger)
 return
+Hotkey, ^F8, , P1
 
 ; Open new gilds
 ^F9::
-	critical
 	clickerPause()
 	openNewGilds()
 return
+Hotkey, ^F9, , P1
 
 ; Autosave the game
 ^F11::
-	critical
 	save()
 return
+Hotkey, ^F11, , P1
 
 ; Raid once for free with Win+F6
 #F6::
-	critical
 	raid()
 return
+Hotkey, #F6, , P1
 
 ; One paid raid
 #F7::
-	critical
 	raid(1)
 return
+Hotkey, #F7, , P1
 
 ; Paid raids
 #F8::
-	critical
 	raid(1, raidAttempts)
 return
+Hotkey, #F8, , P1
 
 ; Toggle boolean (true/false) flags with Shift+Ctrl+Fx
 
@@ -220,6 +221,7 @@ return
 +^F6::
 	toggleFlag("playNotificationSounds", playNotificationSounds)
 return
+Hotkey, +^F6, , P1
 
 +^F7::
 	toggleFlag("playWarningSounds", playWarningSounds)
@@ -1260,6 +1262,7 @@ save() {
 	; Close possible other dialog box
 	ControlSend,, {esc}, ahk_class %dialogBoxClass%
 
+	clickerPause()
 	openSaveDialog()
 
 	; Change the file name...
@@ -1425,6 +1428,8 @@ raid(doSpend:=0, attempts:=1) {
 	local mode := doSpend ? "Paid" : "Free"
 	showUserSplash(mode . " Raid x " . attempts)
 
+	Thread, NoTimers ; block timers if mid run
+
 	switchToClanTab()
 	sleep 1000
 	clickAwayImage(imgClanRaid)
@@ -1463,6 +1468,8 @@ raid(doSpend:=0, attempts:=1) {
 	if (!wasClickerRunning) {
 		clickerStop()
 	}
+
+	isResuming := true
 }
 
 clickAwayImage(image) {
