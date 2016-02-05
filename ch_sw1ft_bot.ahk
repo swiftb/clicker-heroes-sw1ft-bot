@@ -312,7 +312,6 @@ testLocate(image, clickCount:=5) {
 	testSearch(imgClose, "Open Shop > Get More! window")
 	testSearch(imgClickable)
 	switchToCombatTab()
-	testSearch(imgCombat)
 	testSearch(imgHire)
 	testSearch(imgCoin)
 	testSearch(imgDimmedSkill, "Lvl someone to 1")
@@ -752,7 +751,7 @@ visionRun() {
 				; Scroll down when loosing track of the upgrades button
 				if (!locateImage(imgBuyUpgrades)) {
 					scrollToBottom()
-					sleep % coinPickUpDelay
+					sleep % coinPickUpDelay * 1000
 					buyAvailableUpgrades()
 				}
 				skillSearch := true
@@ -790,7 +789,6 @@ visionRun() {
 				maxClick(xBtn, yBtn, 1, 1)
 				if (isNew) {
 					showDebugSplash("New gilded hero found @ Lvl " . zone)
-					sleep % coinPickUpDelay
 					buyAvailableUpgrades()
 				}
 				if (earlyGameMode) {
@@ -892,9 +890,7 @@ visionRun() {
 				if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
 					; ... or not, lost sight of our gilded hero
 					showDebugSplash("Lost sight of our gilded hero!")
-					if (!locateImage(imgCombat)) {
-						switchToCombatTab()
-					}
+					clickAwayImage(imgCombatTab)
 					isResuming := true
 				}
 			}
@@ -1469,6 +1465,7 @@ raid(doSpend:=0, attempts:=1) {
 		clickerStop()
 	}
 
+	clickAwayImage(imgCombatTab)
 	isResuming := true
 }
 
@@ -1605,8 +1602,8 @@ locateGilded(byref xPos, byref yPos, byref isNew, startAt:=0, earlyGameMode:=0) 
 	local xAbs, yAbs
 
 	if (startAt = 0 and !locateImage(imgBuyUpgrades)) {
-		if (!locateImage(imgCombat)) {
-			switchToCombatTab()
+		if (locateImage(imgCombatTab)) {
+			clickAwayImage(imgCombatTab)
 		}
 		scrollToBottom()
 	}
@@ -1669,9 +1666,7 @@ checkSafetyZones() {
 				playNotificationSound()
 				if (useImageSearch and locateImage(imgProgression)) {
 					msgbox,,% script,Click safety pause engaged. Resume?
-					if (!locateImage(imgCombat)) {
-						switchToCombatTab()
-					}
+					clickAwayImage(imgCombatTab)
 					isResuming := true
 					reFocus()
 				} else {
