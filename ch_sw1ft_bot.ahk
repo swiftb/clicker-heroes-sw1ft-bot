@@ -233,6 +233,10 @@ return
 
 ; -- Test Hotkeys -------------------------------------------------------------------------
 
+F1::
+	testSearch(imgClickable)
+return
+
 ; Ctrl+Alt+F1 should scroll down to the bottom
 ^!F1::
 	scrollToBottom()
@@ -1460,6 +1464,7 @@ raid(doSpend:=0, attempts:=1) {
 				sleep % raidDuration
 			}
 		}
+		getClickable()
 	}
 	if (!wasClickerRunning) {
 		clickerStop()
