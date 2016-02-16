@@ -233,10 +233,6 @@ return
 
 ; -- Test Hotkeys -------------------------------------------------------------------------
 
-F1::
-	testSearch(imgClickable)
-return
-
 ; Ctrl+Alt+F1 should scroll down to the bottom
 ^!F1::
 	scrollToBottom()
