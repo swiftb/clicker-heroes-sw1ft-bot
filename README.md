@@ -202,7 +202,7 @@ These are listed under the Optional Settings section in the `ch_bot_settings.ahk
 ### Function tests
 
 1. <kbd>Ctrl+Alt+F1</kbd> should scroll down to the bottom
-2. <kbd>Ctrl+Alt+F2</kbd> should switch to the relics tab and then back
+2. <kbd>Ctrl+Alt+F2</kbd> should switch between all used tabs
 
 If any of these fail, validate your [lib settings](#mandatory-lib-settings), then reload the script with <kbd>Alt+F5</kbd> and try again.
 

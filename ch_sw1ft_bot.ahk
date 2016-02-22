@@ -119,6 +119,7 @@ return
 	showUserSplash("Aborting...")
 	exitThread := true
 return
+Hotkey, !Pause, , P2
 
 ; Schedule a stop after finishing the current run with Shift+Pause
 +Pause::
@@ -127,10 +128,10 @@ return
 
 ; Reload the script (needed after configuration changes)
 !F5::
-	critical
 	global scheduleReload := true
 	handleScheduledReload()
 return
+Hotkey, !F5, , P2
 
 ; Schedule a script reload after finishing the current run, then restart it
 +^F5::
@@ -139,11 +140,11 @@ return
 
 ; Re-initialize coordinates (needed after moving or re-sizing the client window)
 !F6::
-	critical
 	showUserSplash("Re-initialize coordinates... ")
 	clientCheck()
 	clickerInitialize()
 return
+Hotkey, !F6, , P2
 
 ; -- Supplementary Hotkeys ----------------------------------------------------------------
 
@@ -153,9 +154,9 @@ return
 
 ; Open the Ancients Optimizer and auto-import game save data
 ^F5::
-	critical
 	openAncientsOptimizer()
 return
+Hotkey, ^F5, , P1
 
 ; Set previous ranger as re-gild target
 ^F6::
@@ -169,47 +170,47 @@ return
 	showUserSplash("Re-gild ranger set to " . rangers[reGildRanger])
 return
 
-; Move "reGildCount" gilds to the target ranger
+; Move all gilds to the target ranger
 ^F8::
-	critical
 	playNotificationSound()
-	msgbox, 4,% script,% "Move " . reGildCount . " gilds to " . rangers[reGildRanger] . "?"
+	msgbox, 4,% script,% "Move all gilds to " . rangers[reGildRanger] . "?"
 	ifmsgbox no
 		return
 	clickerPause()
-	regild(reGildRanger, reGildCount)
+	regild(reGildRanger)
 return
+Hotkey, ^F8, , P1
 
 ; Open new gilds
 ^F9::
-	critical
 	clickerPause()
 	openNewGilds()
 return
+Hotkey, ^F9, , P1
 
 ; Autosave the game
 ^F11::
-	critical
 	save()
 return
+Hotkey, ^F11, , P1
 
 ; Raid once for free with Win+F6
 #F6::
-	critical
 	raid()
 return
+Hotkey, #F6, , P1
 
 ; One paid raid
 #F7::
-	critical
 	raid(1)
 return
+Hotkey, #F7, , P1
 
 ; Paid raids
 #F8::
-	critical
 	raid(1, raidAttempts)
 return
+Hotkey, #F8, , P1
 
 ; Toggle boolean (true/false) flags with Shift+Ctrl+Fx
 
@@ -220,6 +221,7 @@ return
 +^F6::
 	toggleFlag("playNotificationSounds", playNotificationSounds)
 return
+Hotkey, +^F6, , P1
 
 +^F7::
 	toggleFlag("playWarningSounds", playWarningSounds)
@@ -310,7 +312,6 @@ testLocate(image, clickCount:=5) {
 	testSearch(imgClose, "Open Shop > Get More! window")
 	testSearch(imgClickable)
 	switchToCombatTab()
-	testSearch(imgCombat)
 	testSearch(imgHire)
 	testSearch(imgCoin)
 	testSearch(imgDimmedSkill, "Lvl someone to 1")
@@ -750,7 +751,7 @@ visionRun() {
 				; Scroll down when loosing track of the upgrades button
 				if (!locateImage(imgBuyUpgrades)) {
 					scrollToBottom()
-					sleep % coinPickUpDelay
+					sleep % coinPickUpDelay * 1000
 					buyAvailableUpgrades()
 				}
 				skillSearch := true
@@ -788,7 +789,6 @@ visionRun() {
 				maxClick(xBtn, yBtn, 1, 1)
 				if (isNew) {
 					showDebugSplash("New gilded hero found @ Lvl " . zone)
-					sleep % coinPickUpDelay
 					buyAvailableUpgrades()
 				}
 				if (earlyGameMode) {
@@ -890,9 +890,7 @@ visionRun() {
 				if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
 					; ... or not, lost sight of our gilded hero
 					showDebugSplash("Lost sight of our gilded hero!")
-					if (!locateImage(imgCombat)) {
-						switchToCombatTab()
-					}
+					clickAwayImage(imgCombatTab)
 					isResuming := true
 				}
 			}
@@ -1260,6 +1258,7 @@ save() {
 	; Close possible other dialog box
 	ControlSend,, {esc}, ahk_class %dialogBoxClass%
 
+	clickerPause()
 	openSaveDialog()
 
 	; Change the file name...
@@ -1425,6 +1424,8 @@ raid(doSpend:=0, attempts:=1) {
 	local mode := doSpend ? "Paid" : "Free"
 	showUserSplash(mode . " Raid x " . attempts)
 
+	Thread, NoTimers ; block timers if mid run
+
 	switchToClanTab()
 	sleep 1000
 	clickAwayImage(imgClanRaid)
@@ -1459,10 +1460,14 @@ raid(doSpend:=0, attempts:=1) {
 				sleep % raidDuration
 			}
 		}
+		getClickable()
 	}
 	if (!wasClickerRunning) {
 		clickerStop()
 	}
+
+	clickAwayImage(imgCombatTab)
+	isResuming := true
 }
 
 clickAwayImage(image) {
@@ -1478,8 +1483,8 @@ clickAwayImage(image) {
 	return 0
 }
 
-; Move "gildCount" gilds to given ranger
-regild(ranger, gildCount) {
+; Move all gilds to given ranger
+regild(ranger) {
 	global
 	switchToCombatTab()
 	scrollToBottom()
@@ -1490,10 +1495,10 @@ regild(ranger, gildCount) {
 	clickPos(xGildedDown, yGildedDown, top2BottomClicks)
 	sleep % scrollDelay + top2BottomClicks * scrollClickDelay
 
-	ControlSend,, {shift down}, ahk_id %chWinId%
-	clickPos(rangerPositions[ranger].x, rangerPositions[ranger].y, gildCount)
-	sleep % 1000 * gildCount/100*6
-	ControlSend,, {shift up}, ahk_id %chWinId%
+	ControlSend,, {q down}, ahk_id %chWinId%
+	clickPos(rangerPositions[ranger].x, rangerPositions[ranger].y)
+	sleep 1000
+	ControlSend,, {q up}, ahk_id %chWinId%
 
 	clickPos(xGildedClose, yGildedClose)
 	sleep % zzz * 2
@@ -1598,8 +1603,8 @@ locateGilded(byref xPos, byref yPos, byref isNew, startAt:=0, earlyGameMode:=0) 
 	local xAbs, yAbs
 
 	if (startAt = 0 and !locateImage(imgBuyUpgrades)) {
-		if (!locateImage(imgCombat)) {
-			switchToCombatTab()
+		if (locateImage(imgCombatTab)) {
+			clickAwayImage(imgCombatTab)
 		}
 		scrollToBottom()
 	}
@@ -1662,9 +1667,7 @@ checkSafetyZones() {
 				playNotificationSound()
 				if (useImageSearch and locateImage(imgProgression)) {
 					msgbox,,% script,Click safety pause engaged. Resume?
-					if (!locateImage(imgCombat)) {
-						switchToCombatTab()
-					}
+					clickAwayImage(imgCombatTab)
 					isResuming := true
 					reFocus()
 				} else {

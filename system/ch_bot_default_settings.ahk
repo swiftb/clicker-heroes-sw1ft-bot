@@ -190,8 +190,6 @@ deepRunCombo := comboGoldenLuck
 
 ; -----------------------------------------------------------------------------------------
 
-; Number of gilds to move over at a time
-reGildCount := 300
 reGildRanger := gildedRanger
 
 raidAttempts := 5 ; Requires useImageSearch set to true

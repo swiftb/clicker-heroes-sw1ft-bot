@@ -80,7 +80,7 @@ imgSkillBar := {file:"skill_bar.png", topOffset:0, leftOffset:575, bottomOffset:
 imgSkillLocked := {file:"skill_locked.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 imgLuckyStrikes := {file:"lucky_strikes.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 
-imgCombat := {file:"combat.png", topOffset:0, leftOffset:0, bottomOffset:CZBO, rightOffset:CZRO}
+imgCombatTab := {file:"combat_tab.png", topOffset:0, leftOffset:0, bottomOffset:CZBO, rightOffset:CZRO}
 
 imgHire := {file:"hire.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgCoin := {file:"coin.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
