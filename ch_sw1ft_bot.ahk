@@ -508,7 +508,6 @@ midasStart() {
 		if (locateImage(imgMercedes)) {
 			scrollDown(8)
 		} else {
-			switchToCombatTab()
 			scrollToTop()
 			scrollDown(18)
 		}
@@ -958,7 +957,6 @@ maxLevels() {
 
 	showDebugSplash("Max levels for souls")
 
-	switchToCombatTab()
 	scrollToTop()
 	reFocus()
 
