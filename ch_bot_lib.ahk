@@ -145,7 +145,7 @@ xRelic := 103
 yRelic := 380
 
 xUpgradeNo := 660
-yUpgradeNo := 530
+yUpgradeNo := 580
 
 xSalvageJunk := 280
 ySalvageJunk := 470
@@ -357,8 +357,12 @@ calculateSteamAspectRatio() {
 
 switchToCombatTab() {
 	global
-	clickPos(xCombatTab, yTab)
-	sleep % zzz * 4
+	if (useImageSearch and locateImage(imgCombatTab)) {
+		clickAwayImage(imgCombatTab)
+	} else {
+		clickPos(xCombatTab, yTab)
+		sleep % zzz * 4
+	}
 }
 
 switchToAncientTab() {
@@ -656,6 +660,19 @@ isBrowserClient() {
 ; Note that all image/pixel searches are done with absolute coordinates relative to the
 ; screen. The CH window is required to be visible and in default size for this to work.
 ; -----------------------------------------------------------------------------------------
+
+clickAwayImage(image) {
+	local xImg := 0, yImg := 0
+	if (locateImage(image)) {
+		while (locateImage(image, xImg, yImg)) {
+			clickPos(xImg, yImg, 1, 1)
+			sleep 250
+		}
+		sleep 1000
+		return 1
+	}
+	return 0
+}
 
 upLocator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, earlyGameMode:=0) {
 	return locator(image, what, xPos, yPos, retries, clickCount, absolute, startAt, earlyGameMode, 1)

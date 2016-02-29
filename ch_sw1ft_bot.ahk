@@ -312,6 +312,7 @@ testLocate(image, clickCount:=5) {
 	testSearch(imgClose, "Open Shop > Get More! window")
 	testSearch(imgClickable)
 	switchToCombatTab()
+	scrollToTop()
 	testSearch(imgHire)
 	testSearch(imgCoin)
 	testSearch(imgDimmedSkill, "Lvl someone to 1")
@@ -355,6 +356,7 @@ initRun(initMode:=0) {
 	showDebugSplash("Init Run @ Lvl " . getCurrentZone())
 
 	switchToCombatTab()
+	scrollToTop()
 	reFocus()
 
 	if (!useImageSearch) {
@@ -453,6 +455,7 @@ midasStart() {
 	showDebugSplash("Midas Start")
 
 	switchToCombatTab()
+	scrollToTop()
 	startMonitoring()
 	reFocus()
 
@@ -505,7 +508,7 @@ midasStart() {
 		if (locateImage(imgMercedes)) {
 			scrollDown(8)
 		} else {
-			switchToCombatTab()
+			scrollToTop()
 			scrollDown(18)
 		}
 		scrollToZone(midasZone2)
@@ -645,6 +648,7 @@ loopVisionRun() {
 				getClickable(useImageSearch)
 				sleep % coinPickUpDelay * 1000
 				switchToCombatTab()
+				scrollToTop()
 				ctrlClick(xLvl, yLvl+oLvl) ; Force progression
 				setProgressionMode()
 			} else {
@@ -953,7 +957,7 @@ maxLevels() {
 
 	showDebugSplash("Max levels for souls")
 
-	switchToCombatTab()
+	scrollToTop()
 	reFocus()
 
 	local xButton, yButton
@@ -1468,19 +1472,6 @@ raid(doSpend:=0, attempts:=1) {
 
 	clickAwayImage(imgCombatTab)
 	isResuming := true
-}
-
-clickAwayImage(image) {
-	local xImg := 0, yImg := 0
-	if (locateImage(image)) {
-		while (locateImage(image, xImg, yImg)) {
-			clickPos(xImg, yImg, 1, 1)
-			sleep 250
-		}
-		sleep 1000
-		return 1
-	}
-	return 0
 }
 
 ; Move all gilds to given ranger
