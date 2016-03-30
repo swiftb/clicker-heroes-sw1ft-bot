@@ -100,6 +100,11 @@ saveMode := 1 ; 1 or 2
 
 ; -- Deep/Vision Run ----------------------------------------------------------------------
 
+; Existing clickable image files:
+; clickable_bag.png, clickable_cake.png, clickable_candy.png, clickable_cane.png
+; clickable_egg.png, clickable_fish.png, clickable_heart.png
+clickableImageFiles := ["clickable_fish.png", "clickable_egg.png"] ; fish + "current other clickable"
+
 clickableHuntDelay := 5 ; hunt for a clickable every 5s
 
 ; Stop hunt when this many minutes remain of a run.

@@ -249,25 +249,6 @@ IfNotExist, ch_bot_lib_settings.ahk
 ; -- Functions
 ; -----------------------------------------------------------------------------------------
 
-getClickable(idle:=0) {
-	global
-	local xPos, yPos
-	if (idle = 0) {
-		; Break idle on purpose to get the same amount of gold every run
-		loop 3 {
-			clickPos(xMonster, yMonster)
-		}
-		clickPos(524, 487)
-		clickPos(747, 431)
-		clickPos(760, 380)
-		clickPos(873, 512)
-		clickPos(1005, 453)
-		clickPos(1053, 443)
-	} else if (locateImage(imgClickable, xPos, yPos)) {
-		clickPos(xPos, yPos, 1, 1) ; absolute pos
-	}
-}
-
 clientCheck() {
 	global
 	if (!isBrowserClient()) {
