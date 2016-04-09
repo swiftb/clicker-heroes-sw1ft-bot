@@ -119,6 +119,7 @@ return
 	showUserSplash("Aborting...")
 	exitThread := true
 return
+Hotkey, !Pause, , P2
 
 ; Schedule a stop after finishing the current run with Shift+Pause
 +Pause::
@@ -127,10 +128,10 @@ return
 
 ; Reload the script (needed after configuration changes)
 !F5::
-	critical
 	global scheduleReload := true
 	handleScheduledReload()
 return
+Hotkey, !F5, , P2
 
 ; Schedule a script reload after finishing the current run, then restart it
 +^F5::
@@ -139,11 +140,11 @@ return
 
 ; Re-initialize coordinates (needed after moving or re-sizing the client window)
 !F6::
-	critical
 	showUserSplash("Re-initialize coordinates... ")
 	clientCheck()
 	clickerInitialize()
 return
+Hotkey, !F6, , P2
 
 ; -- Supplementary Hotkeys ----------------------------------------------------------------
 
@@ -153,9 +154,9 @@ return
 
 ; Open the Ancients Optimizer and auto-import game save data
 ^F5::
-	critical
 	openAncientsOptimizer()
 return
+Hotkey, ^F5, , P1
 
 ; Set previous ranger as re-gild target
 ^F6::
@@ -169,47 +170,47 @@ return
 	showUserSplash("Re-gild ranger set to " . rangers[reGildRanger])
 return
 
-; Move "reGildCount" gilds to the target ranger
+; Move all gilds to the target ranger
 ^F8::
-	critical
 	playNotificationSound()
-	msgbox, 4,% script,% "Move " . reGildCount . " gilds to " . rangers[reGildRanger] . "?"
+	msgbox, 4,% script,% "Move all gilds to " . rangers[reGildRanger] . "?"
 	ifmsgbox no
 		return
 	clickerPause()
-	regild(reGildRanger, reGildCount)
+	regild(reGildRanger)
 return
+Hotkey, ^F8, , P1
 
 ; Open new gilds
 ^F9::
-	critical
 	clickerPause()
 	openNewGilds()
 return
+Hotkey, ^F9, , P1
 
 ; Autosave the game
 ^F11::
-	critical
 	save()
 return
+Hotkey, ^F11, , P1
 
 ; Raid once for free with Win+F6
 #F6::
-	critical
 	raid()
 return
+Hotkey, #F6, , P1
 
 ; One paid raid
 #F7::
-	critical
 	raid(1)
 return
+Hotkey, #F7, , P1
 
 ; Paid raids
 #F8::
-	critical
 	raid(1, raidAttempts)
 return
+Hotkey, #F8, , P1
 
 ; Toggle boolean (true/false) flags with Shift+Ctrl+Fx
 
@@ -220,6 +221,7 @@ return
 +^F6::
 	toggleFlag("playNotificationSounds", playNotificationSounds)
 return
+Hotkey, +^F6, , P1
 
 +^F7::
 	toggleFlag("playWarningSounds", playWarningSounds)
@@ -310,7 +312,7 @@ testLocate(image, clickCount:=5) {
 	testSearch(imgClose, "Open Shop > Get More! window")
 	testSearch(imgClickable)
 	switchToCombatTab()
-	testSearch(imgCombat)
+	scrollToTop()
 	testSearch(imgHire)
 	testSearch(imgCoin)
 	testSearch(imgDimmedSkill, "Lvl someone to 1")
@@ -344,6 +346,32 @@ return
 ; -- Functions
 ; -----------------------------------------------------------------------------------------
 
+getClickable(idle:=0) {
+	global
+	local xPos, yPos
+	if (idle = 0) {
+		; Break idle on purpose to get the same amount of gold every run
+		loop 3 {
+			clickPos(xMonster, yMonster)
+		}
+		clickPos(524, 487)
+		clickPos(747, 431)
+		clickPos(760, 380)
+		clickPos(873, 512)
+		clickPos(1005, 453)
+		clickPos(1053, 443)
+	} else {
+		loop % clickableImageFiles.Length()
+		{
+			imgClickable.file := clickableImageFiles[A_Index]
+			if (locateImage(imgClickable, xPos, yPos)) {
+				clickPos(xPos, yPos, 1, 1) ; absolute pos
+				break
+			}
+		}
+	}
+}
+
 ; Level up and upgrade all heroes
 initRun(initMode:=0) {
 	global
@@ -354,10 +382,16 @@ initRun(initMode:=0) {
 	showDebugSplash("Init Run @ Lvl " . getCurrentZone())
 
 	switchToCombatTab()
+	scrollToTop()
 	reFocus()
 
 	if (!useImageSearch) {
-		local clicks := irisLevel > 1600 ? 6 : 7
+		local clicks := 7
+		if (irisLevel > 3000) {
+			clicks := 5
+		} else if (irisLevel > 1500) {
+			clicks := 6
+		}
 		loop 6
 		{
 			upgrade(2)
@@ -447,6 +481,7 @@ midasStart() {
 	showDebugSplash("Midas Start")
 
 	switchToCombatTab()
+	scrollToTop()
 	startMonitoring()
 	reFocus()
 
@@ -499,7 +534,7 @@ midasStart() {
 		if (locateImage(imgMercedes)) {
 			scrollDown(8)
 		} else {
-			switchToCombatTab()
+			scrollToTop()
 			scrollDown(18)
 		}
 		scrollToZone(midasZone2)
@@ -611,10 +646,10 @@ loopVisionRun() {
 	logVariable("deepRunClicks", deepRunClicks, true)
 	if (endLvlActive > 0) {
 		logArray("deepRunCombo", deepRunCombo)
-		logVariable("clickableHuntDelay", clickableHuntDelay)
-		logVariable("stopHuntThreshold", stopHuntThreshold)
 	}
 	logVariable("clickerDuration", clickerDuration)
+	logVariable("clickableHuntDelay", clickableHuntDelay)
+	logVariable("stopHuntThreshold", stopHuntThreshold)
 	logVariable("saveBeforeAscending", saveBeforeAscending, true)
 	logVariable("autoAscend", autoAscend, true)
 	if (!earlyGameMode) {
@@ -639,6 +674,7 @@ loopVisionRun() {
 				getClickable(useImageSearch)
 				sleep % coinPickUpDelay * 1000
 				switchToCombatTab()
+				scrollToTop()
 				ctrlClick(xLvl, yLvl+oLvl) ; Force progression
 				setProgressionMode()
 			} else {
@@ -745,7 +781,7 @@ visionRun() {
 				; Scroll down when loosing track of the upgrades button
 				if (!locateImage(imgBuyUpgrades)) {
 					scrollToBottom()
-					sleep % coinPickUpDelay
+					sleep % coinPickUpDelay * 1000
 					buyAvailableUpgrades()
 				}
 				skillSearch := true
@@ -783,7 +819,6 @@ visionRun() {
 				maxClick(xBtn, yBtn, 1, 1)
 				if (isNew) {
 					showDebugSplash("New gilded hero found @ Lvl " . zone)
-					sleep % coinPickUpDelay
 					buyAvailableUpgrades()
 				}
 				if (earlyGameMode) {
@@ -885,13 +920,13 @@ visionRun() {
 				if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
 					; ... or not, lost sight of our gilded hero
 					showDebugSplash("Lost sight of our gilded hero!")
-					if (!locateImage(imgCombat)) {
-						switchToCombatTab()
-					}
+					clickAwayImage(imgCombatTab)
 					isResuming := true
 				}
 			}
 		}
+
+		updateProgress(zone // barUpdateDelay, endZone - zone, 1) ; show lvls remaining
 
 		zone := getCurrentZone()
 		if (zone > maxZone) {
@@ -899,7 +934,6 @@ visionRun() {
 		}
 
 		t += 1
-		updateProgress(zone // barUpdateDelay, endZone - zone, 1) ; show lvls remaining
 		sleep 1000
 
 	} until zone > endZone
@@ -908,8 +942,12 @@ visionRun() {
 		maxLevels() ; get some extra souls from levels
 	}
 
-	zoneTicks := ""
 	SetTimer, zoneTickTimer, off
+	if (useZoneDataLogger) {
+		logZoneData(zdlStart, endZone, zdlInterval)
+	}
+	zoneTicks := ""
+
 	SetTimer, comboTimer, off
 	clickerStop()
 	stopProgress()
@@ -945,7 +983,7 @@ maxLevels() {
 
 	showDebugSplash("Max levels for souls")
 
-	switchToCombatTab()
+	scrollToTop()
 	reFocus()
 
 	local xButton, yButton
@@ -969,7 +1007,7 @@ loopSpeedRun() {
 	local mode := hybridMode ? "Hybrid" : "Speed"
 	showUserSplash("Starting " . mode . " Runs!")
 
-	if (A_TitleMatchMode = "regex") {
+	if (isBrowserClient()) {
 		logVariable("browser", browser)
 		logVariable("browserTopMargin", browserTopMargin)
 	}
@@ -1058,7 +1096,7 @@ speedRun() {
 
 	showSplash("Starting Speed Run")
 
-	logVariable("zoneLvl", formatSeconds(zoneLvl))
+	logVariable("zoneLvl", zoneLvl)
 	logVariable("firstStintTime", formatSeconds(firstStintTime))
 	logVariable("lastStintTime", formatSeconds(lastStintTime))
 
@@ -1250,6 +1288,7 @@ save() {
 	; Close possible other dialog box
 	ControlSend,, {esc}, ahk_class %dialogBoxClass%
 
+	clickerPause()
 	openSaveDialog()
 
 	; Change the file name...
@@ -1335,6 +1374,7 @@ ascend(autoYes:=false) {
 	}
 
 	salvageJunkPile() ; must salvage junk relics before ascending
+	toggleMode()
 
 	showDebugSplash("Ascend @ Lvl " . getCurrentZone())
 
@@ -1344,6 +1384,7 @@ ascend(autoYes:=false) {
 	sleep % zzz * 2
 
 	stopMonitoring()
+	sleep 1000 ; wait a sec
 }
 
 salvageJunkPile() {
@@ -1413,6 +1454,8 @@ raid(doSpend:=0, attempts:=1) {
 	local mode := doSpend ? "Paid" : "Free"
 	showUserSplash(mode . " Raid x " . attempts)
 
+	Thread, NoTimers ; block timers if mid run
+
 	switchToClanTab()
 	sleep 1000
 	clickAwayImage(imgClanRaid)
@@ -1447,27 +1490,18 @@ raid(doSpend:=0, attempts:=1) {
 				sleep % raidDuration
 			}
 		}
+		getClickable()
 	}
 	if (!wasClickerRunning) {
 		clickerStop()
 	}
+
+	clickAwayImage(imgCombatTab)
+	isResuming := true
 }
 
-clickAwayImage(image) {
-	local xImg := 0, yImg := 0
-	if (locateImage(image)) {
-		while (locateImage(image, xImg, yImg)) {
-			clickPos(xImg, yImg, 1, 1)
-			sleep 250
-		}
-		sleep 1000
-		return 1
-	}
-	return 0
-}
-
-; Move "gildCount" gilds to given ranger
-regild(ranger, gildCount) {
+; Move all gilds to given ranger
+regild(ranger) {
 	global
 	switchToCombatTab()
 	scrollToBottom()
@@ -1478,10 +1512,10 @@ regild(ranger, gildCount) {
 	clickPos(xGildedDown, yGildedDown, top2BottomClicks)
 	sleep % scrollDelay + top2BottomClicks * scrollClickDelay
 
-	ControlSend,, {shift down}, ahk_id %chWinId%
-	clickPos(rangerPositions[ranger].x, rangerPositions[ranger].y, gildCount)
-	sleep % 1000 * gildCount/100*6
-	ControlSend,, {shift up}, ahk_id %chWinId%
+	ControlSend,, {q down}, ahk_id %chWinId%
+	clickPos(rangerPositions[ranger].x, rangerPositions[ranger].y)
+	sleep 1000
+	ControlSend,, {q up}, ahk_id %chWinId%
 
 	clickPos(xGildedClose, yGildedClose)
 	sleep % zzz * 2
@@ -1586,8 +1620,8 @@ locateGilded(byref xPos, byref yPos, byref isNew, startAt:=0, earlyGameMode:=0) 
 	local xAbs, yAbs
 
 	if (startAt = 0 and !locateImage(imgBuyUpgrades)) {
-		if (!locateImage(imgCombat)) {
-			switchToCombatTab()
+		if (locateImage(imgCombatTab)) {
+			clickAwayImage(imgCombatTab)
 		}
 		scrollToBottom()
 	}
@@ -1650,9 +1684,7 @@ checkSafetyZones() {
 				playNotificationSound()
 				if (useImageSearch and locateImage(imgProgression)) {
 					msgbox,,% script,Click safety pause engaged. Resume?
-					if (!locateImage(imgCombat)) {
-						switchToCombatTab()
-					}
+					clickAwayImage(imgCombatTab)
 					isResuming := true
 					reFocus()
 				} else {
@@ -1729,19 +1761,55 @@ farmOrFight() {
 storeZoneTick() {
 	global
 	local cz := getCurrentZone()
-	local pz := cz - 1
-	local currentTime := A_TickCount
+	if (cz > 0) {
+		local pz := cz - 1
+		local currentTime := A_TickCount
 
-	if (!zoneTicks.HasKey(pz)) {
-		zoneTicks[pz] := currentTime
-	}
-	if (!zoneTicks.HasKey(cz)) {
-		zoneTicks[cz] := currentTime
-		local elapsed := (zoneTicks[cz] - zoneTicks[pz]) / 1000
-		if (mod(cz-4, 5) = 0 and elapsed >= 20) {
-			showDebugSplash("Lvl " . pz . " -> " . cz . " : " . formatSeconds(elapsed))
+		if (!zoneTicks.HasKey(pz)) {
+			zoneTicks[pz] := currentTime
+		}
+		if (!zoneTicks.HasKey(cz)) {
+			zoneTicks[cz] := currentTime
+			local elapsed := (zoneTicks[cz] - zoneTicks[pz]) / 1000
+			if (mod(cz-4, 5) = 0 and elapsed >= 20) {
+				showDebugSplash("Lvl " . pz . " -> " . cz . " : " . formatSeconds(elapsed))
+			}
 		}
 	}
+}
+
+logZoneData(zStart, zEnd, zInterval) {
+	global
+	local startZone := zStart < zoneTicks.MinIndex() ? zoneTicks.MinIndex() : zStart
+	local endZone := zEnd > zoneTicks.MaxIndex() ? zoneTicks.MaxIndex() : zEnd
+	local intervals := ceil((endZone - startZone) / zInterval)
+
+	local zone := startZone
+	local prevZone := zone - zInterval
+
+	local totalTime := 0
+	local intervalTime := 0
+
+	local t := "`t" ; tab
+	local nl := "`n" ; new line
+	local zoneData := "Zones: " . startZone . " -> " . endZone . ", Interval: " . zInterval
+	zoneData .= nl . "Zone" . t . "Time" . t . "Diff (s)"
+	zoneData .= nl . zone . t . "00:00:00" . t . "0"
+
+	loop % intervals {
+		zone += zInterval
+		if (zone > endZone) {
+			zone := endZone
+		}
+		prevZone += zInterval
+
+		totalTime := (zoneTicks[zone] - zoneTicks[startZone]) / 1000
+		intervalTime := (zoneTicks[zone] - zoneTicks[prevZone]) / 1000
+
+		zoneData .= nl . zone . t . formatSeconds(totalTime) . t . round(intervalTime, 1)
+	}
+
+	logger(zoneData, "INFO", "_zone_data")
 }
 
 ; -----------------------------------------------------------------------------------------

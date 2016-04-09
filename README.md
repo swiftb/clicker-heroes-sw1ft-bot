@@ -112,6 +112,9 @@ Unless they already exist, three user settings files will be created as copies o
 
 ## Configuration
 
+* In Windows:
+    - Set display scaling to 100% (96 DPI)
+    - Use True Color (32 bit)
 * In Clicker Heroes, turn off:
     - __Show damage texts__ (can cause progression mode issues if left on)
     - __Show relic found popups__
@@ -199,7 +202,7 @@ These are listed under the Optional Settings section in the `ch_bot_settings.ahk
 ### Function tests
 
 1. <kbd>Ctrl+Alt+F1</kbd> should scroll down to the bottom
-2. <kbd>Ctrl+Alt+F2</kbd> should switch to the relics tab and then back
+2. <kbd>Ctrl+Alt+F2</kbd> should switch between all used tabs
 
 If any of these fail, validate your [lib settings](#mandatory-lib-settings), then reload the script with <kbd>Alt+F5</kbd> and try again.
 
@@ -216,7 +219,7 @@ The Vision run is usually not that picky about game state, just try start it wit
 -3 | No Clicker Heroes window found   | Open the client
 -2 | No vision                        | Set `useImageSearch` to **true**
 -1 | Vision, but not in browser       | Use the browser client
- 0 | Vision, but not finding anything | Use standard (100%, 96 DPI) Windows sizes
+ 0 | Vision, but not finding anything | In Windows, use standard 100% (96 DPI) display scaling in (32 bit) True Color
 
 ## Main Hotkeys
 
@@ -262,7 +265,7 @@ These hotkeys can be executed while a speed, deep or vision run is active.
 | Hotkey | Function |
 | ------ | -------- |
 <kbd>Ctrl+Alt+F1</kbd>  | Should scroll down to the bottom
-<kbd>Ctrl+Alt+F2</kbd>  | Should switch to the relics tab and then back
+<kbd>Ctrl+Alt+F2</kbd>  | Should switch between all used tabs
 <kbd>Alt+F1</kbd>       | Test the `getClickable()` function
 <kbd>Alt+F2</kbd>       | Test the `initRun()` function
 <kbd>Alt+F3</kbd>       | Test the `speedRun()` function

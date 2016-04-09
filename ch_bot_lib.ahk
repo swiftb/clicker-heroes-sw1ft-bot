@@ -80,7 +80,7 @@ imgSkillBar := {file:"skill_bar.png", topOffset:0, leftOffset:575, bottomOffset:
 imgSkillLocked := {file:"skill_locked.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 imgLuckyStrikes := {file:"lucky_strikes.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 
-imgCombat := {file:"combat.png", topOffset:0, leftOffset:0, bottomOffset:CZBO, rightOffset:CZRO}
+imgCombatTab := {file:"combat_tab.png", topOffset:0, leftOffset:0, bottomOffset:CZBO, rightOffset:CZRO}
 
 imgHire := {file:"hire.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgCoin := {file:"coin.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
@@ -136,16 +136,16 @@ yYes := 510 ; redesigned ascend window
 
 oTab := 69 ; offset to next tab
 xCombatTab := 52
-xAncientTab := xCombatTab + oTab * 3
-xRelicTab := xAncientTab + oTab
-xClanTab := xRelicTab + oTab
+xAncientTab := xCombatTab + oTab*3
+xRelicTab := xCombatTab + oTab*4 + 10 ; Halloween fix
+xClanTab := xCombatTab + oTab*5
 yTab := 130
 
 xRelic := 103
 yRelic := 380
 
 xUpgradeNo := 660
-yUpgradeNo := 530
+yUpgradeNo := 580
 
 xSalvageJunk := 280
 ySalvageJunk := 470
@@ -249,28 +249,9 @@ IfNotExist, ch_bot_lib_settings.ahk
 ; -- Functions
 ; -----------------------------------------------------------------------------------------
 
-getClickable(idle:=0) {
-	global
-	local xPos, yPos
-	if (idle = 0) {
-		; Break idle on purpose to get the same amount of gold every run
-		loop 3 {
-			clickPos(xMonster, yMonster)
-		}
-		clickPos(524, 487)
-		clickPos(747, 431)
-		clickPos(760, 380)
-		clickPos(873, 512)
-		clickPos(1005, 453)
-		clickPos(1053, 443)
-	} else if (locateImage(imgClickable, xPos, yPos)) {
-		clickPos(xPos, yPos, 1, 1) ; absolute pos
-	}
-}
-
 clientCheck() {
 	global
-	if (A_TitleMatchMode = 3) {
+	if (!isBrowserClient()) {
 		calculateSteamAspectRatio() ; Steam
 	} else {
 		local xPos, yPos
@@ -357,8 +338,12 @@ calculateSteamAspectRatio() {
 
 switchToCombatTab() {
 	global
-	clickPos(xCombatTab, yTab)
-	sleep % zzz * 4
+	if (useImageSearch and locateImage(imgCombatTab)) {
+		clickAwayImage(imgCombatTab)
+	} else {
+		clickPos(xCombatTab, yTab)
+		sleep % zzz * 4
+	}
 }
 
 switchToAncientTab() {
@@ -517,7 +502,7 @@ logVariable(name, value, isBool:=0) {
 }
 
 ; 0:OFF, 1:WARN, 2:USER, 3:INFO, 4:DEBUG
-logger(msg, level) {
+logger(msg, level, fileSuffix:="") {
 	global
 	local localTime := A_Now
 	local currentDate
@@ -526,7 +511,7 @@ logger(msg, level) {
 	if (severityLevels[level] <= logSeverityLevel) {
 		FormatTime, currentDate, localTime, yyyy-MM-dd
 		FormatTime, currentDateTime, localTime, yyyy-MM-dd HH:mm:ss
-		fileName := "logs\" . currentDate . ".txt"
+		fileName := "logs\" . currentDate . fileSuffix . ".txt"
 		FileAppend, % currentDateTime . "`t" . level . "`t" . msg . "`n", %fileName%
 	}
 }
@@ -580,7 +565,7 @@ toggleFlag(flagName, byref flag) {
 screenShot() {
 	global
 	local activeWinId
-	if (A_TitleMatchMode = 3) { ; Steam only
+	if (!isBrowserClient()) { ; Steam only
 		WinGet, activeWinId, ID, A ; remember current active window...
 		WinActivate, ahk_id %chWinId%
 		send {f12 down}{f12 up} ; screenshot
@@ -633,7 +618,7 @@ verticalSkills(x) {
 getCurrentZone() {
 	global
 	local title, currentZone
-	if (A_TitleMatchMode = "regex") {
+	if (isBrowserClient()) {
 		WinGetTitle, title, ahk_id %chWinId%
 		currentZone := SubStr(title, 5, InStr(title, "-") - 6)
 		return currentZone
@@ -648,10 +633,27 @@ reFocus() {
 	sleep 25
 }
 
+isBrowserClient() {
+	return A_TitleMatchMode = "regex"
+}
+
 ; -----------------------------------------------------------------------------------------
 ; Note that all image/pixel searches are done with absolute coordinates relative to the
 ; screen. The CH window is required to be visible and in default size for this to work.
 ; -----------------------------------------------------------------------------------------
+
+clickAwayImage(image) {
+	local xImg := 0, yImg := 0
+	if (locateImage(image)) {
+		while (locateImage(image, xImg, yImg)) {
+			clickPos(xImg, yImg, 1, 1)
+			sleep 250
+		}
+		sleep 1000
+		return 1
+	}
+	return 0
+}
 
 upLocator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, earlyGameMode:=0) {
 	return locator(image, what, xPos, yPos, retries, clickCount, absolute, startAt, earlyGameMode, 1)
@@ -663,9 +665,11 @@ locator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute
 
 	local attempts := ceil(45 / clickCount)
 	local attempt := 0
+	local keepGoing := true
 
 	while (!locateImage(image, xPos, yPos, absolute, startAt, directionUp)) {
-		if (++attempt <= attempts and !locateImage(imgCid)) {
+		keepGoing := directionUp ? !locateImage(imgCid) : true
+		if (++attempt <= attempts and keepGoing) {
 			if (directionUp) {
 				scrollUp(clickCount)
 				startAt := 0 ; only offset once

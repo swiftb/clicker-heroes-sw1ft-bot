@@ -64,10 +64,17 @@ forcedMidasStart := false ; use only for active play with custom Midas combo
 levelSolomon := false ; feed solomon after ascending?
 solomonLevels := 5
 
+; Enabled will start to log zone data after each completed run
+useZoneDataLogger := false
+zdlStart := irisLevel + 1
+zdlInterval := 35
+
 ; -- Speed/Vision Run ---------------------------------------------------------------------
 
 activateSkillsAtStart := true ; usually needed in the late game to get going after ascending
 
+; If you don't need the full skills duration, lower this setting to get back the idle bonus faster.
+; E.g. when using the Vision Run in early game mode, this setting should be set to 30.
 clickerDuration := 90 ; monster clicker duration (in seconds). 0 = endless
 
 autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention! <Shift+Ctrl+F1>
@@ -92,6 +99,11 @@ saveButtonClassNN := "Button2" ; Button1 or Button2
 saveMode := 1 ; 1 or 2
 
 ; -- Deep/Vision Run ----------------------------------------------------------------------
+
+; Existing clickable image files:
+; clickable_bag.png, clickable_cake.png, clickable_candy.png, clickable_cane.png
+; clickable_egg.png, clickable_fish.png, clickable_heart.png
+clickableImageFiles := ["clickable_fish.png", "clickable_egg.png"] ; fish + "current other clickable"
 
 clickableHuntDelay := 5 ; hunt for a clickable every 5s
 
@@ -183,8 +195,6 @@ deepRunCombo := comboGoldenLuck
 
 ; -----------------------------------------------------------------------------------------
 
-; Number of gilds to move over at a time
-reGildCount := 300
 reGildRanger := gildedRanger
 
 raidAttempts := 5 ; Requires useImageSearch set to true
