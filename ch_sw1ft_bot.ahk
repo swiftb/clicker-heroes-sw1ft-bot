@@ -119,7 +119,7 @@ return
 	showUserSplash("Aborting...")
 	exitThread := true
 return
-Hotkey, !Pause, , P2
+Hotkey, !Pause, , P10
 
 ; Schedule a stop after finishing the current run with Shift+Pause
 +Pause::
@@ -131,7 +131,7 @@ return
 	global scheduleReload := true
 	handleScheduledReload()
 return
-Hotkey, !F5, , P2
+Hotkey, !F5, , P10
 
 ; Schedule a script reload after finishing the current run, then restart it
 +^F5::
@@ -144,7 +144,7 @@ return
 	clientCheck()
 	clickerInitialize()
 return
-Hotkey, !F6, , P2
+Hotkey, !F6, , P10
 
 ; -- Supplementary Hotkeys ----------------------------------------------------------------
 
@@ -156,7 +156,7 @@ return
 ^F5::
 	openAncientsOptimizer()
 return
-Hotkey, ^F5, , P1
+Hotkey, ^F5, , P5
 
 ; Set previous ranger as re-gild target
 ^F6::
@@ -179,38 +179,38 @@ return
 	clickerPause()
 	regild(reGildRanger)
 return
-Hotkey, ^F8, , P1
+Hotkey, ^F8, , P5
 
 ; Open new gilds
 ^F9::
 	clickerPause()
 	openNewGilds()
 return
-Hotkey, ^F9, , P1
+Hotkey, ^F9, , P5
 
 ; Autosave the game
 ^F11::
 	save()
 return
-Hotkey, ^F11, , P1
+Hotkey, ^F11, , P5
 
 ; Raid once for free with Win+F6
 #F6::
 	raid()
 return
-Hotkey, #F6, , P1
+Hotkey, #F6, , P5
 
 ; One paid raid
 #F7::
 	raid(1)
 return
-Hotkey, #F7, , P1
+Hotkey, #F7, , P5
 
 ; Paid raids
 #F8::
 	raid(1, raidAttempts)
 return
-Hotkey, #F8, , P1
+Hotkey, #F8, , P5
 
 ; Toggle boolean (true/false) flags with Shift+Ctrl+Fx
 
@@ -221,7 +221,7 @@ return
 +^F6::
 	toggleFlag("playNotificationSounds", playNotificationSounds)
 return
-Hotkey, +^F6, , P1
+Hotkey, +^F6, , P5
 
 +^F7::
 	toggleFlag("playWarningSounds", playWarningSounds)
@@ -719,22 +719,21 @@ visionRun() {
 	local locateBuyUpgradesDelay := 20
 	local progressCheckDelay := 10
 
-	local zone := getCurrentZone()
-	zoneTicks := {}
-	local maxZone := zone
-	local initiatedZone := 0
-	farmZone := 0
-	local initZone := 146
-	local endZone := getEndZone()
-	local stopHuntZone := endZone - ceil(stopHuntThreshold * 250 / 7)
-
 	local t := 0
 	local elapsedTime := 0
 
 	local comboDelay := deepRunCombo[1]
 	comboIndex := 2
 
+	manualProgression := false
 	if (earlyGameMode) {
+		switchToCombatTab()
+		setProgressionMode(true)
+		if (!locateImage(imgProgression)) {
+			manualProgression := true
+			SetTimer, nextZoneTimer, 500, 1 ; prio + 1
+		}
+		showProgressBar := false
 		endLvlIdle := oldEndLvlIdle
 		endLvlActive := oldEndLvlActive
 		locateGildedDelay := 6
@@ -744,8 +743,17 @@ visionRun() {
 	local timeToAscend := 0
 	local zoneClearTime := 0
 	secPerMonster := 0
+
+	farmZone := 0
 	farmTime := 0
 	isFarming := false
+
+	local zone := getCurrentZone()
+	zoneTicks := {}
+	local initiatedZone := 0
+	local initZone := 146
+	local endZone := getEndZone()
+	local stopHuntZone := endZone - ceil(stopHuntThreshold * 250 / 7)
 
 	local mode := earlyGameMode ? "Early Game Mode " : ""
 	showSplash("Starting " . mode . "Vision Run")
@@ -761,6 +769,7 @@ visionRun() {
 	{
 		if (exitThread) {
 			zoneTicks := ""
+			SetTimer, nextZoneTimer, off
 			SetTimer, zoneTickTimer, off
 			SetTimer, comboTimer, off
 			clickerStop()
@@ -777,6 +786,18 @@ visionRun() {
 
 		; Early game mode until "power 5" zone
 		if (earlyGameMode and zone < power5Zone) {
+			if (manualProgression) {
+				if (zone > 100) {
+					manualProgression := false
+					SetTimer, nextZoneTimer, off
+				} else if (mod(t, 30) = 0 and locateImage(imgBoss)) {
+					; Make sure we are not farming on a boss
+					m := mod(zone, 5)
+					farmZone := m = 0 ? m - 1 : m ; don't farm on the boss lvl
+					startFarming(farmZone, 60)
+					scrollToZone(farmZone)
+				}
+			}
 			if (mod(t, locateBuyUpgradesDelay) = 0 or isResuming) {
 				; Scroll down when loosing track of the upgrades button
 				if (!locateImage(imgBuyUpgrades)) {
@@ -806,11 +827,8 @@ visionRun() {
 				secPerMonster := zoneClearTime / (10 - kumawakamaruLevel)
 				if (secPerMonster >= 2) {
 					farmTime := ceil(secPerMonster * 25) ; 20, 25 or 30?
-					showDebugSplash("Farming for " . farmTime . "s")
-					setFarmMode(1)
-					SetTimer, farmTimer, % -farmTime * 1000, 1
-					isFarming := true
 					farmZone := zone
+					startFarming(farmZone, farmTime)
 				}
 			}
 		} else if (mod(t, locateGildedDelay) = 0 or isResuming) {
@@ -864,7 +882,7 @@ visionRun() {
 					}
 					Gosub, comboTimer
 				}
-				setProgressionMode()
+				setProgressionMode(manualProgression)
 			}
 		}
 
@@ -925,14 +943,8 @@ visionRun() {
 				}
 			}
 		}
-
 		updateProgress(zone // barUpdateDelay, endZone - zone, 1) ; show lvls remaining
-
 		zone := getCurrentZone()
-		if (zone > maxZone) {
-			maxZone := zone
-		}
-
 		t += 1
 		sleep 1000
 
@@ -941,6 +953,8 @@ visionRun() {
 	if (earlyGameMode) {
 		maxLevels() ; get some extra souls from levels
 	}
+
+	SetTimer, nextZoneTimer, off
 
 	SetTimer, zoneTickTimer, off
 	if (useZoneDataLogger) {
@@ -955,6 +969,14 @@ visionRun() {
 
 	elapsedTime := (A_TickCount - startTime) / 1000
 	showSplash("Vision Run duration: " . formatSeconds(elapsedTime))
+}
+
+startFarming(farmZone, farmTime) {
+	global
+	showDebugSplash("Farm @ Lvl " . farmZone . " for " . farmTime . "s")
+	setFarmMode(1)
+	SetTimer, farmTimer, % -farmTime * 1000, 1
+	isFarming := true
 }
 
 isActiveZone(zone) {
@@ -1533,7 +1555,7 @@ toggleMode(toggle:=1) {
 
 setFarmMode(silent:=0) {
 	global
-	if (locateImage(imgProgression)) {
+	if (!manualProgression and locateImage(imgProgression)) {
 		toggleMode()
 		if (!silent) {
 			showDebugSplash("Set Farm Mode")
@@ -1543,7 +1565,7 @@ setFarmMode(silent:=0) {
 
 setProgressionMode(silent:=0) {
 	global
-	if (!locateImage(imgProgression)) {
+	if (!manualProgression and !locateImage(imgProgression)) {
 		toggleMode()
 		if (!silent) {
 			showDebugSplash("Set Progression Mode")
@@ -1712,6 +1734,13 @@ farmOrFight() {
 	local bossZone := farmZone + 1
 	local maxTime := 1.5 ; s
 
+	isFarming := false
+
+	if (manualProgression) {
+		zoneMovedWithin(bossZone, 31)
+		return
+	}
+
 	setProgressionMode(silent) ; Toggle progress on, then
 	if (zoneMovedWithin(farmZone, maxTime) > 0) { ; if we reached the boss in time
 		scrollToZone(farmZone) ; scroll back
@@ -1722,7 +1751,6 @@ farmOrFight() {
 			local elapsedTime := (A_TickCount - startTime - zzz) // 1000
 			if (zoneMoved > 0) {
 				showDebugSplash("Fight duration: " . elapsedTime . "s")
-				isFarming := false
 				lvlUpDelay := 6 ; reset
 				return
 			} else {
@@ -1739,7 +1767,6 @@ farmOrFight() {
 	if (bossZone >= 110 and secPerMonster >= 5 and locateImage(imgLuckyStrikes)) {
 		; If available, use skills on tough bosses
 		showDebugSplash("Push with skills @ Lvl " . getCurrentZone())
-		isFarming := false
 		if (!getClickerStatus()) {
 			clickerStart(clickerDuration)
 		}
@@ -1747,6 +1774,7 @@ farmOrFight() {
 		activateSkills("2-3")
 	} else {
 		setFarmMode(silent)
+		isFarming := true
 		sleep % zzz
 		if (farmZone < getCurrentZone()) {
 			; Make sure we are farming on the correct lvl
@@ -1755,6 +1783,14 @@ farmOrFight() {
 		showDebugSplash("Keep farming!")
 		SetTimer, farmTimer, % -farmTime * 1000, 1
 		lvlUpDelay := 18 ; up the chance to lvl up next hero
+	}
+}
+
+nextZone() {
+	global
+	if (!isFarming) {
+		clickPos(xPlusOneZone, yZone)
+		sleep % zzz
 	}
 }
 
@@ -1842,4 +1878,8 @@ return
 
 zoneTickTimer:
 	storeZoneTick()
+return
+
+nextZoneTimer:
+	nextZone()
 return

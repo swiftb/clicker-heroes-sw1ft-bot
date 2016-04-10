@@ -83,7 +83,7 @@ These recommendations should give you enough gold after ascending with a *[click
     - If the gilded hero is not visible after a clickable or Midas start, a transitional hero must be gilded
 
 * [Early Game Mode] World Ascensions > 2
-    - Need the Progression Mode option and the Buy Available Upgrades button
+    - Need the Buy Available Upgrades button. Recommendation: Save 100 rubies and buy two Quick Ascension's @ Lvl 10 after every Trancend.
 
 **Midas start requirements:**
 

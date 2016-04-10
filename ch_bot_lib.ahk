@@ -75,6 +75,7 @@ imgProgression := {file:"progression.png", topOffset:0, leftOffset:1090, bottomO
 imgAscend := {file:"ascend.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 
 imgClickable := {file:"clickable.png", topOffset:CZTO, leftOffset:CZLO, bottomOffset:0, rightOffset:0}
+imgBoss := {file:"boss_clock.png", topOffset:155, leftOffset:805, bottomOffset:-445, rightOffset:-290}
 
 imgSkillBar := {file:"skill_bar.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 imgSkillLocked := {file:"skill_locked.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
@@ -220,6 +221,7 @@ ySkill2nd := 410 ; at bottom
 
 xPrevZone := 679
 xMiddleZone := 858
+xPlusOneZone := 922
 xNextZone := 1044
 yZone := 70
 
