@@ -14,7 +14,7 @@
 SetControlDelay, -1
 
 scriptName=CH Sw1ft Bot
-scriptVersion=3.x
+scriptVersion=4.x
 minLibVersion=1.5
 
 script := scriptName . " v" . scriptVersion
@@ -728,7 +728,7 @@ visionRun() {
 	manualProgression := false
 	if (earlyGameMode) {
 		switchToCombatTab()
-		setProgressionMode(true)
+		setProgressionMode()
 		if (!locateImage(imgProgression)) {
 			manualProgression := true
 			SetTimer, nextZoneTimer, 500, 1 ; prio + 1
@@ -792,10 +792,9 @@ visionRun() {
 					SetTimer, nextZoneTimer, off
 				} else if (mod(t, 30) = 0 and locateImage(imgBoss)) {
 					; Make sure we are not farming on a boss
-					m := mod(zone, 5)
-					farmZone := m = 0 ? m - 1 : m ; don't farm on the boss lvl
-					startFarming(farmZone, 60)
+					farmZone := getCurrentZone() - 1
 					scrollToZone(farmZone)
+					startFarming(farmZone, 60)
 				}
 			}
 			if (mod(t, locateBuyUpgradesDelay) = 0 or isResuming) {
@@ -811,7 +810,6 @@ visionRun() {
 			if (mod(t, lvlUpDelay) = 0) {
 				; Level heroes bottom up
 				if (locateImageUp(imgCoin, xBtn, yBtn)) {
-					xBtn := 79
 					yBtn -= 8
 				}
 			}
@@ -882,7 +880,7 @@ visionRun() {
 					}
 					Gosub, comboTimer
 				}
-				setProgressionMode(manualProgression)
+				setProgressionMode()
 			}
 		}
 
@@ -974,7 +972,7 @@ visionRun() {
 startFarming(farmZone, farmTime) {
 	global
 	showDebugSplash("Farm @ Lvl " . farmZone . " for " . farmTime . "s")
-	setFarmMode(1)
+	setFarmMode()
 	SetTimer, farmTimer, % -farmTime * 1000, 1
 	isFarming := true
 }
@@ -1553,7 +1551,7 @@ toggleMode(toggle:=1) {
 	}
 }
 
-setFarmMode(silent:=0) {
+setFarmMode(silent:=1) {
 	global
 	if (!manualProgression and locateImage(imgProgression)) {
 		toggleMode()
@@ -1563,7 +1561,7 @@ setFarmMode(silent:=0) {
 	}
 }
 
-setProgressionMode(silent:=0) {
+setProgressionMode(silent:=1) {
 	global
 	if (!manualProgression and !locateImage(imgProgression)) {
 		toggleMode()
@@ -1730,7 +1728,6 @@ zoneMovedWithin(zone, sec) {
 
 farmOrFight() {
 	global
-	local silent := true
 	local bossZone := farmZone + 1
 	local maxTime := 1.5 ; s
 
@@ -1741,7 +1738,7 @@ farmOrFight() {
 		return
 	}
 
-	setProgressionMode(silent) ; Toggle progress on, then
+	setProgressionMode() ; Toggle progress on, then
 	if (zoneMovedWithin(farmZone, maxTime) > 0) { ; if we reached the boss in time
 		scrollToZone(farmZone) ; scroll back
 		local startTime := A_TickCount
@@ -1770,10 +1767,10 @@ farmOrFight() {
 		if (!getClickerStatus()) {
 			clickerStart(clickerDuration)
 		}
-		setProgressionMode(silent)
+		setProgressionMode()
 		activateSkills("2-3")
 	} else {
-		setFarmMode(silent)
+		setFarmMode()
 		isFarming := true
 		sleep % zzz
 		if (farmZone < getCurrentZone()) {

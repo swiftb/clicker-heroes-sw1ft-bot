@@ -3,7 +3,7 @@
 ; -- Mandatory Configuration
 ; -----------------------------------------------------------------------------------------
 
-SetTitleMatchMode, 3 ; Steam [3] or browser [regex] version?
+SetTitleMatchMode, regex ; Steam [3] or browser [regex] version?
 
 browser := "Opera" ; browser name used by the title matching
 
