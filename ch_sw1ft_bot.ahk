@@ -309,7 +309,6 @@ testLocate(image, clickCount:=5) {
 	testSearch(imgQuality, "Set high quality")
 	testSearch(imgSmile, "Set low quality")
 	testSearch(imgProgression, "Toggle progression mode")
-	testSearch(imgClose, "Open Shop > Get More! window")
 	testSearch(imgClickable)
 	switchToCombatTab()
 	scrollToTop()
@@ -711,7 +710,6 @@ visionRun() {
 	local hasBomberBuff := gildedRanger = 12 ? true : false
 	local hasGogBuff := gildedRanger = 13 ? true : false
 
-	local xClose := 0, yClose := 0
 	local xBtn := 0, yBtn := 0, isNew := 0
 	local xSkill := 0, ySkill := 0, skillSearch := false
 
@@ -763,6 +761,7 @@ visionRun() {
 
 	startProgress("Vision Run", zone // barUpdateDelay, endZone // barUpdateDelay)
 
+	SetTimer, betaWarningTimer, 5000, 2 ; TODO: REMOVE AFTER BETA
 	SetTimer, zoneTickTimer, 500
 
 	loop
@@ -770,6 +769,7 @@ visionRun() {
 		if (exitThread) {
 			zoneTicks := ""
 			SetTimer, nextZoneTimer, off
+			SetTimer, betaWarningTimer, off ; TODO: REMOVE AFTER BETA
 			SetTimer, zoneTickTimer, off
 			SetTimer, comboTimer, off
 			clickerStop()
@@ -844,16 +844,11 @@ visionRun() {
 				skillSearch := true
 				isResuming := false
 			} else {
-				; If any, close auto-opened buy more rubies window
-				if (locateImage(imgClose, xClose, yClose)) {
-					clickPos(xClose, yClose, 1, 1)
-				} else {
-					showWarningSplash("Could not locate any gilded hero! Restarting...")
-					; Restart
-					scrollToZone(irisLevel - 1)
-					setFarmMode()
-					break
-				}
+				showWarningSplash("Could not locate any gilded hero!")
+				; Restart
+				; scrollToZone(irisLevel - 1)
+				; setFarmMode()
+				; break
 			}
 		}
 
@@ -953,7 +948,7 @@ visionRun() {
 	}
 
 	SetTimer, nextZoneTimer, off
-
+	SetTimer, betaWarningTimer, off ; TODO: REMOVE AFTER BETA
 	SetTimer, zoneTickTimer, off
 	if (useZoneDataLogger) {
 		logZoneData(zdlStart, endZone, zdlInterval)
@@ -1879,4 +1874,11 @@ return
 
 nextZoneTimer:
 	nextZone()
+return
+
+betaWarningTimer:
+	; If any, close auto-opened beta warning window
+	if (locateImage(imgClose)) {
+		clickPos(580, 470)
+	}
 return
