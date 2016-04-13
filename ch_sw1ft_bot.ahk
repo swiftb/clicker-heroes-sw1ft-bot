@@ -761,7 +761,7 @@ visionRun() {
 
 	startProgress("Vision Run", zone // barUpdateDelay, endZone // barUpdateDelay)
 
-	SetTimer, betaWarningTimer, 5000, 2 ; TODO: REMOVE AFTER BETA
+	SetTimer, betaWarningTimer, 2500, 2 ; TODO: REMOVE AFTER BETA
 	SetTimer, zoneTickTimer, 500
 
 	loop
@@ -1879,6 +1879,6 @@ return
 betaWarningTimer:
 	; If any, close auto-opened beta warning window
 	if (locateImage(imgClose)) {
-		clickPos(580, 470)
+		clickAwayImage(imgClose)
 	}
 return
