@@ -3,10 +3,7 @@
 ## Speed Run
 
 **Q:** Why didn’t the bot level my gilded ranger?  
-**A:** Use the Siyalatas [regilding chart][] to make sure you are gilded correctly and the [Ancients Calculator][] to optimally level your Ancients. Any transitional hero/ranger used by the bot must also be gilded.  
-
-**Q:** The bot missed to buy all upgrades on my gilded ranger!?  
-**A:** Most likely caused by a low Iris. Make sure to (as a minimum) level it up to be within 1000 levels of your *optimal zone*. The `firstStintAdjustment` setting can temporarily be used to _compensate_ (35 levels ~= 60s) for this.
+**A:** Use the Siyalatas [regilding chart][] to make sure you are gilded correctly and the [Ancients Optimizer][] to optimally level your Ancients. Any transitional hero/ranger used by the bot must also be gilded.  
 
 **Q:** Even with `activateSkillsAtStart` set to `false` the Speed run is breaking idle at the start. Is that a bug?  
 **A:** No, without image recognition to spot the clickables, it just clicks on all known spawn locations. Then to prevent a toggling behavior, it actually breaks idle on purpose.
@@ -14,9 +11,6 @@
 **Q:** Why did the bot seem to get stuck after ascending?  
 **A1:** It needs a *clickable* to get going, so leave them alone!  
 **A2:** If `activateSkillsAtStart` is set to `false`, you might need a higher Chronos to not get stuck at the start before Idle kicks in.
-
-**Q:** Is the Speed run always two stages?  
-**A:** No. Depending on your Iris, it can be one or two stages. One if Iris is high enough to start right away on your gilded ranger, otherwise two.
 
 ## Hybrid/Deep Run
 
@@ -27,9 +21,6 @@
 
 **Q:** I get a "Start failed (state = 0)!" warning, what's wrong?  
 **A:** In Windows, use standard 100% (96 DPI) display scaling in (32 bit) True Color
-
-**Q:** The Vision run gets stuck before reaching my gilded ranger!?  
-**A:** You need one transitional hero/ranger (with 1 gild) that the bot can find after the clickable/Midas start.
 
 **Q:** Why isn't the Steam client supported?  
 **A:** The Vision run utilizes the level shown in the browser client title bar. Something the Steam client lacks.
@@ -73,7 +64,7 @@
 **A:** Ask me on [Reddit][home]. Your game state via the [Clicker Lister][] always help.
 
 [AutoHotkey]: http://ahkscript.org/
-[Ancients Calculator]: http://hsoptimizer.github.io/ancient/
+[Ancients Optimizer]: http://philni.neocities.org/ancientssoul.html
 [regilding chart]: https://redd.it/3frj62
 [home]: https://redd.it/3wxwfu
-[Clicker Lister]: http://dobruj01.github.io/clicker-lister/
+[Clicker Lister]: http://alexbonjour.github.io/clicker-lister/

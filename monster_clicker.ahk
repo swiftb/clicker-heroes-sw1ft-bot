@@ -26,7 +26,7 @@ SetBatchLines, -1
 
 scriptName=Monster Clicker
 scriptVersion=1.3
-minLibVersion=1.5
+minLibVersion=4.0
 
 script := scriptName . " v" . scriptVersion
 tag := "[Clicker] "

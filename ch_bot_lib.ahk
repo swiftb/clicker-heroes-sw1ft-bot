@@ -5,7 +5,7 @@
 
 CoordMode, Pixel, Screen
 
-libVersion=1.5
+libVersion=4.0
 
 winName := "Clicker Heroes"
 
@@ -79,7 +79,6 @@ imgBoss := {file:"boss_clock.png", topOffset:155, leftOffset:805, bottomOffset:-
 
 imgSkillBar := {file:"skill_bar.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 imgSkillLocked := {file:"skill_locked.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
-imgLuckyStrikes := {file:"lucky_strikes.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 
 imgCombatTab := {file:"combat_tab.png", topOffset:0, leftOffset:0, bottomOffset:CZBO, rightOffset:CZRO}
 
@@ -89,13 +88,8 @@ imgMaxLvl := {file:"max_lvl.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, 
 
 imgDimmedSkill := {file:"skill_dimmed.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgSkill := {file:"skill.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgClickstorm := {file:"clickstorm.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgMetalDetector := {file:"metal_detector.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgGoldenClicks := {file:"golden_clicks.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgCid := {file:"cid.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgMercedes := {file:"mercedes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgReferi := {file:"referi.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgDK := {file:"dk.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgDKG := {file:"dk_g.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgMax := {file:"max.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
@@ -216,7 +210,6 @@ ySave := 112
 
 xSkill := 201
 oSkill := 36 ; offset to next skill
-ySkillTop := 279 ; at top
 ySkill2nd := 410 ; at bottom
 
 xPrevZone := 679
@@ -530,14 +523,10 @@ startProgress(title, min:=0, max:=100) {
 	}
 }
 
-updateProgress(position, remainingTime, showLvl:=0) {
+updateProgress(position, remainingTime) {
 	if (showProgressBar) {
 		guicontrol,, ProgressBar,% position
-		if (showLvl) {
-			guicontrol,, ProgressBarTime,% remainingTime
-		} else {
-			guicontrol,, ProgressBarTime,% formatSeconds(remainingTime)
-		}
+		guicontrol,, ProgressBarTime,% formatSeconds(remainingTime)
 	}
 }
 
@@ -605,18 +594,6 @@ horizontalSkills(x, y, skills, absolute:=0) {
 	sleep % zzz * 2
 }
 
-verticalSkills(x) {
-	global
-	local y := 215
-
-	loop 14
-	{
-		clickPos(x, y)
-		sleep 25
-		y += buttonSize
-	}
-}
-
 getCurrentZone() {
 	global
 	local title, currentZone
@@ -657,12 +634,12 @@ clickAwayImage(image) {
 	return 0
 }
 
-upLocator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, earlyGameMode:=0) {
-	return locator(image, what, xPos, yPos, retries, clickCount, absolute, startAt, earlyGameMode, 1)
+upLocator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, silent:=0) {
+	return locator(image, what, xPos, yPos, retries, clickCount, absolute, startAt, silent, 1)
 }
 
 ; Try to locate the given image one screen at a time
-locator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, earlyGameMode:=0, directionUp:=0) {
+locator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, silent:=0, directionUp:=0) {
 	global
 
 	local attempts := ceil(45 / clickCount)
@@ -679,9 +656,8 @@ locator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute
 				scrollDown(clickCount)
 			}
 		} else if (retries-- != 0) {
-			if (!earlyGameMode) {
+			if (!silent) {
 				showDebugSplash("Could not locate " . what . "! Trying again...")
-				clientCheck()
 			}
 			if (directionUp) {
 				scrollToBottom()
