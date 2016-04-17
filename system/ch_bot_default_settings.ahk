@@ -22,7 +22,7 @@ endLvlActive := 10
 ; active: set endLvlIdle = 0
 
 farmMonsterKillTime := 2.0 ; stop and farm before boss when exceeded
-maxMonsterKillTime := 2.9 ; ascend when exceeded three times
+maxMonsterKillTime := 2.5 ; ascend when exceeded three times
 
 kumawakamaruLevel := 0
 
@@ -65,13 +65,13 @@ zdlInterval := 35
 ; E.g. when using the Vision Run in early game mode, this setting should be set to 30.
 clickerDuration := 30 ; monster clicker duration (in seconds). 0 = endless
 
-autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention! <Shift+Ctrl+F1>
+autoAscend := true ; Warning! Set to true will both salvage relics and ascend without any user intervention! <Shift+Ctrl+F1>
 
 ; Auto Ascend Warning Mode
 ; The following two settings may replace each other or can both be used.
 ; Set to 0 to disable completely
 autoAscendDelay := 0 ; warning timer (in seconds) before ascending
-displayRelicsDuration := 10 ; warning timer (in seconds) before salvaging the junk pile
+displayRelicsDuration := 0 ; warning timer (in seconds) before salvaging the junk pile
 
 ; If you run the Steam client with autoAscend, you can screenshot every relic you salvage!
 screenShotRelics := false

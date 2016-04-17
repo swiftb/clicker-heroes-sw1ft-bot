@@ -402,9 +402,9 @@ initRun(initMode:=0) {
 		if (!locateImage(imgSkillLocked)) {
 			hasNoSkillLocked := true
 		}
-		logVariable("hasAscendButton", hasAscendButton, true)
-		logVariable("hasSkillBar", hasSkillBar, true)
-		logVariable("hasNoSkillLocked", hasNoSkillLocked, true)
+		logVariable("hasAscendButton", hasAscendButton, true, "TRACE")
+		logVariable("hasSkillBar", hasSkillBar, true, "TRACE")
+		logVariable("hasNoSkillLocked", hasNoSkillLocked, true, "TRACE")
 	}
 
 	return useImageSearch ? hasAscendButton and hasSkillBar and hasNoSkillLocked : 1
@@ -516,7 +516,6 @@ visionRun() {
 	local isInitiated := false
 	local isClickerRunning := false
 	local isComboActive := false
-	local isPushing := false
 	local hasActivatedSkills := false
 	local hasBomberBuff := gildedRanger = 12 ? true : false
 	local hasGogBuff := gildedRanger = 13 ? true : false
@@ -538,6 +537,7 @@ visionRun() {
 	switchToCombatTab()
 	setProgressionMode()
 	if (!locateImage(imgProgression)) {
+		showTraceSplash("Manual progression: On")
 		manualProgression := true
 		SetTimer, nextZoneTimer, 500
 	}
@@ -553,20 +553,22 @@ visionRun() {
 
 	farmZone := 0
 	farmTime := 60
-	isFarming := false
 
 	local zone := getCurrentZone()
 	zoneTicks := {}
 	local initiatedZone := 0
 	local earliestAscendZone := 129 ; xx4/xx9
+	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger)*250 + 600 : earliestAscendZone
 	local initZone := 146
 	local earlyGameZone := initZone
-	local endZone := getEndZone()
-	local stopHuntZone := endZone - ceil(stopHuntThreshold * 250 / 7)
+	local stopHuntZone := getEndZone() - ceil(stopHuntThreshold * 250 / 7)
 
 	local earlyGameMode := true
+	gameMode := "PROGRESSING"
 
 	showSplash("Starting Vision Run")
+
+	showDebugSplash("Estimated earliest ascension @ Lvl " . estimatedAscendLevel)
 
 	startMonitoring()
 	reFocus()
@@ -604,13 +606,9 @@ visionRun() {
 		if (zone < earlyGameZone) {
 			if (manualProgression) {
 				if (zone > 100) {
-					showDebugSplash("Turning manual progression off!")
+					showTraceSplash("Manual progression: Off")
 					manualProgression := false
 					SetTimer, nextZoneTimer, off
-				} else if (mod(t, 10) = 0 and locateImage(imgBoss)) {
-					; Make sure we are not farming on a boss
-					farmZone := getCurrentZone() - 1
-					startFarming(farmZone, farmTime)
 				}
 			}
 			if (mod(t, locateBuyUpgradesDelay) = 0 or isResuming) {
@@ -655,44 +653,51 @@ visionRun() {
 				}
 				isResuming := false
 			} else {
-				earlyGameZone += 10
+				earlyGameZone := zone + 10
 				earlyGameMode := true
-				showDebugSplash("No gilded hero found! earlyGameMode extended to Lvl " . earlyGameZone)
+				showTraceSplash("No gilded hero found yet, earlyGameMode extended to Lvl " . earlyGameZone)
 			}
 		}
 
 		; Ascend or keep farming?
-		if (zone > 10 and zone > farmZone and mod(zone-4, 5) = 0 and !isFarming) {
+		if (zone > 10 and mod(zone-4, 5) = 0 and gameMode = "PROGRESSING") {
+			; Progressing @ zone before boss?
+			; Calculate average monster kill time for the previous zone
 			secPerMonster := timeBetweenZones(zone-1, zone) / (10 - kumawakamaruLevel)
+			; Fast enough to kill next boss easily?
 			if (secPerMonster >= farmMonsterKillTime) {
-				if (secPerMonster >= maxMonsterKillTime and zone >= earliestAscendZone) {
-					showDebugSplash("Ascend Warning! (" . ++timeToAscend . "/2) @ Lvl " . zone)
-					if (timeToAscend >= 2) {
-						showDebugSplash("Ascend after next boss")
-						endLvlIdle := zone + 1
-						endLvlActive := zone + 1
-						endZone := getEndZone()
-					}
+				showDebugSplash("Lvl " . zone-1 . " -> " . zone . " - Avg monster kill time: " . round(secPerMonster, 2))
+				; No! Time to ascend?
+				if (secPerMonster >= maxMonsterKillTime and zone >= estimatedAscendLevel) {
+					; Yes!
+					ascendWarning(zone, zone + 1, timeToAscend)
+					; In idle mode?
 					if (!isComboActive) {
-						; Brute force through two bosses with skills, then ascend
-						showDebugSplash("Push with skills!")
+						; Yes, brute force through two bosses with skills, then ascend
+						zoneMovedWithin(zone, 30) ; wait till boss
 						clickerStart(clickerDuration)
-						Gosub, comboTimer
-						isPushing := true
+						showDebugSplash("Push with skills!")
+						Gosub, comboTimer ; trigger skill combo
+						bossFight()
 					}
 				}
-				farmZone := zone
-				if (!isPushing) {
-					; Yes, keep farming
+				if (gameMode = "PROGRESSING") {
+					; Farm a bit before next boss
 					farmTime := ceil(secPerMonster * 25) ; 20, 25 or 30?
-					startFarming(farmZone, farmTime)
+					startFarming()
 				}
 			}
 		}
 
-		; Make sure we are progressing
 		if (mod(t, progressCheckDelay) = 0) {
-			if (!locateImage(imgProgression) and !isFarming) {
+			; Progression check
+			if (!locateImage(imgProgression) and gameMode != "FARMING") {
+				; Failing badly above our estimated ascend level?
+				if (zone > estimatedAscendLevel) {
+					; Yes, probably best to ascend
+					ascendWarning(zone, zone, timeToAscend)
+				}
+				; Unless we are farming, toggle progression back on
 				setProgressionMode()
 			}
 		}
@@ -743,7 +748,7 @@ visionRun() {
 			} else if (!earlyGameMode and gildedRanger and !matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
 				if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
 					; ... or not, lost sight of our gilded hero
-					showDebugSplash("Lost sight of our gilded hero!")
+					showTraceSplash("Lost sight of our gilded hero!")
 					clickAwayImage(imgCombatTab)
 					isResuming := true
 				}
@@ -753,7 +758,7 @@ visionRun() {
 		t += 1
 		sleep 1000
 
-	} until zone > endZone
+	} until zone > getEndZone()
 
 	if (earlyGameMode) {
 		maxLevels() ; get some extra souls from levels
@@ -777,12 +782,28 @@ visionRun() {
 	showSplash("Vision Run duration: " . formatSeconds(elapsedTime))
 }
 
-startFarming(farmZone, farmTime) {
+ascendWarning(currentZone, ascendZone, byref warnCount) {
 	global
+	showDebugSplash("Ascend Warning! (" . ++warnCount . "/2) @ Lvl " . currentZone)
+	if (warnCount >= 2) {
+		endLvlIdle := ascendZone
+		endLvlActive := ascendZone
+	}
+}
+
+setGameMode(newGameMode) {
+	global
+	showTraceSplash(gameMode . " --> " . newGameMode . " @ Lvl " . getCurrentZone())
+	gameMode := newGameMode
+}
+
+startFarming() {
+	global
+	scrollToZone(zoneTicks.MaxIndex()) ; scroll to max
+	farmZone := getCurrentZone()
 	showDebugSplash("Farm @ Lvl " . farmZone . " for " . farmTime . "s")
 	setFarmMode()
-	isFarming := true
-	scrollToZone(farmZone)
+	setGameMode("FARMING")
 	SetTimer, farmTimer, % -farmTime * 1000
 }
 
@@ -1328,23 +1349,19 @@ toggleMode(toggle:=1) {
 	}
 }
 
-setFarmMode(silent:=1) {
+setFarmMode() {
 	global
 	if (!manualProgression and locateImage(imgProgression)) {
 		toggleMode()
-		if (!silent) {
-			showDebugSplash("Set Farm Mode")
-		}
+		showTraceSplash("Set Farm Mode")
 	}
 }
 
-setProgressionMode(silent:=1) {
+setProgressionMode() {
 	global
 	if (!manualProgression and !locateImage(imgProgression)) {
 		toggleMode()
-		if (!silent) {
-			showDebugSplash("Set Progression Mode")
-		}
+		showTraceSplash("Set Progression Mode")
 	}
 }
 
@@ -1415,6 +1432,7 @@ locateGilded(byref xPos, byref yPos, byref isNew, startAt:=0, silent:=0) {
 	global
 	isNew := 0
 	local xAbs, yAbs
+	local retries := 1
 
 	if (startAt = 0 and !locateImage(imgBuyUpgrades)) {
 		if (locateImage(imgCombatTab)) {
@@ -1423,7 +1441,7 @@ locateGilded(byref xPos, byref yPos, byref isNew, startAt:=0, silent:=0) {
 		scrollToBottom()
 	}
 
-	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, 2, 5, 1, startAt, silent)) { ; two retries
+	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, retries, 5, 1, startAt, silent)) {
 		local xPixel := xAbs + 83 ; HI[R]E
 		local yPixel := yAbs + 38
 		if (matchPixelColor(dimmedYellowColor, xPixel, yPixel)) {
@@ -1503,40 +1521,9 @@ zoneMovedWithin(zone, sec) {
 	return 0
 }
 
-farmOrFight() {
-	global
-	local bossZone := farmZone + 1
-	local maxTime := 1.9 ; s
-
-	showDebugSplash("Lvl " . bossZone . " boss fight!")
-
-	isFarming := false
-	setProgressionMode() ; Go go go!
-
-	zoneMovedWithin(farmZone, 5) ; wait till boss
-
-	local startTime := A_TickCount
-	local zoneMoved := zoneMovedWithin(bossZone, 30)
-	local elapsedTime := (A_TickCount - startTime) // 1000
-	if (zoneMoved > 0) {
-		showDebugSplash("Fight duration: " . elapsedTime . "s")
-		lvlUpDelay := 6 ; reset
-		return
-	} else {
-		showDebugSplash("Failed boss... :/")
-	}
-
-	if (zoneTicks.HasKey(bossZone)) {
-		zoneTicks.Delete(bossZone)
-	}
-
-	startFarming(farmZone, farmTime)
-	lvlUpDelay := 18 ; up the chance to lvl up next hero
-}
-
 nextZone() {
 	global
-	if (!isFarming) {
+	if (gameMode != "FARMING") {
 		clickPos(xPlusOneZone, yZone)
 		sleep % zzz
 	}
@@ -1544,12 +1531,10 @@ nextZone() {
 
 timeBetweenZones(z1, z2) {
 	global
-	local currentTime := A_TickCount
-	local tick1 := zoneTicks.HasKey(z1) ? zoneTicks[z1] : currentTime
-	local tick2 := zoneTicks.HasKey(z2) ? zoneTicks[z2] : currentTime
-	local elapsed := abs(tick1 - tick2) / 1000
-	local farmTime := farmMonsterKillTime * (10 - kumawakamaruLevel)
-	return elapsed ? elapsed : farmTime
+	local oldTick := A_TickCount - 10000 ; 10s back in time
+	local t1 := zoneTicks.HasKey(z1) ? zoneTicks[z1] : oldTick
+	local t2 := zoneTicks.HasKey(z2) ? zoneTicks[z2] : oldTick
+	return abs(t1 - t2) / 1000
 }
 
 storeZoneTick() {
@@ -1564,11 +1549,6 @@ storeZoneTick() {
 		}
 		if (!zoneTicks.HasKey(cz)) {
 			zoneTicks[cz] := currentTime
-			local elapsed := timeBetweenZones(pz, cz)
-			local secPerMonster := elapsed / (10 - kumawakamaruLevel)
-			if (mod(cz-4, 5) = 0 and secPerMonster >= farmMonsterKillTime) {
-				showDebugSplash("Lvl " . pz . " -> " . cz . " : " . formatSeconds(elapsed))
-			}
 		}
 	}
 }
@@ -1607,6 +1587,11 @@ logZoneData(zStart, zEnd, zInterval) {
 	logger(zoneData, "INFO", "_zone_data")
 }
 
+bossFight() {
+	setGameMode("FIGHTING")
+	SetTimer, bossTimer, % -30 * 1000
+}
+
 ; -----------------------------------------------------------------------------------------
 ; -- Subroutines
 ; -----------------------------------------------------------------------------------------
@@ -1632,7 +1617,12 @@ clickerStopTimer:
 return
 
 farmTimer:
-	farmOrFight()
+	setProgressionMode()
+	bossFight()
+return
+
+bossTimer:
+	setGameMode("PROGRESSING")
 return
 
 zoneTickTimer:
@@ -1645,7 +1635,7 @@ return
 
 betaWarningTimer:
 	; If any, close auto-opened beta warning window
-	if (locateImage(imgClose)) {
+	if (locateImage(imgWarning)) {
 		clickAwayImage(imgClose)
 	}
 return

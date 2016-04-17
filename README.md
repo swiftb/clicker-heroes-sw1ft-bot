@@ -127,10 +127,10 @@ These only need to be changed if you run the browser client.
 | Variable | Explanation |
 | -------- | ----------- |
 `fullScreenOption` | [**true**/**false**] Steam borderless fullscreen
-`showSeverityLevel` | **0**:OFF, **1**:WARN, **2**:USER, **3**:INFO, **4**:DEBUG
-`logSeverityLevel`  | **0**:OFF, **1**:WARN, **2**:USER, **3**:INFO, **4**:DEBUG
+`showSeverityLevel` | **0**:OFF, **1**:WARN, **2**:USER, **3**:INFO, **4**:DEBUG, **5**:TRACE
+`logSeverityLevel`  | **0**:OFF, **1**:WARN, **2**:USER, **3**:INFO, **4**:DEBUG, **5**:TRACE
 
-Setting a level to X, will show or log all messages from that level and below. E.g. setting `showSeverityLevel` to **1** and `logSeverityLevel` to **4**, will only show warning messages as splash texts, but will log everything to file.
+Setting a level to X, will show or log all messages from that level and below. E.g. setting `showSeverityLevel` to **1** and `logSeverityLevel` to **5**, will only show warning messages as splash texts, but will log everything to file.
 
 **Known issues:**
 

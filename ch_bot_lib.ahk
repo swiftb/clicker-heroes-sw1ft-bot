@@ -57,7 +57,9 @@ dimmedYellowColor := 0x7E6500
 goldColor := 0xFFB423
 brightGoldColor := 0xFFD911
 
-severityLevels := {"OFF":0, "WARN":1, "USER":2, "INFO":3, "DEBUG":4}
+severityLevels := {"OFF":0, "WARN":1, "USER":2, "INFO":3, "DEBUG":4, "TRACE":5}
+
+gameModes := {"PROGRESSING":1, "FARMING":2, "FIGHTING":3}
 
 ; -- Images -------------------------------------------------------------------------------
 
@@ -107,6 +109,9 @@ imgClanCollect := {file:"clan_collect.png", topOffset:CZTO, leftOffset:0, bottom
 
 imgYes := {file:"yes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:0}
 imgClose := {file:"close.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:0}
+
+; TODO: REMOVE AFTER BETA
+imgWarning := {file:"warn.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 ; -- Coordinates --------------------------------------------------------------------------
 
@@ -254,7 +259,7 @@ clientCheck() {
 		fullScreenOption := false
 
 		if (useImageSearch and locateImage(imgQuality, xPos, yPos)) {
-			showDebugSplash("Switching to low quality")
+			showTraceSplash("Switching to low quality")
 			clickPos(xPos, yPos, 1, 1)
 		}
 	}
@@ -448,6 +453,10 @@ playWarningSound() {
 	}
 }
 
+showTraceSplash(text, seconds:=1) {
+	showSplash(text, seconds, 0, "TRACE")
+}
+
 showDebugSplash(text, seconds:=1) {
 	showSplash(text, seconds, 0, "DEBUG")
 }
@@ -489,14 +498,14 @@ logArray(name, array) {
 	logVariable(name, "[" . value . "]")
 }
 
-logVariable(name, value, isBool:=0) {
+logVariable(name, value, isBool:=0, level="DEBUG") {
 	if (isBool) {
 		value := value ? "true" : "false"
 	}
-	logger(name . " = " . value, "DEBUG")
+	logger(name . " = " . value, level)
 }
 
-; 0:OFF, 1:WARN, 2:USER, 3:INFO, 4:DEBUG
+; 0:OFF, 1:WARN, 2:USER, 3:INFO, 4:DEBUG, 5:TRACE
 logger(msg, level, fileSuffix:="") {
 	global
 	local localTime := A_Now
@@ -634,12 +643,12 @@ clickAwayImage(image) {
 	return 0
 }
 
-upLocator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, silent:=0) {
+upLocator(image, what, byref xPos, byref yPos, byref retries:=0, clickCount:=5, absolute:=0, startAt:=0, silent:=0) {
 	return locator(image, what, xPos, yPos, retries, clickCount, absolute, startAt, silent, 1)
 }
 
 ; Try to locate the given image one screen at a time
-locator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, silent:=0, directionUp:=0) {
+locator(image, what, byref xPos, byref yPos, byref retries:=0, clickCount:=5, absolute:=0, startAt:=0, silent:=0, directionUp:=0) {
 	global
 
 	local attempts := ceil(45 / clickCount)
