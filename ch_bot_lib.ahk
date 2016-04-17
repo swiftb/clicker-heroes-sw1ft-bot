@@ -111,7 +111,7 @@ imgYes := {file:"yes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOf
 imgClose := {file:"close.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:0}
 
 ; TODO: REMOVE AFTER BETA
-imgWarning := {file:"warn.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgWarning := {file:"w.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 ; -- Coordinates --------------------------------------------------------------------------
 

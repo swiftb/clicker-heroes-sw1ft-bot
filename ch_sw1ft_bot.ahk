@@ -548,7 +548,6 @@ visionRun() {
 	lvlUpDelay := 6
 
 	local startAt := 0
-	local timeToAscend := 0
 	local secPerMonster := 0
 
 	farmZone := 0
@@ -659,6 +658,19 @@ visionRun() {
 			}
 		}
 
+		if (mod(t, progressCheckDelay) = 0) {
+			; Progression check
+			if (!locateImage(imgProgression) and gameMode != "FARMING") {
+				; Failing badly above our estimated ascend level?
+				if (zone > estimatedAscendLevel) {
+					; Yes, probably best to ascend
+					ascendNow(zone)
+				}
+				; Unless we are farming, toggle progression back on
+				setProgressionMode()
+			}
+		}
+
 		; Ascend or keep farming?
 		if (zone > 10 and mod(zone-4, 5) = 0 and gameMode = "PROGRESSING") {
 			; Progressing @ zone before boss?
@@ -670,35 +682,23 @@ visionRun() {
 				; No! Time to ascend?
 				if (secPerMonster >= maxMonsterKillTime and zone >= estimatedAscendLevel) {
 					; Yes!
-					ascendWarning(zone, zone + 1, timeToAscend)
+					ascendNow(zone)
+; KEEPING THINGS SIMPLE FOR NOW
 					; In idle mode?
-					if (!isComboActive) {
+;					if (!isComboActive) {
 						; Yes, brute force through two bosses with skills, then ascend
-						zoneMovedWithin(zone, 30) ; wait till boss
-						clickerStart(clickerDuration)
-						showDebugSplash("Push with skills!")
-						Gosub, comboTimer ; trigger skill combo
-						bossFight()
-					}
+;						zoneMovedWithin(zone, 30) ; wait till boss
+;						clickerStart(clickerDuration)
+;						showDebugSplash("Push with skills!")
+;						Gosub, comboTimer ; trigger skill combo
+;						bossFight()
+;					}
 				}
 				if (gameMode = "PROGRESSING") {
 					; Farm a bit before next boss
 					farmTime := ceil(secPerMonster * 25) ; 20, 25 or 30?
 					startFarming()
 				}
-			}
-		}
-
-		if (mod(t, progressCheckDelay) = 0) {
-			; Progression check
-			if (!locateImage(imgProgression) and gameMode != "FARMING") {
-				; Failing badly above our estimated ascend level?
-				if (zone > estimatedAscendLevel) {
-					; Yes, probably best to ascend
-					ascendWarning(zone, zone, timeToAscend)
-				}
-				; Unless we are farming, toggle progression back on
-				setProgressionMode()
 			}
 		}
 
@@ -782,13 +782,11 @@ visionRun() {
 	showSplash("Vision Run duration: " . formatSeconds(elapsedTime))
 }
 
-ascendWarning(currentZone, ascendZone, byref warnCount) {
+ascendNow(ascendZone) {
 	global
-	showDebugSplash("Ascend Warning! (" . ++warnCount . "/2) @ Lvl " . currentZone)
-	if (warnCount >= 2) {
-		endLvlIdle := ascendZone
-		endLvlActive := ascendZone
-	}
+	showDebugSplash("Ascend Warning!")
+	endLvlIdle := ascendZone
+	endLvlActive := ascendZone
 }
 
 setGameMode(newGameMode) {
