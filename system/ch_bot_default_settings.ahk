@@ -15,16 +15,17 @@ useImageSearch := true ; requires browser client in low quality mode
 ; Test hotkey: Win+F3 - Search & locate tests for all images
 
 ; Vision Run
+; Ascensions will automatically trigger when things slow down to much
 endLvlIdle := 10000
-endLvlActive := 10
-; idle:   set endLvlActive = 10 ; to get by Cid
+endLvlActive := 0
+; idle:   set endLvlActive = 0
 ; hybrid: set endLvlActive > endLvlIdle
 ; active: set endLvlIdle = 0
 
-farmMonsterKillTime := 2.0 ; stop and farm before boss when exceeded
-maxMonsterKillTime := 2.5 ; ascend when exceeded three times
+maxMonsterKillTime := 2.5 ; ascend when exceeded
 
-kumawakamaruLevel := 0
+chronos := 0.00 ; #.## seconds to Boss Fight timers
+kumawakamaru := -0.00 ; -#.## monsters required to advance to the next level
 
 ; -- Speed Run ----------------------------------------------------------------------------
 

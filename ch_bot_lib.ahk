@@ -59,7 +59,7 @@ brightGoldColor := 0xFFD911
 
 severityLevels := {"OFF":0, "WARN":1, "USER":2, "INFO":3, "DEBUG":4, "TRACE":5}
 
-gameModes := {"PROGRESSING":1, "FARMING":2, "FIGHTING":3}
+gameModes := {"INIT":0, "PROGRESSING":1, "FARMING":2, "FIGHTING":3}
 
 ; -- Images -------------------------------------------------------------------------------
 

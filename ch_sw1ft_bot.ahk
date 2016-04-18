@@ -3,7 +3,7 @@
 ; by Sw1ftb
 ; -----------------------------------------------------------------------------------------
 
-#Warn All
+; #Warn All
 #Persistent
 #NoEnv
 #InstallKeybdHook
@@ -441,7 +441,7 @@ getState() {
 	if (!locateImage(imgSmile)) {
 		return 0 ; vision, but not finding anything
 	}
-	if (getCurrentZone() < getEndZone()) {
+	if (getCurrentZone() < getEndZone() and !readyToAscend) {
 		return 1 ; ready for progression
 	} else {
 		return 2 ; ready to ascend
@@ -450,9 +450,7 @@ getState() {
 
 loopVisionRun() {
 	global
-
-	oldEndLvlIdle := endLvlIdle
-	oldEndLvlActive := endLvlActive
+	readyToAscend := false
 
 	local state := 0
 
@@ -497,6 +495,7 @@ loopVisionRun() {
 				save()
 			}
 			ascend(autoAscend)
+			readyToAscend := false
 			if (levelSolomon) {
 				solomonLeveler(solomonLevels)
 			}
@@ -543,8 +542,6 @@ visionRun() {
 	}
 
 	showProgressBar := false
-	endLvlIdle := oldEndLvlIdle
-	endLvlActive := oldEndLvlActive
 	lvlUpDelay := 6
 
 	local startAt := 0
@@ -552,18 +549,20 @@ visionRun() {
 
 	farmZone := 0
 	farmTime := 60
+	farmMonsterKillTime := 2.0 ; stop and farm before boss when exceeded
 
-	local zone := getCurrentZone()
+	local startZone := getCurrentZone()
+	local zone := startZone
 	zoneTicks := {}
 	local initiatedZone := 0
 	local earliestAscendZone := 129 ; xx4/xx9
-	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger)*250 + 600 : earliestAscendZone
+	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger)*250 + 500 : earliestAscendZone
 	local initZone := 146
 	local earlyGameZone := initZone
 	local stopHuntZone := getEndZone() - ceil(stopHuntThreshold * 250 / 7)
 
 	local earlyGameMode := true
-	gameMode := "PROGRESSING"
+	gameMode := "INIT"
 
 	showSplash("Starting Vision Run")
 
@@ -595,10 +594,26 @@ visionRun() {
 			getClickable(useImageSearch)
 		}
 
-		if (!isInitiated and zone >= initZone) {
-			; If enough gold, run init
-			isInitiated := initRun()
-			isResuming := true
+		; Active zone?
+		if (isActiveZone(zone)) {
+			if (deepRunClicks) {
+				if (!isClickerRunning) {
+					; Yup, start hammering!
+					clickerStart() ; ~38 CPS
+					isClickerRunning := true
+				}
+				clickPos(xMonster, yMonster) ; Jugg combo safety click
+				sleep 30
+				if (isInitiated and isClickerRunning and !isComboActive) {
+					; Save combos till we have all skills
+					Gosub, comboTimer
+					SetTimer, comboTimer, % comboDelay * 1000 + 250
+					isComboActive := true
+				}
+			}
+		} else if (isClickerRunning) {
+			clickerStop()
+			isClickerRunning := false
 		}
 
 		; Early progression
@@ -635,6 +650,12 @@ visionRun() {
 			earlyGameMode := false
 		}
 
+		if (!isInitiated and zone >= initZone) {
+			; If enough gold, run init
+			isInitiated := initRun()
+			isResuming := true
+		}
+
 		; Normal progression
 		if (!earlyGameMode and mod(t, locateGildedDelay) = 0 or isResuming) {
 			; Traverse bottom up till we find the first gilded hero/ranger we can lvl up
@@ -658,13 +679,17 @@ visionRun() {
 			}
 		}
 
+		; Progressing?
 		if (mod(t, progressCheckDelay) = 0) {
-			; Progression check
+			if (gameMode = "INIT" and zone > startZone) {
+				; Yeah!
+				setGameMode("PROGRESSING")
+			}
 			if (!locateImage(imgProgression) and gameMode != "FARMING") {
-				; Failing badly above our estimated ascend level?
 				if (zone > estimatedAscendLevel) {
-					; Yes, probably best to ascend
-					ascendNow(zone)
+					; Stuck at high level, lets just ascend
+					triggerAscension()
+					break
 				}
 				; Unless we are farming, toggle progression back on
 				setProgressionMode()
@@ -675,24 +700,26 @@ visionRun() {
 		if (zone > 10 and mod(zone-4, 5) = 0 and gameMode = "PROGRESSING") {
 			; Progressing @ zone before boss?
 			; Calculate average monster kill time for the previous zone
-			secPerMonster := timeBetweenZones(zone-1, zone) / (10 - kumawakamaruLevel)
+			secPerMonster := timeBetweenZones(zone-1, zone) / (10.0 + kumawakamaru)
 			; Fast enough to kill next boss easily?
 			if (secPerMonster >= farmMonsterKillTime) {
 				showDebugSplash("Lvl " . zone-1 . " -> " . zone . " - Avg monster kill time: " . round(secPerMonster, 2))
 				; No! Time to ascend?
 				if (secPerMonster >= maxMonsterKillTime and zone >= estimatedAscendLevel) {
-					; Yes!
-					ascendNow(zone)
-; KEEPING THINGS SIMPLE FOR NOW
 					; In idle mode?
-;					if (!isComboActive) {
-						; Yes, brute force through two bosses with skills, then ascend
-;						zoneMovedWithin(zone, 30) ; wait till boss
-;						clickerStart(clickerDuration)
-;						showDebugSplash("Push with skills!")
-;						Gosub, comboTimer ; trigger skill combo
-;						bossFight()
-;					}
+					if (!isComboActive) {
+						; Yes, try brute force through one last boss with skills, then ascend
+						zoneMovedWithin(zone, 20) ; wait till boss
+						clickerStart(clickerDuration)
+						showDebugSplash("Push with skills!")
+						Gosub, comboTimer ; trigger skill combo
+						bossFight()
+						triggerAscension(30 + chronos)
+					} else {
+						; No, we are done here
+						triggerAscension()
+						break
+					}
 				}
 				if (gameMode = "PROGRESSING") {
 					; Farm a bit before next boss
@@ -700,28 +727,6 @@ visionRun() {
 					startFarming()
 				}
 			}
-		}
-
-		; Active zone?
-		if (isActiveZone(zone)) {
-			if (deepRunClicks) {
-				if (!isClickerRunning) {
-					; Yup, start hammering!
-					clickerStart() ; ~38 CPS
-					isClickerRunning := true
-				}
-				clickPos(xMonster, yMonster) ; Jugg combo safety click
-				sleep 30
-				if (isInitiated and isClickerRunning and !isComboActive) {
-					; Save combos till we have all skills
-					Gosub, comboTimer
-					SetTimer, comboTimer, % comboDelay * 1000 + 250
-					isComboActive := true
-				}
-			}
-		} else if (isClickerRunning) {
-			clickerStop()
-			isClickerRunning := false
 		}
 
 		; Level up...
@@ -758,7 +763,7 @@ visionRun() {
 		t += 1
 		sleep 1000
 
-	} until zone > getEndZone()
+	} until zone > getEndZone() or readyToAscend
 
 	if (earlyGameMode) {
 		maxLevels() ; get some extra souls from levels
@@ -782,11 +787,15 @@ visionRun() {
 	showSplash("Vision Run duration: " . formatSeconds(elapsedTime))
 }
 
-ascendNow(ascendZone) {
+triggerAscension(delay:=0) {
 	global
-	showDebugSplash("Ascend Warning!")
-	endLvlIdle := ascendZone
-	endLvlActive := ascendZone
+	if (delay > 0) {
+		showDebugSplash("Trigger ascension in " . floor(delay) . " seconds")
+		SetTimer, ascendTimer, % -delay * 1000
+	} else {
+		showDebugSplash("Ascension triggered!")
+		readyToAscend := true
+	}
 }
 
 setGameMode(newGameMode) {
@@ -807,6 +816,9 @@ startFarming() {
 
 isActiveZone(zone) {
 	global
+	if (zone < 10) {
+		return true
+	}
 	if (zone <= endLvlActive) {
 		if (endLvlIdle < endLvlActive and zone <= endLvlIdle) {
 			return false
@@ -1529,10 +1541,9 @@ nextZone() {
 
 timeBetweenZones(z1, z2) {
 	global
-	local oldTick := A_TickCount - 10000 ; 10s back in time
-	local t1 := zoneTicks.HasKey(z1) ? zoneTicks[z1] : oldTick
-	local t2 := zoneTicks.HasKey(z2) ? zoneTicks[z2] : oldTick
-	return abs(t1 - t2) / 1000
+	local elapsed := abs(zoneTicks[z1] - zoneTicks[z2]) / 1000
+	local fallback := farmMonsterKillTime * (10.0 + kumawakamaru)
+	return elapsed ? elapsed : fallback
 }
 
 storeZoneTick() {
@@ -1586,8 +1597,9 @@ logZoneData(zStart, zEnd, zInterval) {
 }
 
 bossFight() {
+	global
 	setGameMode("FIGHTING")
-	SetTimer, bossTimer, % -30 * 1000
+	SetTimer, bossTimer, % -(30 + chronos) * 1000
 }
 
 ; -----------------------------------------------------------------------------------------
@@ -1636,4 +1648,8 @@ betaWarningTimer:
 	if (locateImage(imgWarning)) {
 		clickAwayImage(imgClose)
 	}
+return
+
+ascendTimer:
+	readyToAscend := true
 return
