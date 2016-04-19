@@ -91,13 +91,14 @@ return
 
 ; Start the Speed Run loop with Ctrl+F1
 ^F1::
-	showWarningSplash("The Speed Run has not been updated to support a Transcend!")
+	showWarningSplash("The Speed Run is no longer supported!")
 	; loopSpeedRun()
 return
 
 ; Start a Deep Run with Ctrl+F2 (expecting to start where a Speed Run finishes)
 ^F2::
-	deepRun()
+	showWarningSplash("The Deep Run is no longer supported!")
+	; deepRun()
 return
 
 ; Start a Vision Run loop with Ctrl+F3
@@ -464,6 +465,9 @@ loopVisionRun() {
 	}
 	logVariable("endLvlIdle", endLvlIdle)
 	logVariable("endLvlActive", endLvlActive)
+	logVariable("maxMonsterKillTime", maxMonsterKillTime)
+	logVariable("chronos", chronos)
+	logVariable("kumawakamaru", kumawakamaru)
 	logVariable("deepRunClicks", deepRunClicks, true)
 	if (endLvlActive > 0) {
 		logArray("deepRunCombo", deepRunCombo)
@@ -473,10 +477,6 @@ loopVisionRun() {
 	logVariable("stopHuntThreshold", stopHuntThreshold)
 	logVariable("saveBeforeAscending", saveBeforeAscending, true)
 	logVariable("autoAscend", autoAscend, true)
-	logVariable("levelSolomon", levelSolomon, true)
-	if (levelSolomon) {
-		logVariable("solomonLevels", solomonLevels)
-	}
 
 	loop
 	{
@@ -789,12 +789,14 @@ visionRun() {
 
 triggerAscension(delay:=0) {
 	global
-	if (delay > 0) {
-		showDebugSplash("Trigger ascension in " . floor(delay) . " seconds")
-		SetTimer, ascendTimer, % -delay * 1000
-	} else {
-		showDebugSplash("Ascension triggered!")
-		readyToAscend := true
+	if (!readyToAscend) {
+		if (delay > 0) {
+			showDebugSplash("Trigger ascension in " . floor(delay) . " seconds")
+			SetTimer, ascendTimer, % -delay * 1000
+		} else {
+			showDebugSplash("Ascension triggered!")
+			readyToAscend := true
+		}
 	}
 }
 

@@ -24,7 +24,7 @@ endLvlActive := 0
 
 maxMonsterKillTime := 2.5 ; ascend when exceeded
 
-chronos := 0.00 ; #.## seconds to Boss Fight timers
+chronos := 0.00 ; +#.## seconds to Boss Fight timers
 kumawakamaru := -0.00 ; -#.## monsters required to advance to the next level
 
 ; -- Speed Run ----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ solomonLevels := 5
 
 ; Enabled will start to log zone data after each completed run
 useZoneDataLogger := false
-zdlStart := 10
+zdlStart := 100
 zdlInterval := 35
 
 ; -- Speed/Vision Run ---------------------------------------------------------------------

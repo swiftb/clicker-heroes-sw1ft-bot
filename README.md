@@ -32,14 +32,8 @@ A game bot for [Clicker Heroes][Reddit].
     - (Steam) Supports window re-sizing (including Full Screen mode)
 * Speed run loop (<kbd>Ctrl+F1</kbd>)
     - DOES NOT SUPPORT THE TRANSCEND RELEASE!
-    - Supports idle and hybrid play
 * Deep run (<kbd>Ctrl+F2</kbd>)
-    - Intended as a continuation of a speed run
-    - Utilizes the external _monster clicker_
-
-**Limitations:**
-
-* Without the support from visual cues, it is critically important that the [recommended game state](#minimum-recommended-game-state) is adhered to.
+    - DOES NOT SUPPORT THE TRANSCEND RELEASE!
 
 ### Features with image search
 
@@ -58,16 +52,6 @@ A game bot for [Clicker Heroes][Reddit].
 * Window must be visible in the foreground
 
 ### Minimum recommended game state
-
-**To operate as intended, the (background) Speed run needs a certain minimum game state:**
-
-* Atlas or higher ranger gilded
-    - Any transitional hero used by the script must also be gilded
-* _Optimal zone_ > 1000
-* Siyalatas > 200
-    - All other ancients must follow the [Rules of Thumb][]. Use the [Ancients Optimizer][] to balance your ancients optimally.
-
-These recommendations should give you enough gold after ascending with a *[clickable][Clickables]*, to instantly unlock, level and buy all upgrades for every hero down to and including Frostleaf.
 
 **Recommended minimum for the (foreground) Vision run:**
 
@@ -190,10 +174,6 @@ These are listed under the Optional Settings section in the `ch_bot_settings.ahk
 If any of these fail, validate your [lib settings](#mandatory-lib-settings), then reload the script with <kbd>Alt+F5</kbd> and try again.
 
 ## Starting a run
-
-The Speed run (<kbd>Ctrl+F1</kbd>) is expecting to start after a fresh ascend with an available clickable.
-
-The Deep run is expecting to start where a Speed run finishes. Start it manually with <kbd>Ctrl+F2</kbd>, or set `hybridMode` to true to automatically start it.
 
 The Vision run is usually not that picky about game state, just try start it with <kbd>Ctrl+F3</kbd>. Error states:
 

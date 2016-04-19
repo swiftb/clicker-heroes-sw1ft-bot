@@ -2,20 +2,8 @@
 
 ## Speed Run
 
-**Q:** Why didn’t the bot level my gilded ranger?  
-**A:** Use the Siyalatas [regilding chart][] to make sure you are gilded correctly and the [Ancients Optimizer][] to optimally level your Ancients. Any transitional hero/ranger used by the bot must also be gilded.  
-
-**Q:** Even with `activateSkillsAtStart` set to `false` the Speed run is breaking idle at the start. Is that a bug?  
-**A:** No, without image recognition to spot the clickables, it just clicks on all known spawn locations. Then to prevent a toggling behavior, it actually breaks idle on purpose.
-
-**Q:** Why did the bot seem to get stuck after ascending?  
-**A1:** It needs a *clickable* to get going, so leave them alone!  
-**A2:** If `activateSkillsAtStart` is set to `false`, you might need a higher Chronos to not get stuck at the start before Idle kicks in.
-
-## Hybrid/Deep Run
-
-**Q:** I only get like 2 clicks per second!?  
-**A:** There is a built in click speed throttle when moving your mouse cursor inside the Clicker Heroes window.
+**Q:** Not supported any more?  
+**A:** No, sadly not. Highly repetitive and predictable runs died when Iris was removed. This together with the fact, that the new Transcendent Power speeds up your game progression a great deal, makes it even more difficult to script something even remotely decent when you have no visual cues to guide you. RIP Speed Run, 2015-06-16 -- 2016-04-19 :(
 
 ## Vision Run
 
@@ -61,10 +49,10 @@
 **A2:** Screenshot sounds in Steam can also be turned off: Right-click __Steam__ in your toolbar and uncheck __Play a sound__ under __Settings > In-Game__
 
 **Q:** I just can’t get the bot to work and none of the answers above did help. What should I do?  
-**A:** Ask me on [Reddit][home]. Your game state via the [Clicker Lister][] always help.
+**A:** Ask me on [Reddit][home]. Also link me a [Pastebin][] with the contents of today's log file in the logs folder.
 
 [AutoHotkey]: http://ahkscript.org/
 [Ancients Optimizer]: http://philni.neocities.org/ancientssoul.html
 [regilding chart]: https://redd.it/3frj62
 [home]: https://redd.it/3wxwfu
-[Clicker Lister]: http://alexbonjour.github.io/clicker-lister/
+[Pastebin]: http://pastebin.com/
