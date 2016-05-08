@@ -27,6 +27,7 @@ maxMonsterKillTime := 2.9 ; ascend when exceeded
 
 chronos := 0.00 ; +#.## seconds to Boss Fight timers
 kumawakamaru := -0.00 ; -#.## monsters required to advance to the next level
+vaagur := -0.00 ; -#.##% skill cooldowns
 
 ; -- Speed Run ----------------------------------------------------------------------------
 
@@ -130,12 +131,14 @@ yProgressBar := 20
 
 ; Test with tools/combo_tester.ahk
 
-comboEDR := [2.5*60, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
-comboEGolden := [2.5*60, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"]
-comboGoldenLuck := [2.5*60, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
+cooldown := ceil(600*(1 + vaagur/100))
+
+comboEDR := [cooldown, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
+comboEGolden := [cooldown, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"]
+comboGoldenLuck := [cooldown, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
 
 comboEarlyGameIdle := [30, "4-5-6-3-7-8-9", "2-3-7", "1"]
-comboEarlyGameActive := [10*60, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"]
+comboEarlyGameActive := comboGoldenLuck
 
 skillCombo := comboEarlyGameIdle
 

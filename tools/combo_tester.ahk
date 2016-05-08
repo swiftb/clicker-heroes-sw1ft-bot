@@ -14,14 +14,12 @@ winName=Lvl.*Clicker Heroes.* ; browser
 ; Deep run skill combo tests
 ; https://redd.it/3il3tx
 
-; T > 8h
-comboEDR := [2.5*60, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
+vaagur := -0.00 ; -#.##% skill cooldowns
+cooldown := ceil(600*(1 + vaagur/100))
 
-; 3h < T < 8h
-comboEGolden := [2.5*60, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"] ; energize 3 (dmg) or 5 (gold)
-
-; T < 3h
-comboGoldenLuck := [2.5*60, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
+comboEDR := [cooldown, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2", "2", "2-3-4", "2", "2"] ; T > 8h
+comboEGolden := [cooldown, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"] ; 3h < T < 8h
+comboGoldenLuck := [cooldown, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"] ; T < 3h
 
 activeClicker := true ; set to false to add Clickstorm
 testMode := true
