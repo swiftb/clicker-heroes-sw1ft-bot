@@ -25,7 +25,7 @@ fullScreenOption := false ; Steam borderless fullscreen option
 
 ; Severity Levels: 0:OFF, 1:WARN, 2:USER, 3:INFO, 4:DEBUG, 5:TRACE
 showSeverityLevel := 3 ; splash texts
-logSeverityLevel := 5 ; file
+logSeverityLevel := 4 ; file
 
 ; Setting a level to X, will show or log all messages from that level and below.
 ; E.g. setting showSeverityLevel to 1 and logSeverityLevel to 5, will only show

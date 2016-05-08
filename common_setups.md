@@ -16,13 +16,15 @@ Example settings for different styles of play.
 
 #### Idle
 
-    endLvlIdle := 10000
+    endLvlIdle := 100000
     endLvlActive := 0
+    skillCombo := comboEarlyGameIdle
 
 #### Active
 
     endLvlIdle := 0
-    endLvlActive := 10000
+    endLvlActive := 100000
+    skillCombo := comboEarlyGameActive
 
 ## Do not disturb
 

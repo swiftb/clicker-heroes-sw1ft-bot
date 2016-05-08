@@ -7,7 +7,8 @@
 ; -1: Samurai
 ; 1:Dread Knight, 2:Atlas, 3:Terra, 4:Phthalo, 5:Banana, 6:Lilin, 7:Cadmia, 8:Alabaster, 9:Astraea
 ; 10:Chiron, 11:Moloch, 12:Bomber Max, 13:Gog, 14:Wepwawet
-gildedRanger := 0 ; the number of your main guilded ranger
+; 15:Betty, 16:Midas (use Wepwawet as the last transitional ranger)
+gildedRanger := 0 ; the number of your main gilded ranger
 
 ; -- Vision Run ---------------------------------------------------------------------------
 
@@ -16,13 +17,13 @@ useImageSearch := true ; requires browser client in low quality mode
 
 ; Vision Run
 ; Ascensions will automatically trigger when things slow down to much
-endLvlIdle := 10000
+endLvlIdle := 100000
 endLvlActive := 0
 ; idle:   set endLvlActive = 0
 ; hybrid: set endLvlActive > endLvlIdle
 ; active: set endLvlIdle = 0
 
-maxMonsterKillTime := 2.5 ; ascend when exceeded
+maxMonsterKillTime := 2.9 ; ascend when exceeded
 
 chronos := 0.00 ; +#.## seconds to Boss Fight timers
 kumawakamaru := -0.00 ; -#.## monsters required to advance to the next level
@@ -61,10 +62,6 @@ zdlStart := 100
 zdlInterval := 35
 
 ; -- Speed/Vision Run ---------------------------------------------------------------------
-
-; If you don't need the full skills duration, lower this setting to get back the idle bonus faster.
-; E.g. when using the Vision Run in early game mode, this setting should be set to 30.
-clickerDuration := 30 ; monster clicker duration (in seconds). 0 = endless
 
 autoAscend := true ; Warning! Set to true will both salvage relics and ascend without any user intervention! <Shift+Ctrl+F1>
 
@@ -137,9 +134,10 @@ comboEDR := [2.5*60, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2"
 comboEGolden := [2.5*60, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"]
 comboGoldenLuck := [2.5*60, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
 
-comboEarlyGame := [10*60, "3-7-8-9-4-5-6", "2-3-7", "2", "2", "2-3-4", "2", "2"]
+comboEarlyGameIdle := [30, "4-5-6-3-7-8-9", "2-3-7", "1"]
+comboEarlyGameActive := [10*60, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"]
 
-deepRunCombo := comboEarlyGame
+skillCombo := comboEarlyGameIdle
 
 ; -----------------------------------------------------------------------------------------
 

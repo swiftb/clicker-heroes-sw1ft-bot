@@ -46,7 +46,7 @@ barUpdateDelay := 30 ; time (in seconds) between progress bar updates
 coinPickUpDelay := 5 ; time (in seconds) needed to pick up all coins from a clickable
 nextHeroDelay := 5 ; extra gold farm delay (in seconds) between heroes
 
-scrollDelay := 300 ; base delay (in ms)
+scrollDelay := 325 ; base delay (in ms)
 scrollClickDelay := 20 ; delay per click (in ms)
 
 dialogBoxClass := "#32770"
@@ -90,6 +90,9 @@ imgMaxLvl := {file:"max_lvl.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, 
 
 imgDimmedSkill := {file:"skill_dimmed.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgSkill := {file:"skill.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+
+imgChefBuff := {file:"way_of_the_chef.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgKingsBuff := {file:"way_of_kings.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgCid := {file:"cid.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgDK := {file:"dk.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}

@@ -470,9 +470,8 @@ loopVisionRun() {
 	logVariable("kumawakamaru", kumawakamaru)
 	logVariable("deepRunClicks", deepRunClicks, true)
 	if (endLvlActive > 0) {
-		logArray("deepRunCombo", deepRunCombo)
+		logArray("skillCombo", skillCombo)
 	}
-	logVariable("clickerDuration", clickerDuration)
 	logVariable("clickableHuntDelay", clickableHuntDelay)
 	logVariable("stopHuntThreshold", stopHuntThreshold)
 	logVariable("saveBeforeAscending", saveBeforeAscending, true)
@@ -518,6 +517,7 @@ visionRun() {
 	local hasActivatedSkills := false
 	local hasBomberBuff := gildedRanger = 12 ? true : false
 	local hasGogBuff := gildedRanger = 13 ? true : false
+	local foundTheWay := false
 
 	local xBtn := 0, yBtn := 0, isNew := 0
 	local xSkill := 0, ySkill := 0, skillSearch := false
@@ -529,7 +529,7 @@ visionRun() {
 	local t := 0
 	local elapsedTime := 0
 
-	local comboDelay := deepRunCombo[1]
+	local comboDelay := skillCombo[1]
 	comboIndex := 2
 
 	manualProgression := false
@@ -547,9 +547,10 @@ visionRun() {
 	local startAt := 0
 	local secPerMonster := 0
 
-	farmZone := 0
 	farmTime := 60
 	farmMonsterKillTime := 2.0 ; stop and farm before boss when exceeded
+
+	bossFightTimer := 30 + chronos + 1
 
 	local startZone := getCurrentZone()
 	local zone := startZone
@@ -558,7 +559,7 @@ visionRun() {
 	local earliestAscendZone := 129 ; xx4/xx9
 	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger)*250 + 500 : earliestAscendZone
 	local initZone := 146
-	local earlyGameZone := initZone
+	local earlyGameZone := 175
 	local stopHuntZone := getEndZone() - ceil(stopHuntThreshold * 250 / 7)
 
 	local earlyGameMode := true
@@ -646,7 +647,8 @@ visionRun() {
 				initRun(1) ; x 100
 				initiatedZone := zone
 			}
-		} else {
+		} else if (earlyGameMode) {
+			showTraceSplash("Ending early game mode @ Lvl " . zone)
 			earlyGameMode := false
 		}
 
@@ -657,10 +659,10 @@ visionRun() {
 		}
 
 		; Normal progression
-		if (!earlyGameMode and mod(t, locateGildedDelay) = 0 or isResuming) {
+		if (!earlyGameMode and (!foundTheWay and mod(t, locateGildedDelay) = 0) or isResuming) {
 			; Traverse bottom up till we find the first gilded hero/ranger we can lvl up
-			if (locateGilded(xBtn, yBtn, isNew, startAt, !gildedRanger)) {
-				maxClick(xBtn, yBtn, 1, 1)
+			if (locateGilded(xBtn, yBtn, isNew, startAt, !gildedRanger, foundTheWay)) {
+				maxClick(xBtn, yBtn, 2, 1)
 				if (isNew) {
 					showDebugSplash("New gilded hero found @ Lvl " . zone)
 					buyAvailableUpgrades()
@@ -673,26 +675,9 @@ visionRun() {
 				}
 				isResuming := false
 			} else {
-				earlyGameZone := zone + 10
+				earlyGameZone := zone + 25
 				earlyGameMode := true
-				showTraceSplash("No gilded hero found yet, earlyGameMode extended to Lvl " . earlyGameZone)
-			}
-		}
-
-		; Progressing?
-		if (mod(t, progressCheckDelay) = 0) {
-			if (gameMode = "INIT" and zone > startZone) {
-				; Yeah!
-				setGameMode("PROGRESSING")
-			}
-			if (!locateImage(imgProgression) and gameMode != "FARMING") {
-				if (zone > estimatedAscendLevel) {
-					; Stuck at high level, lets just ascend
-					triggerAscension()
-					break
-				}
-				; Unless we are farming, toggle progression back on
-				setProgressionMode()
+				showTraceSplash("No gilded hero found yet! Early game mode extended to Lvl " . earlyGameZone)
 			}
 		}
 
@@ -710,14 +695,15 @@ visionRun() {
 					if (!isComboActive) {
 						; Yes, try brute force through one last boss with skills, then ascend
 						zoneMovedWithin(zone, 20) ; wait till boss
-						clickerStart(clickerDuration)
+						clickerStart(2 * bossFightTimer)
 						showDebugSplash("Push with skills!")
 						Gosub, comboTimer ; trigger skill combo
+						SetTimer, comboTimer, % comboDelay * 1000 + 250
 						bossFight()
-						triggerAscension(30 + chronos)
+						triggerAscension("End of idle run", 2 * bossFightTimer)
 					} else {
 						; No, we are done here
-						triggerAscension()
+						triggerAscension("End of active run")
 						break
 					}
 				}
@@ -729,14 +715,32 @@ visionRun() {
 			}
 		}
 
+		; Progressing?
+		if (mod(t, progressCheckDelay) = 0) {
+			if (gameMode = "INIT" and isInitiated and t > bossFightTimer) {
+				triggerAscension("Stuck in INIT mode")
+				break
+			}
+			if (!locateImage(imgProgression) and gameMode != "FARMING") {
+				if (zone > estimatedAscendLevel) {
+					triggerAscension("Stuck at high level boss")
+					break
+				}
+				; Unless we are farming, toggle progression back on
+				setProgressionMode()
+			}
+		}
+
 		; Level up...
 		if (mod(t, lvlUpDelay) = 0 and !isResuming) {
 			if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
-				; Get Bomber Max and Gog global gold and dps buffs when we can
-				if (!hasBomberBuff and zone > 2930) {
-					getBuff(imgMax, hasBomberBuff, skillSearch)
-				} else if (!hasGogBuff and zone > 3210) {
-					getBuff(imgGog, hasGogBuff, skillSearch)
+				if (!foundTheWay) {
+					; Get Bomber Max and Gog global gold and dps buffs when we can
+					if (!hasBomberBuff and zone > 2930) {
+						getBuff(imgMax, hasBomberBuff, skillSearch)
+					} else if (!hasGogBuff and zone > 3210) {
+						getBuff(imgGog, hasGogBuff, skillSearch)
+					}
 				}
 				if (skillSearch) {
 					; Aquire possible new skills
@@ -753,7 +757,7 @@ visionRun() {
 			} else if (!earlyGameMode and gildedRanger and !matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
 				if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
 					; ... or not, lost sight of our gilded hero
-					showTraceSplash("Lost sight of our gilded hero!")
+					showTraceSplash("Trigger gilded hero locator")
 					clickAwayImage(imgCombatTab)
 					isResuming := true
 				}
@@ -787,14 +791,14 @@ visionRun() {
 	showSplash("Vision Run duration: " . formatSeconds(elapsedTime))
 }
 
-triggerAscension(delay:=0) {
+triggerAscension(msg, delay:=0) {
 	global
 	if (!readyToAscend) {
 		if (delay > 0) {
-			showDebugSplash("Trigger ascension in " . floor(delay) . " seconds")
+			showDebugSplash("Trigger ascension in " . floor(delay) . " seconds (" . msg . ")")
 			SetTimer, ascendTimer, % -delay * 1000
 		} else {
-			showDebugSplash("Ascension triggered!")
+			showDebugSplash("Ascension triggered! (" . msg . ")")
 			readyToAscend := true
 		}
 	}
@@ -804,16 +808,6 @@ setGameMode(newGameMode) {
 	global
 	showTraceSplash(gameMode . " --> " . newGameMode . " @ Lvl " . getCurrentZone())
 	gameMode := newGameMode
-}
-
-startFarming() {
-	global
-	scrollToZone(zoneTicks.MaxIndex()) ; scroll to max
-	farmZone := getCurrentZone()
-	showDebugSplash("Farm @ Lvl " . farmZone . " for " . farmTime . "s")
-	setFarmMode()
-	setGameMode("FARMING")
-	SetTimer, farmTimer, % -farmTime * 1000
 }
 
 isActiveZone(zone) {
@@ -849,7 +843,7 @@ maxLevels() {
 	reFocus()
 
 	local xButton, yButton
-	ControlSend,, {shift down}{vk51 down}, ahk_id %chWinId% ; {q}, {vk51} or {sc010}
+	ControlSend,, {vk51 down}, ahk_id %chWinId% ; {q}, {vk51} or {sc010}
 	loop 9 ; pages
 	{
 		loop 10 ; attempts per page
@@ -861,7 +855,7 @@ maxLevels() {
 		}
 		scrollDown(5)
 	}
-	ControlSend,, {vk51 up}{shift up}, ahk_id %chWinId%
+	ControlSend,, {vk51 up}, ahk_id %chWinId%
 }
 
 loopSpeedRun() {
@@ -882,11 +876,10 @@ loopSpeedRun() {
 	logVariable("hybridMode", hybridMode, true)
 	if (hybridMode) {
 		logVariable("deepRunTime", deepRunTime)
-		logArray("deepRunCombo", deepRunCombo)
+		logArray("skillCombo", skillCombo)
 		logVariable("clickableHuntDelay", clickableHuntDelay)
 		logVariable("stopHuntThreshold", stopHuntThreshold)
 	}
-	logVariable("clickerDuration", clickerDuration)
 	logVariable("saveBeforeAscending", saveBeforeAscending, true)
 	logVariable("autoAscend", autoAscend, true)
 
@@ -1015,7 +1008,7 @@ deepRun() {
 	startProgress("Deep Run Progress", 0, drDuration // barUpdateDelay)
 	clickerStart()
 
-	local comboDelay := deepRunCombo[1]
+	local comboDelay := skillCombo[1]
 	local comboIndex := 2
 	local stopHuntIndex := drDuration - stopHuntThreshold * 60
 
@@ -1038,8 +1031,8 @@ deepRun() {
 			clickPos(xMonster, yMonster)
 		}
 		if (mod(t, comboDelay) = 0) {
-			activateSkills(deepRunCombo[comboIndex])
-			comboIndex := comboIndex < deepRunCombo.MaxIndex() ? comboIndex+1 : 2
+			activateSkills(skillCombo[comboIndex])
+			comboIndex := comboIndex < skillCombo.MaxIndex() ? comboIndex+1 : 2
 		}
 		if (mod(t, lvlUpDelay) = 0) {
 			ctrlClick(xLvl, y, 1, 0)
@@ -1440,7 +1433,7 @@ hasClickable() {
 }
 
 ; Try to find the first gilded hero/ranger we can lvl up
-locateGilded(byref xPos, byref yPos, byref isNew, startAt:=0, silent:=0) {
+locateGilded(byref xPos, byref yPos, byref isNew, startAt:=0, silent:=0, byref foundTheWay:=0) {
 	global
 	isNew := 0
 	local xAbs, yAbs
@@ -1451,6 +1444,14 @@ locateGilded(byref xPos, byref yPos, byref isNew, startAt:=0, silent:=0) {
 			clickAwayImage(imgCombatTab)
 		}
 		scrollToBottom()
+	}
+
+	if (gildedRanger = 15 and locateImage(imgBuyUpgrades) and locateImage(imgChefBuff)) {
+		scrollUp(35) ; Locate Betty
+		foundTheWay := true
+	} else if (gildedRanger = 16 and locateImage(imgBuyUpgrades) and locateImage(imgKingsBuff)) {
+		scrollUp(22) ; Locate Midas
+		foundTheWay := true
 	}
 
 	while (upLocator(imgGilded, "Gilded hero", xAbs, yAbs, retries, 5, 1, startAt, silent)) {
@@ -1560,6 +1561,11 @@ storeZoneTick() {
 		}
 		if (!zoneTicks.HasKey(cz)) {
 			zoneTicks[cz] := currentTime
+			; Reached a new non-boss zone?
+			if (gameMode != "PROGRESSING" and mod(cz, 5) > 0 and zoneTicks.MaxIndex() > 1) {
+				; Yup!
+				setGameMode("PROGRESSING")
+			}
 		}
 	}
 }
@@ -1598,10 +1604,25 @@ logZoneData(zStart, zEnd, zInterval) {
 	logger(zoneData, "INFO", "_zone_data")
 }
 
+startFarming() {
+	global
+	setGameMode("FARMING")
+	setFarmMode()
+	scrollToZone(zoneTicks.MaxIndex())
+	local farmZone := getCurrentZone()
+	if (mod(farmZone, 5) = 0) {
+		scrollToZone(--farmZone)
+	}
+	; Farm on highest recorded non-boss zone
+	showDebugSplash("Farm @ Lvl " . farmZone . " for " . farmTime . "s")
+	SetTimer, farmTimer, % -farmTime * 1000
+}
+
 bossFight() {
 	global
 	setGameMode("FIGHTING")
-	SetTimer, bossTimer, % -(30 + chronos) * 1000
+	setProgressionMode()
+	SetTimer, bossTimer, % -bossFightTimer * 1000
 }
 
 ; -----------------------------------------------------------------------------------------
@@ -1620,8 +1641,8 @@ checkWindowVisibility:
 return
 
 comboTimer:
-	activateSkills(deepRunCombo[comboIndex])
-	comboIndex := comboIndex < deepRunCombo.MaxIndex() ? comboIndex+1 : 2
+	activateSkills(skillCombo[comboIndex])
+	comboIndex := comboIndex < skillCombo.MaxIndex() ? comboIndex+1 : 2
 return
 
 clickerStopTimer:
@@ -1629,12 +1650,19 @@ clickerStopTimer:
 return
 
 farmTimer:
-	setProgressionMode()
 	bossFight()
 return
 
 bossTimer:
-	setGameMode("PROGRESSING")
+	if (!locateImage(imgProgression)) {
+		; Failed the boss, back to farming...
+		showDebugSplash("Failed boss!")
+		startFarming()
+	}
+return
+
+ascendTimer:
+	readyToAscend := true
 return
 
 zoneTickTimer:
@@ -1650,8 +1678,4 @@ betaWarningTimer:
 	if (locateImage(imgWarning)) {
 		clickAwayImage(imgClose)
 	}
-return
-
-ascendTimer:
-	readyToAscend := true
 return

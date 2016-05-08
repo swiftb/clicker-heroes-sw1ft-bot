@@ -85,7 +85,7 @@ Unless they already exist, three user settings files will be created as copies o
     - __Show damage texts__ (can cause progression mode issues if left on)
     - __Show relic found popups__
 * The Speed run requires that all heroes and rangers are kept expanded
-* The Vision run allow for the following heroes to be be minimized: Brittany, Samurai, Forest Seer, Ma Zhu, Athena and any unused rangers besides Dread Knight. Bomber Max and Gog should also not be minimized as we want the 50% gold and dps buffs.
+* The Vision run allow for the following heroes to be be minimized: Brittany, Samurai, Forest Seer, Natalia, Ma Zhu, Athena and any unused rangers besides Dread Knight. Bomber Max and Gog should also not be minimized as we want the 50% gold and dps buffs.
 * Use a decent text editor, like Sublime Text or Notepad++ when you configure this bot.
 * [Common Setups](common_setups.md)
 
