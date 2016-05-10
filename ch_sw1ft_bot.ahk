@@ -468,6 +468,7 @@ loopVisionRun() {
 	logVariable("maxMonsterKillTime", maxMonsterKillTime)
 	logVariable("chronos", chronos)
 	logVariable("kumawakamaru", kumawakamaru)
+	logVariable("vaagur", vaagur)
 	logVariable("deepRunClicks", deepRunClicks, true)
 	if (endLvlActive > 0) {
 		logArray("skillCombo", skillCombo)
@@ -557,9 +558,9 @@ visionRun() {
 	zoneTicks := {}
 	local initiatedZone := 0
 	local earliestAscendZone := 129 ; xx4/xx9
-	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger)*250 + 500 : earliestAscendZone
+	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger)*250 + 250 : earliestAscendZone
 	local initZone := 146
-	local earlyGameZone := 175
+	local earlyGameZone := gildedRanger > 3 ? (gildedRanger - 3)*250 : 175
 	local stopHuntZone := getEndZone() - ceil(stopHuntThreshold * 250 / 7)
 
 	local earlyGameMode := true
@@ -659,7 +660,7 @@ visionRun() {
 		}
 
 		; Normal progression
-		if (!earlyGameMode and (!foundTheWay and mod(t, locateGildedDelay) = 0) or isResuming) {
+		if (!earlyGameMode and ((!foundTheWay and mod(t, locateGildedDelay) = 0) or isResuming)) {
 			; Traverse bottom up till we find the first gilded hero/ranger we can lvl up
 			if (locateGilded(xBtn, yBtn, isNew, startAt, !gildedRanger, foundTheWay)) {
 				maxClick(xBtn, yBtn, 2, 1)
@@ -1544,9 +1545,7 @@ nextZone() {
 
 timeBetweenZones(z1, z2) {
 	global
-	local elapsed := abs(zoneTicks[z1] - zoneTicks[z2]) / 1000
-	local fallback := farmMonsterKillTime * (10.0 + kumawakamaru)
-	return elapsed ? elapsed : fallback
+	return abs(zoneTicks[z1] - zoneTicks[z2]) / 1000
 }
 
 storeZoneTick() {

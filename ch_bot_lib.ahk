@@ -171,7 +171,7 @@ yGildedDown := 493
 xGildedClose := 1090
 yGildedClose := 54
 
-rangers := ["Dread Knight", "Atlas", "Terra", "Phthalo", "Banana", "Lilin", "Cadmia", "Alabaster", "Astraea", "Chiron", "Moloch", "Bomber Max", "Gog", "Wepwawet"]
+rangers := ["Dread Knight", "Atlas", "Terra", "Phthalo", "Banana", "Lilin", "Cadmia", "Alabaster", "Astraea", "Chiron", "Moloch", "Bomber Max", "Gog", "Wepwawet", "Betty", "Midas"]
 
 rangerPositions := {}
 rangerPositions[1] := {x:445, y:290} ; Dread Knight
