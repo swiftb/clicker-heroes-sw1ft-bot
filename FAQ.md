@@ -29,7 +29,8 @@
 **A2:** If you run in the browser, make sure the `browserTopMargin` setting is correct. See __Configuration > Mandatory lib settings__ in the [README](README.md).
 
 **Q:** I run the web client and have focus issues, why?  
-**A:** You need to run CH in one browser (e.g. Opera), then do your normal surfing in another (e.g. Chrome).
+**A1:** You need to run CH in one browser (e.g. Opera), then do your normal surfing in another (e.g. Chrome).  
+**A2:** Make sure the CH window IS NOT focused when you start a run.
 
 **Q:** Why do I get an error when trying to run one of the script files?  
 **A:** Make sure you have the latest version of both [AutoHotkey][] and the bot.

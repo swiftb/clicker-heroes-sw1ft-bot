@@ -844,15 +844,17 @@ maxLevels() {
 	reFocus()
 
 	local xButton, yButton
-	ControlSend,, {vk51 down}, ahk_id %chWinId% ; {q}, {vk51} or {sc010}
 	loop 9 ; pages
 	{
-		loop 10 ; attempts per page
-		{
-			if (locateImage(imgMaxLvl, xButton, yButton)) {
+		ControlSend,, {vk51 down}, ahk_id %chWinId% ; {q}, {vk51} or {sc010}
+		sleep 500
+		if (locateImage(imgMaxLvl, xButton, yButton)) {
+			loop 4
+			{
 				clickPos(xButton, yButton, 1, 1)
+				sleep % zzz
+				yButton += oLvl
 			}
-			sleep 300
 		}
 		scrollDown(5)
 	}
