@@ -196,7 +196,7 @@ yBuy := 582
 xFocus := 564
 yFocus := 69
 
-xMonster := 920
+xMonster := 1010
 yMonster := 164
 
 ; Safety zones (script will pause when entering)
