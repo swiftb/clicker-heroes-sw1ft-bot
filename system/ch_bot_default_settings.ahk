@@ -23,7 +23,7 @@ endLvlActive := 0
 ; hybrid: set endLvlActive > endLvlIdle
 ; active: set endLvlIdle = 0
 
-maxMonsterKillTime := 2.9 ; ascend when exceeded
+maxMonsterKillTime := 2.5 ; ascend when exceeded
 
 chronos := 0.00 ; +#.## seconds to Boss Fight timers
 kumawakamaru := -0.00 ; -#.## monsters required to advance to the next level
@@ -60,11 +60,11 @@ solomonLevels := 5
 ; Enabled will start to log zone data after each completed run
 useZoneDataLogger := false
 zdlStart := 100
-zdlInterval := 35
+zdlInterval := 10
 
 ; -- Speed/Vision Run ---------------------------------------------------------------------
 
-autoAscend := true ; Warning! Set to true will both salvage relics and ascend without any user intervention! <Shift+Ctrl+F1>
+autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention! <Shift+Ctrl+F1>
 
 ; Auto Ascend Warning Mode
 ; The following two settings may replace each other or can both be used.

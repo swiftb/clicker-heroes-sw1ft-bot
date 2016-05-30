@@ -171,23 +171,7 @@ yGildedDown := 493
 xGildedClose := 1090
 yGildedClose := 54
 
-rangers := ["Dread Knight", "Atlas", "Terra", "Phthalo", "Banana", "Lilin", "Cadmia", "Alabaster", "Astraea", "Chiron", "Moloch", "Bomber Max", "Gog", "Wepwawet", "Betty", "Midas"]
-
-rangerPositions := {}
-rangerPositions[1] := {x:445, y:290} ; Dread Knight
-rangerPositions[2] := {x:675, y:290} ; Atlas
-rangerPositions[3] := {x:900, y:290} ; Terra
-rangerPositions[4] := {x:220, y:355} ; Phthalo
-rangerPositions[5] := {x:445, y:355} ; Banana
-rangerPositions[6] := {x:675, y:355} ; Lilin
-rangerPositions[7] := {x:900, y:355} ; Cadmia
-rangerPositions[8] := {x:220, y:425} ; Alabaster
-rangerPositions[9] := {x:445, y:425} ; Astraea
-rangerPositions[10] := {x:675, y:425} ; Chiron
-rangerPositions[11] := {x:900, y:425} ; Moloch
-rangerPositions[12] := {x:220, y:490} ; Bomber Max
-rangerPositions[13] := {x:445, y:490} ; Gog
-rangerPositions[14] := {x:675, y:490} ; Wepwawet
+rangers := {0:"Power 5", -1:"Samurai", 1:"Dread Knight", 2:"Atlas", 3:"Terra", 4:"Phthalo", 5:"Banana", 6:"Lilin", 7:"Cadmia", 8:"Alabaster", 9:"Astraea", 10:"Chiron", 11:"Moloch", 12:"Bomber Max", 13:"Gog", 14:"Wepwawet", 15:"Betty", 16:"Midas"}
 
 ; Buy Available Upgrades button
 xBuy := 370
@@ -265,6 +249,12 @@ clientCheck() {
 			showTraceSplash("Switching to low quality")
 			clickPos(xPos, yPos, 1, 1)
 		}
+	}
+	if (scriptName = "CH Sw1ft Bot") {
+		logVariable("xScreenL", xScreenL, false, "TRACE")
+		logVariable("yScreenT", yScreenT, false, "TRACE")
+		logVariable("xScreenR", xScreenR, false, "TRACE")
+		logVariable("yScreenB", yScreenB, false, "TRACE")
 	}
 }
 

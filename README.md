@@ -20,7 +20,6 @@ A game bot for [Clicker Heroes][Reddit].
     - Built in click speed throttle (when mouse enters window)
     - Remotely operated by the main bot script
 * Supports user defined skill combos (see `tools/combo_tester.ahk`)
-* Built in re-gilder between rangers
 * Option to auto-save before ascending
 * Monitored _click safety zones_ preventing bot misclicks
 * Logging to file
@@ -129,7 +128,7 @@ Setting a level to X, will show or log all messages from that level and below. E
 | -------- | ----------- |
 `gildedRanger` | The number of your main gilded ranger <sup>(3)</sup> <sup>(4)</sup>
 
-(3) **1**:Dread Knight, **2**:Atlas, **3**:Terra, **4**:Phthalo, **5**:Banana, **6**:Lilin, **7**:Cadmia, **8**:Alabaster, **9**:Astraea, **10**:Chiron, **11**:Moloch, **12**:Bomber Max, **13**:Gog, **14**:Wepwawet
+(3) **1**:Dread Knight, **2**:Atlas, **3**:Terra, **4**:Phthalo, **5**:Banana, **6**:Lilin, **7**:Cadmia, **8**:Alabaster, **9**:Astraea, **10**:Chiron, **11**:Moloch, **12**:Bomber Max, **13**:Gog, **14**:Wepwawet, **15**:Betty, **16**:Midas
 
 (4) **0**:*Power 5*, **-1**:Samurai
 
@@ -208,9 +207,6 @@ These hotkeys can be executed while a speed, deep or vision run is active.
 | ------ | -------- |
 <kbd>Ctrl+Esc</kbd> | Suspend/Unsuspend all other Hotkeys
 <kbd>Ctrl+F5</kbd>  | Open the Ancients Optimizer and auto-import game save data
-<kbd>Ctrl+F6</kbd>  | Set previous ranger as re-gild target
-<kbd>Ctrl+F7</kbd>  | Set next ranger as re-gild target
-<kbd>Ctrl+F8</kbd>  | Move all gilds to the target ranger <sup>(7)</sup>
 <kbd>Ctrl+F11</kbd> | Autosave the game
 <kbd>Win+F6</kbd> | Raid once for free <sup>(6)</sup>
 <kbd>Win+F7</kbd> | One paid raid <sup>(6)</sup>
@@ -219,8 +215,6 @@ These hotkeys can be executed while a speed, deep or vision run is active.
 <kbd>Shift+Ctrl+F6</kbd>  | Toggle the `playNotificationSounds` flag
 <kbd>Shift+Ctrl+F7</kbd>  | Toggle the `playWarningSounds` flag
 <kbd>Shift+Ctrl+F11</kbd> | Toggle the `saveBeforeAscending` flag
-
-(7) Will pause the monster clicker if running.
 
 #### Test Hotkeys
 

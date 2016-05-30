@@ -154,29 +154,6 @@ return
 return
 Hotkey, ^F5, , P5
 
-; Set previous ranger as re-gild target
-^F6::
-	reGildRanger := reGildRanger > rangers.MinIndex() ? reGildRanger-1 : reGildRanger
-	showUserSplash("Re-gild ranger set to " . rangers[reGildRanger])
-return
-
-; Set next ranger as re-gild target
-^F7::
-	reGildRanger := reGildRanger < rangers.MaxIndex() ? reGildRanger+1 : reGildRanger
-	showUserSplash("Re-gild ranger set to " . rangers[reGildRanger])
-return
-
-; Move all gilds to the target ranger
-^F8::
-	playNotificationSound()
-	msgbox, 4,% script,% "Move all gilds to " . rangers[reGildRanger] . "?"
-	ifmsgbox no
-		return
-	clickerPause()
-	regild(reGildRanger)
-return
-Hotkey, ^F8, , P5
-
 ; Autosave the game
 ^F11::
 	save()
@@ -460,9 +437,7 @@ loopVisionRun() {
 	logVariable("browser", browser)
 	logVariable("browserTopMargin", browserTopMargin)
 	logVariable("useImageSearch", useImageSearch, true)
-	if (gildedRanger > 0) {
-		logVariable("gildedRanger", rangers[gildedRanger])
-	}
+	logVariable("gildedRanger", rangers[gildedRanger])
 	logVariable("endLvlIdle", endLvlIdle)
 	logVariable("endLvlActive", endLvlActive)
 	logVariable("maxMonsterKillTime", maxMonsterKillTime)
@@ -523,7 +498,7 @@ visionRun() {
 	local xBtn := 0, yBtn := 0, isNew := 0
 	local xSkill := 0, ySkill := 0, skillSearch := false
 
-	local locateGildedDelay := gildedRanger ? 90 : 4
+	local locateGildedDelay := gildedRanger ? 60 : 4
 	local locateBuyUpgradesDelay := 20
 	local progressCheckDelay := 10
 
@@ -558,17 +533,27 @@ visionRun() {
 	zoneTicks := {}
 	local initiatedZone := 0
 	local earliestAscendZone := 129 ; xx4/xx9
-	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger)*250 + 250 : earliestAscendZone
+	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger) * 250 : earliestAscendZone
 	local initZone := 146
-	local earlyGameZone := gildedRanger > 3 ? (gildedRanger - 3)*250 : 175
+	local earlyGameZone := 175
 	local stopHuntZone := getEndZone() - ceil(stopHuntThreshold * 250 / 7)
+
+	local tr1 := -1 ; Samurai
+	local tr2 := ""
+
+	if (gildedCheck(tr1, tr2, earlyGameZone)) {
+		showSplash("Suggested transitional hero(es): " . rangers[tr1] . " > " . rangers[tr2])
+	}
 
 	local earlyGameMode := true
 	gameMode := "INIT"
 
 	showSplash("Starting Vision Run")
 
-	showDebugSplash("Estimated earliest ascension @ Lvl " . estimatedAscendLevel)
+	showDebugSplash("Early game mode ends @ Lvl " . earlyGameZone)
+	if (estimatedAscendLevel > earliestAscendZone) {
+		showDebugSplash("Estimated ascension @ Lvl " . estimatedAscendLevel + 250 . " (idle), " . estimatedAscendLevel + 500 . " (active)")
+	}
 
 	startMonitoring()
 	reFocus()
@@ -604,8 +589,6 @@ visionRun() {
 					clickerStart() ; ~38 CPS
 					isClickerRunning := true
 				}
-				clickPos(xMonster, yMonster) ; Jugg combo safety click
-				sleep 30
 				if (isInitiated and isClickerRunning and !isComboActive) {
 					; Save combos till we have all skills
 					Gosub, comboTimer
@@ -640,7 +623,7 @@ visionRun() {
 			if (mod(t, lvlUpDelay) = 0) {
 				; Level heroes bottom up
 				if (locateImageUp(imgCoin, xBtn, yBtn)) {
-					yBtn -= 8
+					ctrlClick(xBtn, yBtn, 2, 1, 1)
 				}
 			}
 			if (zone > 30 and zone > initiatedZone and mod(zone-6, 30) = 0 and zone < initZone) {
@@ -676,11 +659,14 @@ visionRun() {
 				}
 				isResuming := false
 			} else {
+				scrollToBottom()
 				earlyGameZone := zone + 25
 				earlyGameMode := true
 				showTraceSplash("No gilded hero found yet! Early game mode extended to Lvl " . earlyGameZone)
 			}
 		}
+
+		zone := getCurrentZone()
 
 		; Ascend or keep farming?
 		if (zone > 10 and mod(zone-4, 5) = 0 and gameMode = "PROGRESSING") {
@@ -733,7 +719,7 @@ visionRun() {
 		}
 
 		; Level up...
-		if (mod(t, lvlUpDelay) = 0 and !isResuming) {
+		if (!earlyGameMode and mod(t, lvlUpDelay) = 0 and !isResuming) {
 			if (matchPixelColor(blueColor, xBtn+xWinPos, yBtn+yWinPos)) {
 				if (!foundTheWay) {
 					; Get Bomber Max and Gog global gold and dps buffs when we can
@@ -743,19 +729,9 @@ visionRun() {
 						getBuff(imgGog, hasGogBuff, skillSearch)
 					}
 				}
-				if (skillSearch) {
-					; Aquire possible new skills
-					while (locateImage(imgSkill, xSkill, ySkill)) {
-						clickPos(xSkill, ySkill, 1, 1)
-						sleep 500
-					}
-					if (!locateImage(imgDimmedSkill)) {
-						skillSearch := false
-					}
-				}
 				; ... when we can afford to do so
 				ctrlClick(xBtn, yBtn, 2, 1, 1)
-			} else if (!earlyGameMode and gildedRanger and !matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
+			} else if (gildedRanger and !matchPixelColor(goldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
 				if (!matchPixelColor(brightGoldColor, xBtn-51+xWinPos, yBtn+yWinPos)) {
 					; ... or not, lost sight of our gilded hero
 					showTraceSplash("Trigger gilded hero locator")
@@ -764,6 +740,18 @@ visionRun() {
 				}
 			}
 		}
+
+		if (skillSearch) {
+			; Aquire possible new skills
+			while (locateImage(imgSkill, xSkill, ySkill)) {
+				clickPos(xSkill, ySkill, 1, 1)
+				sleep 500
+			}
+			if (!locateImage(imgDimmedSkill)) {
+				skillSearch := false
+			}
+		}
+
 		zone := getCurrentZone()
 		t += 1
 		sleep 1000
@@ -790,6 +778,26 @@ visionRun() {
 
 	elapsedTime := (A_TickCount - startTime) / 1000
 	showSplash("Vision Run duration: " . formatSeconds(elapsedTime))
+}
+
+gildedCheck(byref tr1, byref tr2, byref earlyGameZone) {
+	global
+	if (gildedRanger > 0) {
+		if (gildedRanger > 3) {
+			if (gildedRanger > 14) {
+				; Use Wepwawet as last transitional hero for gilded Betty or Midas
+				tr2 := 14
+			} else {
+				tr2 := gildedRanger - 3
+			}
+			if (gildedRanger > 6) {
+				tr1 := tr2 - 3
+				earlyGameZone := tr1 * 250
+			}
+		}
+		return 1
+	}
+	return 0
 }
 
 triggerAscension(msg, delay:=0) {
@@ -826,8 +834,11 @@ isActiveZone(zone) {
 }
 
 getBuff(image, byref hasBuff, byref skillSearch) {
+	global
+	local who := image = imgMax ? "Bomber Max" : "Gog"
 	scrollToBottom()
 	if (upLocator(image, image.file, xImg, yImg)) {
+		showDebugSplash("Get buff from " . who . " @ Lvl " . getCurrentZone())
 		ctrlClick(xImg-320, yImg+43, 2, 1, 1) ; hire
 		skillSearch := true
 	}
@@ -1326,27 +1337,6 @@ raid(doSpend:=0, attempts:=1) {
 	isResuming := true
 }
 
-; Move all gilds to given ranger
-regild(ranger) {
-	global
-	switchToCombatTab()
-	scrollToBottom()
-
-	clickPos(xGilded, yGilded)
-	sleep % zzz * 2
-
-	clickPos(xGildedDown, yGildedDown, top2BottomClicks)
-	sleep % scrollDelay + top2BottomClicks * scrollClickDelay
-
-	ControlSend,, {q down}, ahk_id %chWinId%
-	clickPos(rangerPositions[ranger].x, rangerPositions[ranger].y)
-	sleep 1000
-	ControlSend,, {q up}, ahk_id %chWinId%
-
-	clickPos(xGildedClose, yGildedClose)
-	sleep % zzz * 2
-}
-
 ; Toggle between farm and progression modes
 toggleMode(toggle:=1) {
 	global
@@ -1440,7 +1430,7 @@ locateGilded(byref xPos, byref yPos, byref isNew, startAt:=0, silent:=0, byref f
 	global
 	isNew := 0
 	local xAbs, yAbs
-	local retries := 1
+	local retries := 0
 
 	if (startAt = 0 and !locateImage(imgBuyUpgrades)) {
 		if (locateImage(imgCombatTab)) {
