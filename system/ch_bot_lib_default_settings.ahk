@@ -3,7 +3,7 @@
 ; -- Mandatory Configuration
 ; -----------------------------------------------------------------------------------------
 
-SetTitleMatchMode, 3 ; Steam [3] or browser [regex] version?
+SetTitleMatchMode, regex ; Steam [3] or browser [regex] version?
 
 browser := "Opera" ; browser name used by the title matching
 
@@ -23,10 +23,10 @@ fullScreenOption := false ; Steam borderless fullscreen option
 
 ; Note: You need to turn on the "Full Screen" option in Clicker Heroes for this option to work.
 
-; Severity Levels: 0:OFF, 1:WARN, 2:USER, 3:INFO, 4:DEBUG
+; Severity Levels: 0:OFF, 1:WARN, 2:USER, 3:INFO, 4:DEBUG, 5:TRACE
 showSeverityLevel := 3 ; splash texts
 logSeverityLevel := 4 ; file
 
 ; Setting a level to X, will show or log all messages from that level and below.
-; E.g. setting showSeverityLevel to 1 and logSeverityLevel to 4, will only show
+; E.g. setting showSeverityLevel to 1 and logSeverityLevel to 5, will only show
 ; warning messages as splash texts, but will log everything to file.

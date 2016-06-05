@@ -10,6 +10,9 @@
 ; Shift+F5 to reload the script (needed after configuration changes)
 ; Shift+F6 to re-initialize coordinates (needed after moving or re-sizing the client window)
 
+; Pause to Pause/unpause the script
+; Ctrl+Esc to Suspend/Unsuspend all other Hotkeys
+
 ; Built in click speed throttle when moving mouse cursor inside the Clicker Heroes window.
 ; -----------------------------------------------------------------------------------------------------
 
@@ -25,8 +28,8 @@ SetControlDelay, -1
 SetBatchLines, -1
 
 scriptName=Monster Clicker
-scriptVersion=1.3
-minLibVersion=1.5
+scriptVersion=1.4
+minLibVersion=4.0
 
 script := scriptName . " v" . scriptVersion
 tag := "[Clicker] "
@@ -66,6 +69,8 @@ OnMessage(WM_CLICKER_STOP, "MsgMonitor")
 OnMessage(WM_CLICKER_STATUS, "MsgMonitor")
 OnMessage(WM_CLICKER_RELOAD, "MsgMonitor")
 OnMessage(WM_CLICKER_INITIALIZE, "MsgMonitor")
+OnMessage(WM_CLICKER_MODE_FAST, "MsgMonitor")
+OnMessage(WM_CLICKER_MODE_SLOW, "MsgMonitor")
 
 ; -----------------------------------------------------------------------------------------
 ; -- Hotkeys (+=Shift)
@@ -89,6 +94,14 @@ return
 
 +F6::
 	clickerInitialize()
+return
+
+; Pause/unpause the script
+~Pause::Pause
+return
+
+; Suspend/Unsuspend all other Hotkeys with Ctrl+Esc
+~^Esc::Suspend, Toggle
 return
 
 clickerStart() {
@@ -145,6 +158,16 @@ clickerInitialize() {
 	clientCheck()
 }
 
+clickerModeFast() {
+	global
+	clickDelay := short
+}
+
+clickerModeSlow() {
+	global
+	clickDelay := long
+}
+
 MsgMonitor(wParam, lParam, msg) {
 	if (msg = WM_CLICKER_START) {
 		clickerStart()
@@ -158,6 +181,12 @@ MsgMonitor(wParam, lParam, msg) {
 		clickerReload()
 	} else if (msg = WM_CLICKER_INITIALIZE) {
 		clickerInitialize()
+	} else if (msg = WM_CLICKER_MODE_FAST) {
+		setTimer, checkMouse, on
+		clickerModeFast()
+	} else if (msg = WM_CLICKER_MODE_SLOW) {
+		setTimer, checkMouse, off
+		clickerModeSlow()
 	}
 }
 
@@ -168,9 +197,9 @@ MsgMonitor(wParam, lParam, msg) {
 checkMouse:
 	MouseGetPos,,, window
 	if (window = WinExist(winName)) {
-		clickDelay := long
+		clickerModeSlow()
 	} else {
-		clickDelay := short
+		clickerModeFast()
 	}
 return
 

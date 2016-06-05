@@ -3,42 +3,37 @@
 ; -- Mandatory Configuration
 ; -----------------------------------------------------------------------------------------
 
-irisLevel := 1029 ; try to keep your Iris within 1001 levels of your optimal zone
-
-; Siyalatas regilding chart @ https://redd.it/3frj62
+; 0: "Power 5" (Treebeast, Ivan, Brittany, Samurai and Forest Seer)
+; -1: Samurai
 ; 1:Dread Knight, 2:Atlas, 3:Terra, 4:Phthalo, 5:Banana, 6:Lilin, 7:Cadmia, 8:Alabaster, 9:Astraea
 ; 10:Chiron, 11:Moloch, 12:Bomber Max, 13:Gog, 14:Wepwawet
-gildedRanger := 6 ; the number of your main guilded ranger
+; 15:Betty, 16:Midas (use Wepwawet as the last transitional ranger)
+gildedRanger := 0 ; the number of your main gilded ranger
+
+; -- Vision Run ---------------------------------------------------------------------------
+
+useImageSearch := true ; requires browser client in low quality mode
+; Test hotkey: Win+F3 - Search & locate tests for all images
+
+; Vision Run
+; Ascensions will automatically trigger when things slow down to much
+endLvlIdle := 100000
+endLvlActive := 0
+; idle:   set endLvlActive = 0
+; hybrid: set endLvlActive > endLvlIdle
+; active: set endLvlIdle = 0
+
+maxMonsterKillTime := 2.5 ; ascend when exceeded
+
+chronos := 0.00 ; +#.## seconds to Boss Fight timers
+kumawakamaru := -0.00 ; -#.## monsters required to advance to the next level
+vaagur := -0.00 ; -#.##% skill cooldowns
 
 ; -- Speed Run ----------------------------------------------------------------------------
 
 ; Clicker Heroes Ancients Optimizer @ http://philni.neocities.org/ancientssoul.html
 ; Use the optimizer to set the time:
 speedRunTime := 29 ; minutes
-
-; -- Vision Run ---------------------------------------------------------------------------
-
-useImageSearch := false ; requires browser client in low quality mode
-; Test hotkey: Win+F3 - Search & locate tests for all images
-
-; Vision Run
-endLvlIdle := 2000
-endLvlActive := 0
-; idle:   set endLvlActive = 0 (set activateSkillsAtStart to false for 100% idle)
-; hybrid: set endLvlActive > endLvlIdle
-; active: set endLvlIdle = 0
-
-; -- Early Game Vision Run ----------------------------------------------------------------
-
-earlyGameMode := false
-
-kumawakamaruLevel := 0
-
-; Farm till clearing this zone, then use skills when getting stuck on a boss, twice, then ascend
-lastFarmZone := 129 ; xx4/xx9
-
-; When reaching this zone the script will start leveling only gilded heroes
-power5Zone := 181 ; pref. Treebeast, Ivan, Brittany, Samurai, Seer
 
 ; -- Deep Run -----------------------------------------------------------------------------
 
@@ -59,23 +54,15 @@ hybridMode := false ; chain a Deep Run when the Speed Run finish
 
 ; -- Vision Run ---------------------------------------------------------------------------
 
-forcedMidasStart := false ; use only for active play with custom Midas combo 
-
 levelSolomon := false ; feed solomon after ascending?
 solomonLevels := 5
 
 ; Enabled will start to log zone data after each completed run
 useZoneDataLogger := false
-zdlStart := irisLevel + 1
-zdlInterval := 35
+zdlStart := 100
+zdlInterval := 10
 
 ; -- Speed/Vision Run ---------------------------------------------------------------------
-
-activateSkillsAtStart := true ; usually needed in the late game to get going after ascending
-
-; If you don't need the full skills duration, lower this setting to get back the idle bonus faster.
-; E.g. when using the Vision Run in early game mode, this setting should be set to 30.
-clickerDuration := 90 ; monster clicker duration (in seconds). 0 = endless
 
 autoAscend := false ; Warning! Set to true will both salvage relics and ascend without any user intervention! <Shift+Ctrl+F1>
 
@@ -83,7 +70,7 @@ autoAscend := false ; Warning! Set to true will both salvage relics and ascend w
 ; The following two settings may replace each other or can both be used.
 ; Set to 0 to disable completely
 autoAscendDelay := 0 ; warning timer (in seconds) before ascending
-displayRelicsDuration := 10 ; warning timer (in seconds) before salvaging the junk pile
+displayRelicsDuration := 0 ; warning timer (in seconds) before salvaging the junk pile
 
 ; If you run the Steam client with autoAscend, you can screenshot every relic you salvage!
 screenShotRelics := false
@@ -108,37 +95,10 @@ clickableImageFiles := ["clickable_fish.png", "clickable_egg.png"] ; fish + "cur
 clickableHuntDelay := 5 ; hunt for a clickable every 5s
 
 ; Stop hunt when this many minutes remain of a run.
-; Set to 0 when using the Vision Run, or Speed Run in hybrid mode with Midas starts
-stopHuntThreshold := 20
+; Set to 0 when using the Vision Run
+stopHuntThreshold := 0
 ; Odds of getting a clickable for different thresholds:
 ; 5 - 59.4%, 10 - 83.5%, 15 - 93.3%, 20 - 97.3%, 25 - 98.9%, 30 - 99.55%
-
-; -- Midas --------------------------------------------------------------------------------
-
-useMidasStart := false ; pref. used with the useImageSearch option
-
-; Getting a stable Midas start without visual aid, is hard with low Siyalatas levels.
-; The tricky part is the scroll down from Natalia to Midas. No new heroes must spawn
-; during this time or this step will fail.
-
-; Config syntax:
-; [<zone 1>, <delay 1>, <extra zone>, <extra delay>, <zone 2>, <delay 2>]
-
-midasZoneConfig := [56, 6, 0, 0, 76, 0]
-
-; Example configs:
-
-; useImageSearch = false           | useImageSearch = true
-; Siya 28000: [65, 6, 0, 0, 86, 0] | [66, 5, 0, 0, 86, 0]
-; Siya 14000: [60, 7, 0, 0, 83, 4] | [63, 6, 0, 0, 83, 0]
-; Siya 7000:  [55, 9, 0, 0, 79, 5] | [59, 6, 0, 0, 79, 0]
-; Siya 3500: [50, 5, 60, 4, 76, 4] | [56, 6, 0, 0, 76, 0]
-; Siya 2000: [50, 6, 60, 6, 73, 4] | [53, 6, 0, 0, 73, 4]
-; Siya 400:                        | [47, 5, 57, 4, 67, 4]
-
-; Test hotkeys:
-; Win+F1 - One Midas Start
-; Win+F2 - Loop Midas Start + Init Run + ascend
 
 ; -- Look & Feel --------------------------------------------------------------------------
 
@@ -171,27 +131,16 @@ yProgressBar := 20
 
 ; Test with tools/combo_tester.ahk
 
-comboStart := [15*60, "8-1-2-3-4-5-7-6-9"]
-comboStart2 := [15*60, "8-5-2-3-4-7-6-9"] ; requires deepRunClicks set to true
+cooldown := ceil(600*(1 + vaagur/100))
 
-comboEDR := [2.5*60, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
-comboEGolden := [2.5*60, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"]
-comboGoldenLuck := [2.5*60, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
+comboEDR := [cooldown, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
+comboEGolden := [cooldown, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"]
+comboGoldenLuck := [cooldown, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
 
-comboEarlyGame := [10*60, "3-7-8-9-4-5-6", "2-3-7", "2", "2", "2-3-4", "2", "2"]
+comboEarlyGameIdle := [30, "4-5-6-3-7-8-9", "2-3-7", "1"]
+comboEarlyGameActive := comboGoldenLuck
 
-; Hybrid combo
-comboHybridIdle := [15*60, "1-2-3-4-5-7-6-9-8"] ; energize >
-comboHybridActive := [30, "5", "", "", "3", "", "", "8-9-2-5-7", "4", "", "3", "", "1-2"] ; > golden clicks, 6 minutes
-
-; Midas: 1-4-5                                2:30                 5:00                 7:30                 10:00                  12:30                    15:00                        17:30
-comboMidas := [30, "9-3-8-6", "2", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2", "", "4", "", "", "2-5", "", "", "", "", "", "3", "", "", "8-9-3-5", "", "", "2-4-7", "", "1", "", ""]
-
-; Midas: 1-4-5                                 2:30                 5:00                 7:30                  10:00                  12:30                     15:00                       17:30
-comboMidas2 := [30, "9-3-8-6", "2", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-4", "", "", "", "", "2-5", "", "", "", "", "", "3", "", "", "8-9-2-5-7", "4", "", "3", "", "1-2", "", ""]
-
-speedRunStartCombo := comboStart2
-deepRunCombo := comboGoldenLuck
+skillCombo := comboEarlyGameIdle
 
 ; -----------------------------------------------------------------------------------------
 
