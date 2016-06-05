@@ -251,10 +251,8 @@ clientCheck() {
 		}
 	}
 	if (scriptName = "CH Sw1ft Bot") {
-		logVariable("xScreenL", xScreenL, false, "TRACE")
-		logVariable("yScreenT", yScreenT, false, "TRACE")
-		logVariable("xScreenR", xScreenR, false, "TRACE")
-		logVariable("yScreenB", yScreenB, false, "TRACE")
+		showTraceSplash("xScreenR - xScreenL = " . xScreenR - xScreenL)
+		showTraceSplash("yScreenB - yScreenT = " . yScreenB - yScreenT)
 	}
 }
 

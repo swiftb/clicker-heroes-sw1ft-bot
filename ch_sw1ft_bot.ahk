@@ -107,7 +107,7 @@ return
 return
 
 ; Pause/unpause the script
-Pause::Pause
+~Pause::Pause
 return
 
 ; Abort any active run or initiated ascension with Alt+Pause
@@ -145,7 +145,7 @@ Hotkey, !F6, , P10
 ; -- Supplementary Hotkeys ----------------------------------------------------------------
 
 ; Suspend/Unsuspend all other Hotkeys with Ctrl+Esc
-^Esc::Suspend, Toggle
+~^Esc::Suspend, Toggle
 return
 
 ; Open the Ancients Optimizer and auto-import game save data
@@ -533,7 +533,7 @@ visionRun() {
 	zoneTicks := {}
 	local initiatedZone := 0
 	local earliestAscendZone := 129 ; xx4/xx9
-	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger) * 250 : earliestAscendZone
+	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger) * 250 - 75 : earliestAscendZone
 	local initZone := 146
 	local earlyGameZone := 175
 	local stopHuntZone := getEndZone() - ceil(stopHuntThreshold * 250 / 7)
@@ -542,7 +542,7 @@ visionRun() {
 	local tr2 := ""
 
 	if (gildedCheck(tr1, tr2, earlyGameZone)) {
-		showSplash("Suggested transitional hero(es): " . rangers[tr1] . " > " . rangers[tr2])
+		showSplash("Recommended transitional hero(es): " . rangers[tr1] . " > " . rangers[tr2])
 	}
 
 	local earlyGameMode := true
@@ -552,7 +552,7 @@ visionRun() {
 
 	showDebugSplash("Early game mode ends @ Lvl " . earlyGameZone)
 	if (estimatedAscendLevel > earliestAscendZone) {
-		showDebugSplash("Estimated ascension @ Lvl " . estimatedAscendLevel + 250 . " (idle), " . estimatedAscendLevel + 500 . " (active)")
+		showDebugSplash("Estimated ascension @ Lvl " . estimatedAscendLevel + 400 . " (idle), " . estimatedAscendLevel + 800 . " (active)")
 	}
 
 	startMonitoring()
@@ -792,7 +792,7 @@ gildedCheck(byref tr1, byref tr2, byref earlyGameZone) {
 			}
 			if (gildedRanger > 6) {
 				tr1 := tr2 - 3
-				earlyGameZone := tr1 * 250
+				earlyGameZone := tr1 * 250 - 75
 			}
 		}
 		return 1
@@ -1091,6 +1091,14 @@ clickerInitialize() {
 	sendClickerMsg(WM_CLICKER_INITIALIZE)
 }
 
+clickerModeFast() {
+	sendClickerMsg(WM_CLICKER_MODE_FAST)
+}
+
+clickerModeSlow() {
+	sendClickerMsg(WM_CLICKER_MODE_SLOW)
+}
+
 getClickerStatus() {
 	return sendClickerMsg(WM_CLICKER_STATUS, 1)
 }
@@ -1341,8 +1349,8 @@ raid(doSpend:=0, attempts:=1) {
 toggleMode(toggle:=1) {
 	global
 	if (toggle) {
-		ControlSend,, {vk41}, ahk_id %chWinId% ; {a}, {vk41} or {sc01E}
-		; clickPos(xMode, yMode)
+		; ControlSend,, {vk41}, ahk_id %chWinId% ; {a}, {vk41} or {sc01E}
+		clickPos(xMode, yMode)
 		sleep % zzz
 	}
 }
@@ -1503,6 +1511,7 @@ checkSafetyZones() {
 
 			if (x > xL && y > yT && x < xR && y < yB) {
 				playNotificationSound()
+				clickerModeSlow()
 				if (useImageSearch and locateImage(imgProgression)) {
 					msgbox,,% script,Click safety pause engaged. Resume?
 					clickAwayImage(imgCombatTab)
@@ -1511,6 +1520,7 @@ checkSafetyZones() {
 				} else {
 					msgbox,,% script,Click safety pause engaged. Continue?
 				}
+				clickerModeFast()
 			}
 		}
 	}
@@ -1641,7 +1651,9 @@ clickerStopTimer:
 return
 
 farmTimer:
-	bossFight()
+	if (gameMode != "PROGRESSING") {
+		bossFight()
+	}
 return
 
 bossTimer:
