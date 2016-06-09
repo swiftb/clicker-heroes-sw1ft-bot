@@ -558,7 +558,6 @@ visionRun() {
 	startMonitoring()
 	reFocus()
 
-	SetTimer, betaWarningTimer, 2500, 1 ; TODO: REMOVE AFTER BETA
 	SetTimer, zoneTickTimer, 500
 
 	loop
@@ -566,7 +565,6 @@ visionRun() {
 		if (exitThread) {
 			zoneTicks := ""
 			SetTimer, nextZoneTimer, off
-			SetTimer, betaWarningTimer, off ; TODO: REMOVE AFTER BETA
 			SetTimer, zoneTickTimer, off
 			SetTimer, comboTimer, off
 			clickerStop()
@@ -763,7 +761,6 @@ visionRun() {
 	}
 
 	SetTimer, nextZoneTimer, off
-	SetTimer, betaWarningTimer, off ; TODO: REMOVE AFTER BETA
 	SetTimer, zoneTickTimer, off
 
 	if (useZoneDataLogger) {
@@ -1674,11 +1671,4 @@ return
 
 nextZoneTimer:
 	nextZone()
-return
-
-betaWarningTimer:
-	; If any, close auto-opened beta warning window
-	if (locateImage(imgWarning)) {
-		clickAwayImage(imgClose)
-	}
 return

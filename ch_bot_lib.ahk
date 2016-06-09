@@ -113,9 +113,6 @@ imgClanCollect := {file:"clan_collect.png", topOffset:CZTO, leftOffset:0, bottom
 imgYes := {file:"yes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:0}
 imgClose := {file:"close.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:0}
 
-; TODO: REMOVE AFTER BETA
-imgWarning := {file:"w.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-
 ; -- Coordinates --------------------------------------------------------------------------
 
 ; Top LVL UP button when scrolled to the bottom
