@@ -2,34 +2,13 @@
 
 ## Speed Run
 
-**Q:** Why didn’t the bot level my gilded ranger?  
-**A:** Use the Siyalatas [regilding chart][] to make sure you are gilded correctly and the [Ancients Calculator][] to optimally level your Ancients. Any transitional hero/ranger used by the bot must also be gilded.  
-
-**Q:** The bot missed to buy all upgrades on my gilded ranger!?  
-**A:** Most likely caused by a low Iris. Make sure to (as a minimum) level it up to be within 1000 levels of your *optimal zone*. The `firstStintAdjustment` setting can temporarily be used to _compensate_ (35 levels ~= 60s) for this.
-
-**Q:** Even with `activateSkillsAtStart` set to `false` the Speed run is breaking idle at the start. Is that a bug?  
-**A:** No, without image recognition to spot the clickables, it just clicks on all known spawn locations. Then to prevent a toggling behavior, it actually breaks idle on purpose.
-
-**Q:** Why did the bot seem to get stuck after ascending?  
-**A1:** It needs a *clickable* to get going, so leave them alone!  
-**A2:** If `activateSkillsAtStart` is set to `false`, you might need a higher Chronos to not get stuck at the start before Idle kicks in.
-
-**Q:** Is the Speed run always two stages?  
-**A:** No. Depending on your Iris, it can be one or two stages. One if Iris is high enough to start right away on your gilded ranger, otherwise two.
-
-## Hybrid/Deep Run
-
-**Q:** I only get like 2 clicks per second!?  
-**A:** There is a built in click speed throttle when moving your mouse cursor inside the Clicker Heroes window.
+**Q:** Not supported any more?  
+**A:** No, sadly not. Highly repetitive and predictable runs died when Iris was removed. This together with the fact, that the new Transcendent Power speeds up your game progression a great deal, makes it even more difficult to script something even remotely decent when you have no visual cues to guide you. RIP Speed Run, 2015-06-16 -- 2016-04-19 :(
 
 ## Vision Run
 
 **Q:** I get a "Start failed (state = 0)!" warning, what's wrong?  
 **A:** In Windows, use standard 100% (96 DPI) display scaling in (32 bit) True Color
-
-**Q:** The Vision run gets stuck before reaching my gilded ranger!?  
-**A:** You need one transitional hero/ranger (with 1 gild) that the bot can find after the clickable/Midas start.
 
 **Q:** Why isn't the Steam client supported?  
 **A:** The Vision run utilizes the level shown in the browser client title bar. Something the Steam client lacks.
@@ -50,7 +29,8 @@
 **A2:** If you run in the browser, make sure the `browserTopMargin` setting is correct. See __Configuration > Mandatory lib settings__ in the [README](README.md).
 
 **Q:** I run the web client and have focus issues, why?  
-**A:** You need to run CH in one browser (e.g. Opera), then do your normal surfing in another (e.g. Chrome).
+**A1:** You need to run CH in one browser (e.g. Opera), then do your normal surfing in another (e.g. Chrome).  
+**A2:** Make sure the CH window IS NOT focused when you start a run.
 
 **Q:** Why do I get an error when trying to run one of the script files?  
 **A:** Make sure you have the latest version of both [AutoHotkey][] and the bot.
@@ -70,10 +50,10 @@
 **A2:** Screenshot sounds in Steam can also be turned off: Right-click __Steam__ in your toolbar and uncheck __Play a sound__ under __Settings > In-Game__
 
 **Q:** I just can’t get the bot to work and none of the answers above did help. What should I do?  
-**A:** Ask me on [Reddit][home]. Your game state via the [Clicker Lister][] always help.
+**A:** Ask me on [Reddit][home]. Also link me a [Pastebin][] with the contents of today's log file in the logs folder.
 
 [AutoHotkey]: http://ahkscript.org/
-[Ancients Calculator]: http://hsoptimizer.github.io/ancient/
+[Ancients Optimizer]: http://philni.neocities.org/ancientssoul.html
 [regilding chart]: https://redd.it/3frj62
 [home]: https://redd.it/3wxwfu
-[Clicker Lister]: http://dobruj01.github.io/clicker-lister/
+[Pastebin]: http://pastebin.com/

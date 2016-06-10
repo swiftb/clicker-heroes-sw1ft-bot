@@ -14,24 +14,12 @@ winName=Lvl.*Clicker Heroes.* ; browser
 ; Deep run skill combo tests
 ; https://redd.it/3il3tx
 
-; T > 8h
-comboEDR := [2.5*60, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
+vaagur := -0.00 ; -#.##% skill cooldowns
+cooldown := ceil(600*(1 + vaagur/100))
 
-; 3h < T < 8h
-comboEGolden := [2.5*60, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"] ; energize 3 (dmg) or 5 (gold)
-
-; T < 3h
-comboGoldenLuck := [2.5*60, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"]
-
-; Hybrid combo
-comboHybridIdle := [15*60, "1-2-3-4-5-7-6-9-8"] ; energize >
-comboHybridActive := [30, "5", "", "", "3", "", "", "8-9-2-5-7", "4", "", "3", "", "1-2"] ; > golden clicks, 6 minutes
-
-; Midas: 1-4-5                                2:30                 5:00                 7:30                 10:00                  12:30                    15:00                        17:30
-comboMidas := [30, "9-3-8-6", "2", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2", "", "4", "", "", "2-5", "", "", "", "", "", "3", "", "", "8-9-3-5", "", "", "2-4-7", "", "1", "", ""]
-
-; Midas: 1-4-5                                 2:30                 5:00                 7:30                  10:00                  12:30                     15:00                       17:30
-comboMidas2 := [30, "9-3-8-6", "2", "", "", "", "", "2", "", "", "", "", "2", "", "", "", "", "2-4", "", "", "", "", "2-5", "", "", "", "", "", "3", "", "", "8-9-2-5-7", "4", "", "3", "", "1-2", "", ""]
+comboEDR := [cooldown, "2-3-4-5-7-8-6-9", "", "", "", "", "", "8-9-2-3-4-5-7", "2", "2", "2-3-4", "2", "2"] ; T > 8h
+comboEGolden := [cooldown, "8-5-2-3-4-7-6-9", "2", "2", "2-3-4", "2", "2"] ; 3h < T < 8h
+comboGoldenLuck := [cooldown, "6-2-3-5-8-9", "2-3-4-5-7", "2", "2", "2-3-4", "2", "2"] ; T < 3h
 
 activeClicker := true ; set to false to add Clickstorm
 testMode := true
@@ -49,11 +37,7 @@ F2::
 return
 
 F3::
-	comboTester(comboHybridActive)
-return
-
-F4::
-	comboTester(comboMidas)
+	comboTester(comboGoldenLuck)
 return
 
 F5::

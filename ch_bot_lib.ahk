@@ -5,7 +5,7 @@
 
 CoordMode, Pixel, Screen
 
-libVersion=1.5
+libVersion=4.0
 
 winName := "Clicker Heroes"
 
@@ -46,7 +46,7 @@ barUpdateDelay := 30 ; time (in seconds) between progress bar updates
 coinPickUpDelay := 5 ; time (in seconds) needed to pick up all coins from a clickable
 nextHeroDelay := 5 ; extra gold farm delay (in seconds) between heroes
 
-scrollDelay := 300 ; base delay (in ms)
+scrollDelay := 325 ; base delay (in ms)
 scrollClickDelay := 20 ; delay per click (in ms)
 
 dialogBoxClass := "#32770"
@@ -57,7 +57,9 @@ dimmedYellowColor := 0x7E6500
 goldColor := 0xFFB423
 brightGoldColor := 0xFFD911
 
-severityLevels := {"OFF":0, "WARN":1, "USER":2, "INFO":3, "DEBUG":4}
+severityLevels := {"OFF":0, "WARN":1, "USER":2, "INFO":3, "DEBUG":4, "TRACE":5}
+
+gameModes := {"INIT":0, "PROGRESSING":1, "FARMING":2, "FIGHTING":3}
 
 ; -- Images -------------------------------------------------------------------------------
 
@@ -75,10 +77,10 @@ imgProgression := {file:"progression.png", topOffset:0, leftOffset:1090, bottomO
 imgAscend := {file:"ascend.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 
 imgClickable := {file:"clickable.png", topOffset:CZTO, leftOffset:CZLO, bottomOffset:0, rightOffset:0}
+imgBoss := {file:"boss_clock.png", topOffset:155, leftOffset:805, bottomOffset:-445, rightOffset:-290}
 
 imgSkillBar := {file:"skill_bar.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 imgSkillLocked := {file:"skill_locked.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
-imgLuckyStrikes := {file:"lucky_strikes.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 
 imgCombatTab := {file:"combat_tab.png", topOffset:0, leftOffset:0, bottomOffset:CZBO, rightOffset:CZRO}
 
@@ -88,13 +90,11 @@ imgMaxLvl := {file:"max_lvl.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, 
 
 imgDimmedSkill := {file:"skill_dimmed.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgSkill := {file:"skill.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgClickstorm := {file:"clickstorm.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgMetalDetector := {file:"metal_detector.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgGoldenClicks := {file:"golden_clicks.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+
+imgChefBuff := {file:"way_of_the_chef.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
+imgKingsBuff := {file:"way_of_kings.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgCid := {file:"cid.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgMercedes := {file:"mercedes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-imgReferi := {file:"referi.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgDK := {file:"dk.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgDKG := {file:"dk_g.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgMax := {file:"max.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
@@ -111,7 +111,7 @@ imgClanFightAgain := {file:"clan_fight_again.png", topOffset:CZTO, leftOffset:0,
 imgClanCollect := {file:"clan_collect.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgYes := {file:"yes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:0}
-imgClose := {file:"close.png", topOffset:0, leftOffset:800, bottomOffset:-400, rightOffset:0}
+imgClose := {file:"close.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:0}
 
 ; -- Coordinates --------------------------------------------------------------------------
 
@@ -168,23 +168,7 @@ yGildedDown := 493
 xGildedClose := 1090
 yGildedClose := 54
 
-rangers := ["Dread Knight", "Atlas", "Terra", "Phthalo", "Banana", "Lilin", "Cadmia", "Alabaster", "Astraea", "Chiron", "Moloch", "Bomber Max", "Gog", "Wepwawet"]
-
-rangerPositions := {}
-rangerPositions[1] := {x:445, y:290} ; Dread Knight
-rangerPositions[2] := {x:675, y:290} ; Atlas
-rangerPositions[3] := {x:900, y:290} ; Terra
-rangerPositions[4] := {x:220, y:355} ; Phthalo
-rangerPositions[5] := {x:445, y:355} ; Banana
-rangerPositions[6] := {x:675, y:355} ; Lilin
-rangerPositions[7] := {x:900, y:355} ; Cadmia
-rangerPositions[8] := {x:220, y:425} ; Alabaster
-rangerPositions[9] := {x:445, y:425} ; Astraea
-rangerPositions[10] := {x:675, y:425} ; Chiron
-rangerPositions[11] := {x:900, y:425} ; Moloch
-rangerPositions[12] := {x:220, y:490} ; Bomber Max
-rangerPositions[13] := {x:445, y:490} ; Gog
-rangerPositions[14] := {x:675, y:490} ; Wepwawet
+rangers := {0:"Power 5", -1:"Samurai", 1:"Dread Knight", 2:"Atlas", 3:"Terra", 4:"Phthalo", 5:"Banana", 6:"Lilin", 7:"Cadmia", 8:"Alabaster", 9:"Astraea", 10:"Chiron", 11:"Moloch", 12:"Bomber Max", 13:"Gog", 14:"Wepwawet", 15:"Betty", 16:"Midas"}
 
 ; Buy Available Upgrades button
 xBuy := 370
@@ -193,7 +177,7 @@ yBuy := 582
 xFocus := 564
 yFocus := 69
 
-xMonster := 920
+xMonster := 1010
 yMonster := 164
 
 ; Safety zones (script will pause when entering)
@@ -215,11 +199,11 @@ ySave := 112
 
 xSkill := 201
 oSkill := 36 ; offset to next skill
-ySkillTop := 279 ; at top
 ySkill2nd := 410 ; at bottom
 
 xPrevZone := 679
 xMiddleZone := 858
+xPlusOneZone := 922
 xNextZone := 1044
 yZone := 70
 
@@ -249,25 +233,6 @@ IfNotExist, ch_bot_lib_settings.ahk
 ; -- Functions
 ; -----------------------------------------------------------------------------------------
 
-getClickable(idle:=0) {
-	global
-	local xPos, yPos
-	if (idle = 0) {
-		; Break idle on purpose to get the same amount of gold every run
-		loop 3 {
-			clickPos(xMonster, yMonster)
-		}
-		clickPos(524, 487)
-		clickPos(747, 431)
-		clickPos(760, 380)
-		clickPos(873, 512)
-		clickPos(1005, 453)
-		clickPos(1053, 443)
-	} else if (locateImage(imgClickable, xPos, yPos)) {
-		clickPos(xPos, yPos, 1, 1) ; absolute pos
-	}
-}
-
 clientCheck() {
 	global
 	if (!isBrowserClient()) {
@@ -278,9 +243,13 @@ clientCheck() {
 		fullScreenOption := false
 
 		if (useImageSearch and locateImage(imgQuality, xPos, yPos)) {
-			showDebugSplash("Switching to low quality")
+			showTraceSplash("Switching to low quality")
 			clickPos(xPos, yPos, 1, 1)
 		}
+	}
+	if (scriptName = "CH Sw1ft Bot") {
+		showTraceSplash("xScreenR - xScreenL = " . xScreenR - xScreenL)
+		showTraceSplash("yScreenB - yScreenT = " . yScreenB - yScreenT)
 	}
 }
 
@@ -472,6 +441,10 @@ playWarningSound() {
 	}
 }
 
+showTraceSplash(text, seconds:=1) {
+	showSplash(text, seconds, 0, "TRACE")
+}
+
 showDebugSplash(text, seconds:=1) {
 	showSplash(text, seconds, 0, "DEBUG")
 }
@@ -513,14 +486,14 @@ logArray(name, array) {
 	logVariable(name, "[" . value . "]")
 }
 
-logVariable(name, value, isBool:=0) {
+logVariable(name, value, isBool:=0, level="DEBUG") {
 	if (isBool) {
 		value := value ? "true" : "false"
 	}
-	logger(name . " = " . value, "DEBUG")
+	logger(name . " = " . value, level)
 }
 
-; 0:OFF, 1:WARN, 2:USER, 3:INFO, 4:DEBUG
+; 0:OFF, 1:WARN, 2:USER, 3:INFO, 4:DEBUG, 5:TRACE
 logger(msg, level, fileSuffix:="") {
 	global
 	local localTime := A_Now
@@ -547,14 +520,10 @@ startProgress(title, min:=0, max:=100) {
 	}
 }
 
-updateProgress(position, remainingTime, showLvl:=0) {
+updateProgress(position, remainingTime) {
 	if (showProgressBar) {
 		guicontrol,, ProgressBar,% position
-		if (showLvl) {
-			guicontrol,, ProgressBarTime,% remainingTime
-		} else {
-			guicontrol,, ProgressBarTime,% formatSeconds(remainingTime)
-		}
+		guicontrol,, ProgressBarTime,% formatSeconds(remainingTime)
 	}
 }
 
@@ -622,18 +591,6 @@ horizontalSkills(x, y, skills, absolute:=0) {
 	sleep % zzz * 2
 }
 
-verticalSkills(x) {
-	global
-	local y := 215
-
-	loop 14
-	{
-		clickPos(x, y)
-		sleep 25
-		y += buttonSize
-	}
-}
-
 getCurrentZone() {
 	global
 	local title, currentZone
@@ -674,12 +631,12 @@ clickAwayImage(image) {
 	return 0
 }
 
-upLocator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, earlyGameMode:=0) {
-	return locator(image, what, xPos, yPos, retries, clickCount, absolute, startAt, earlyGameMode, 1)
+upLocator(image, what, byref xPos, byref yPos, byref retries:=0, clickCount:=5, absolute:=0, startAt:=0, silent:=0) {
+	return locator(image, what, xPos, yPos, retries, clickCount, absolute, startAt, silent, 1)
 }
 
 ; Try to locate the given image one screen at a time
-locator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute:=0, startAt:=0, earlyGameMode:=0, directionUp:=0) {
+locator(image, what, byref xPos, byref yPos, byref retries:=0, clickCount:=5, absolute:=0, startAt:=0, silent:=0, directionUp:=0) {
 	global
 
 	local attempts := ceil(45 / clickCount)
@@ -696,9 +653,8 @@ locator(image, what, byref xPos, byref yPos, retries:=0, clickCount:=5, absolute
 				scrollDown(clickCount)
 			}
 		} else if (retries-- != 0) {
-			if (!earlyGameMode) {
+			if (!silent) {
 				showDebugSplash("Could not locate " . what . "! Trying again...")
-				clientCheck()
 			}
 			if (directionUp) {
 				scrollToBottom()
