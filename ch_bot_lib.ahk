@@ -12,7 +12,6 @@ winName := "Clicker Heroes"
 global ProgressBar, ProgressBarTime ; progress bar controls
 
 exitThread := false
-exitDRThread := false
 
 chWinId := ""
 
@@ -37,14 +36,10 @@ topMarginOffset := 0
 
 ; Calculated
 aspectRatio := 1
-hBorder := 0
-vBorder := 0
 
 zzz := 175 ; sleep delay (in ms) after a click
-lvlUpDelay := 4 ; time (in seconds) between lvl up clicks
-barUpdateDelay := 30 ; time (in seconds) between progress bar updates
+lvlUpDelay := 6 ; time (in seconds) between lvl up clicks
 coinPickUpDelay := 5 ; time (in seconds) needed to pick up all coins from a clickable
-nextHeroDelay := 5 ; extra gold farm delay (in seconds) between heroes
 
 scrollDelay := 325 ; base delay (in ms)
 scrollClickDelay := 20 ; delay per click (in ms)
@@ -111,28 +106,23 @@ imgClanFightAgain := {file:"clan_fight_again.png", topOffset:CZTO, leftOffset:0,
 imgClanCollect := {file:"clan_collect.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgYes := {file:"yes.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:0}
-imgClose := {file:"close.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:0}
 
 ; -- Coordinates --------------------------------------------------------------------------
 
 ; Top LVL UP button when scrolled to the bottom
 xLvl := 80
-yLvl := 285
 oLvl := 107 ; offset to next button
-
-buttonSize := 34
 
 ; Progression/Farm Mode
 xMode := 1121
 yMode := 281
 
-; 0.23 ascend button
 xAscend := 1121
 yAscend := 322
 
 ; Ascend Yes button
 xYes := 500
-yYes := 510 ; redesigned ascend window
+yYes := 510
 
 oTab := 69 ; offset to next tab
 xCombatTab := 52
@@ -158,15 +148,6 @@ xScroll := 554
 yUp := 219
 yDown := 653
 top2BottomClicks := 45
-
-xGilded := 135
-yGilded := 582
-
-xGildedDown := 1060
-yGildedDown := 493
-
-xGildedClose := 1090
-yGildedClose := 54
 
 rangers := {0:"Power 5", -1:"Samurai", 1:"Dread Knight", 2:"Atlas", 3:"Terra", 4:"Phthalo", 5:"Banana", 6:"Lilin", 7:"Cadmia", 8:"Alabaster", 9:"Astraea", 10:"Chiron", 11:"Moloch", 12:"Bomber Max", 13:"Gog", 14:"Wepwawet", 15:"Betty", 16:"Midas"}
 
@@ -199,23 +180,12 @@ ySave := 112
 
 xSkill := 201
 oSkill := 36 ; offset to next skill
-ySkill2nd := 410 ; at bottom
 
 xPrevZone := 679
 xMiddleZone := 858
 xPlusOneZone := 922
 xNextZone := 1044
 yZone := 70
-
-xNewGild := 1105
-yNewGild := 560
-xOpenGild := 570
-yOpenGild := 360
-xCloseGild := 924
-yCloseGild := 133
-
-xBuyRubiesClose := 1081
-yBuyRubiesClose := 96
 
 ; -----------------------------------------------------------------------------------------
 
@@ -235,17 +205,12 @@ IfNotExist, ch_bot_lib_settings.ahk
 
 clientCheck() {
 	global
-	if (!isBrowserClient()) {
-		calculateSteamAspectRatio() ; Steam
-	} else {
-		local xPos, yPos
-		calculateBrowserOffsets() ; Browser
-		fullScreenOption := false
+	local xPos, yPos
+	calculateBrowserOffsets()
 
-		if (useImageSearch and locateImage(imgQuality, xPos, yPos)) {
-			showTraceSplash("Switching to low quality")
-			clickPos(xPos, yPos, 1, 1)
-		}
+	if (locateImage(imgQuality, xPos, yPos)) {
+		showTraceSplash("Switching to low quality")
+		clickPos(xPos, yPos, 1, 1)
 	}
 	if (scriptName = "CH Sw1ft Bot") {
 		showTraceSplash("xScreenR - xScreenL = " . xScreenR - xScreenL)
@@ -277,56 +242,9 @@ calculateBrowserOffsets() {
 	}
 }
 
-calculateSteamAspectRatio() {
-	global
-	local w, h
-	IfWinExist, % winName
-	{
-		WinActivate
-		WinGetPos, xWinPos, yWinPos, w, h
-		WinGet, chWinId, ID, A
-
-		; Fullscreen sanity checks
-		if (fullScreenOption) {
-			if (w <> A_ScreenWidth || h <> A_ScreenHeight) {
-				showWarningSplash("The fullScreenOption should be set to false!")
-				return
-			}
-		} else if (w = A_ScreenWidth && h = A_ScreenHeight) {
-			showWarningSplash("The fullScreenOption should be set to true!")
-			return
-		}
-
-		if (w != chTotalWidth || h != chTotalHeight) {
-			showDebugSplash("Calculating Steam aspect ratio (" . scriptName . ")")
-
-			local winWidth := fullScreenOption ? w : w - 2 * chMargin
-			local winHeight := fullScreenOption ? h : h - chTopMargin - chMargin
-			local horizontalAR := winWidth/chWidth
-			local verticalAR := winHeight/chHeight
-
-			; Take the lowest aspect ratio and calculate border size
-			if (horizontalAR < verticalAR) {
-				aspectRatio := horizontalAR
-				vBorder := (winHeight - chHeight * aspectRatio) // 2
-			} else {
-				aspectRatio := verticalAR
-				hBorder := (winWidth - chWidth * aspectRatio) // 2
-			}
-		}
-
-		xScreenL := fullScreenOption ? xWinPos : xWinPos + chMargin
-		yScreenT := fullScreenOption ? yWinPos : yWinPos + chTopMargin
-		xScreenR := fullScreenOption ? xWinPos + w : xWinPos + w - chMargin
-		yScreenB := fullScreenOption ? yWinPos + h : yWinPos + h - chMargin
-	} else {
-		showWarningSplash("Clicker Heroes started in Steam?")
-	}
-}
-
 switchToCombatTab() {
 	global
-	if (useImageSearch and locateImage(imgCombatTab)) {
+	if (locateImage(imgCombatTab)) {
 		clickAwayImage(imgCombatTab)
 	} else {
 		clickPos(xCombatTab, yTab)
@@ -376,14 +294,6 @@ scrollDown(clickCount:=1) {
 	sleep % scrollDelay + clickCount * scrollClickDelay
 }
 
-; Scroll down fix when at bottom and scroll bar don't update correctly
-scrollWayDown(clickCount:=1) {
-	global
-	scrollUp()
-	scrollDown(clickCount + 1)
-	sleep % nextHeroDelay * 1000
-}
-
 maxClick(xCoord, yCoord, clickCount:=1, absolute:=0) {
 	global
 	ControlSend,, {shift down}{vk51 down}, ahk_id %chWinId% ; {q}, {vk51} or {sc010}
@@ -402,14 +312,6 @@ ctrlClick(xCoord, yCoord, clickCount:=1, sleepSome:=1, absolute:=0) {
 	}
 }
 
-zClick(xCoord, yCoord, clickCount:=1, absolute:=0) {
-	global
-	ControlSend,, {vk5A down}, ahk_id %chWinId% ; {z}, {vk5A} or {sc02C}
-	clickPos(xCoord, yCoord, clickCount, absolute)
-	ControlSend,, {vk5A up}, ahk_id %chWinId%
-	sleep % zzz
-}
-
 clickPos(xCoord, yCoord, clickCount:=1, absolute:=0) {
 	global
 	local xAdj := absolute ? xCoord : getAdjustedX(xCoord)
@@ -419,14 +321,14 @@ clickPos(xCoord, yCoord, clickCount:=1, absolute:=0) {
 
 getAdjustedX(x) {
 	global
-	local leftMargin := fullScreenOption ? 0 : chMargin + leftMarginOffset
-	return round(aspectRatio*(x - chMargin) + leftMargin + hBorder)
+	local leftMargin := chMargin + leftMarginOffset
+	return round(aspectRatio*(x - chMargin) + leftMargin)
 }
 
 getAdjustedY(y) {
 	global
-	local topMargin := fullScreenOption ? 0 : chTopMargin + topMarginOffset
-	return round(aspectRatio*(y - chTopMargin) + topMargin + vBorder)
+	local topMargin := chTopMargin + topMarginOffset
+	return round(aspectRatio*(y - chTopMargin) + topMargin)
 }
 
 playNotificationSound() {
@@ -508,31 +410,6 @@ logger(msg, level, fileSuffix:="") {
 	}
 }
 
-startProgress(title, min:=0, max:=100) {
-	global
-	if (showProgressBar) {
-		gui, new
-		gui, margin, 0, 0
-		gui, font, s18
-		gui, add, progress,% "w" wProgressBar " h28 range" min "-" max " -smooth vProgressBar"
-		gui, add, text, w92 vProgressBarTime x+2
-		gui, show,% "na x" xProgressBar " y" yProgressBar,% script " - " title
-	}
-}
-
-updateProgress(position, remainingTime) {
-	if (showProgressBar) {
-		guicontrol,, ProgressBar,% position
-		guicontrol,, ProgressBarTime,% formatSeconds(remainingTime)
-	}
-}
-
-stopProgress() {
-	if (showProgressBar) {
-		gui, destroy
-	}
-}
-
 formatSeconds(s) {
 	time := 19990101 ; *Midnight* of an arbitrary date.
 	time += %s%, seconds
@@ -540,26 +417,10 @@ formatSeconds(s) {
 	return timeStr
 }
 
-secondsSince(startTime) {
-	return (A_TickCount - startTime) // 1000
-}
-
 toggleFlag(flagName, byref flag) {
 	flag := !flag
 	flagValue := flag ? "On" : "Off"
 	showUserSplash("Toggled " . flagName . " " . flagValue)
-}
-
-screenShot() {
-	global
-	local activeWinId
-	if (!isBrowserClient()) { ; Steam only
-		WinGet, activeWinId, ID, A ; remember current active window...
-		WinActivate, ahk_id %chWinId%
-		send {f12 down}{f12 up} ; screenshot
-		sleep % zzz
-		WinActivate, ahk_id %activeWinId% ; ... and restore focus back
-	}
 }
 
 scrollToZone(zone) {
@@ -579,38 +440,18 @@ scrollZone(fromZone, toZone) {
 	}
 }
 
-horizontalSkills(x, y, skills, absolute:=0) {
-	global
-
-	loop % skills
-	{
-		clickPos(x, y, 1, absolute)
-		sleep 25
-		x += oSkill
-	}
-	sleep % zzz * 2
-}
-
 getCurrentZone() {
 	global
 	local title, currentZone
-	if (isBrowserClient()) {
-		WinGetTitle, title, ahk_id %chWinId%
-		currentZone := SubStr(title, 5, InStr(title, "-") - 6)
-		return currentZone
-	} else {
-		return 0
-	}
+	WinGetTitle, title, ahk_id %chWinId%
+	currentZone := SubStr(title, 5, InStr(title, "-") - 6)
+	return currentZone
 }
 
 reFocus() {
 	global
 	clickPos(xFocus, yFocus)
 	sleep 25
-}
-
-isBrowserClient() {
-	return A_TitleMatchMode = "regex"
 }
 
 ; -----------------------------------------------------------------------------------------
