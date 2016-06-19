@@ -46,7 +46,7 @@ A game bot for [Clicker Heroes][Reddit].
 ![](images/guide/autohotkey.png?raw=true)
 
 **3.** Download the [latest bot release][] from GitHub:  
-![](images/guide/dl_bot.png?raw=true)  
+![](images/guide/dl_bot.png?raw=true)
 
 **4.** Extract the bot zip file:  
 ![](images/guide/unzip_bot.png?raw=true)
@@ -71,7 +71,7 @@ Unless they already exist, three user settings files will be created:
 * Make sure the Clicker Heroes window have focus, then click <kbd>Ctrl+Middle Mouse Button</kbd> dead center in the ancient tab eye like this:  
 ![](images/guide/ancient_eye_click.png?raw=true)
 * Update the `browserTopMargin` according to the pop-up window:  
-![](images/guide/browserTopMargin.png?raw=true)  
+![](images/guide/browserTopMargin.png?raw=true)
 * Save and reload the script with <kbd>Alt+F5</kbd>.
 
 **Test hotkeys:**
@@ -94,8 +94,8 @@ Then you would set `gildedRanger` to 11.
 ![](images/guide/playstyle.png?raw=true)
 
 * The settings for `chronos`, `kumawakamaru` and `vaagur`:
-![](images/guide/ancient_settings.png?raw=true)
-Should match your in-game values:
+![](images/guide/ancient_settings.png?raw=true)  
+Should match your in-game values:  
 ![](images/guide/kumawakamaru.png?raw=true)
 
 Recommended optional settings:

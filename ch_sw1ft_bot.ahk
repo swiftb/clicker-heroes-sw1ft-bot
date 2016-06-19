@@ -562,6 +562,7 @@ visionRun() {
 				if (secPerMonster >= maxMonsterKillTime and zone >= estimatedAscendLevel) {
 					; Yeah, we are done here
 					triggerAscension("End of run")
+					break
 				}
 				if (gameMode = "PROGRESSING") {
 					; Farm a bit before next boss
