@@ -3,7 +3,7 @@
 ; by Sw1ftb
 ; -----------------------------------------------------------------------------------------
 
-#Warn All
+; #Warn All
 #Persistent
 #NoEnv
 #InstallKeybdHook
@@ -24,6 +24,7 @@ clickerName := clickerScript . " - AutoHotkey"
 
 scheduleReload := false
 scheduleStop := false
+manualProgression := false
 
 ; -----------------------------------------------------------------------------------------
 
@@ -90,6 +91,12 @@ return
 ; Start a Vision Run loop with Ctrl+F1
 ^F1::
 	loopVisionRun()
+return
+
+; Reload and restart Vision Run loop with Ctrl+F3
+^F3::
+	global scheduleReload := true
+	handleScheduledReload("loopVisionRun")
 return
 
 ; Pause/unpause the script
@@ -545,18 +552,20 @@ visionRun() {
 			; Progressing @ zone before boss?
 			elapsedZoneTime := timeBetweenZones(zone-1, zone)
 			zoneTimeIncrease := (elapsedZoneTime - previousZoneTime) / previousZoneTime
-			previousZoneTime := elapsedZoneTime
-			previousZone := zone
 
-			; showTraceSplash("elapsedZoneTime = " . elapsedZoneTime . " @ Lvl " . zone)
-			; if (zoneTimeIncrease > 0) {
-			;	logVariable("zoneTimeIncrease", zoneTimeIncrease)
-			; }
+			if (zoneTimeIncrease > 1.5) {
+				logVariable("previousZoneTime", previousZoneTime,, "TRACE")
+				logVariable("elapsedZoneTime", elapsedZoneTime,, "TRACE")
+				showTraceSplash("zoneTimeIncrease = " . zoneTimeIncrease . " @ Lvl " . zone)
+			}
+
+			previousZone := zone
+			previousZoneTime := elapsedZoneTime
 
 			; Calculate average monster kill time for the previous zone
 			secPerMonster := elapsedZoneTime / (10.0 + kumawakamaru)
 			; Fast enough to kill next boss easily?
-			if (secPerMonster >= farmMonsterKillTime and zoneTimeIncrease < 2.0) {
+			if (secPerMonster >= farmMonsterKillTime and zoneTimeIncrease < 2.5) {
 				showDebugSplash("Lvl " . zone-1 . " -> " . zone . " - Avg monster kill time: " . round(secPerMonster, 2))
 				; No! Time to ascend?
 				if (secPerMonster >= maxMonsterKillTime and zone >= estimatedAscendLevel) {
@@ -870,7 +879,7 @@ ascend(autoYes:=false) {
 	}
 
 	salvageJunkPile() ; must salvage junk relics before ascending
-	toggleMode()
+	setFarmMode()
 
 	showDebugSplash("Ascend @ Lvl " . getCurrentZone())
 
@@ -992,15 +1001,15 @@ toggleMode(toggle:=1) {
 setFarmMode() {
 	global
 	if (!manualProgression and locateImage(imgProgression)) {
-		toggleMode()
+		clickAwayImage(imgProgression)
 		showTraceSplash("Set Farm Mode")
 	}
 }
 
 setProgressionMode() {
 	global
-	if (!manualProgression and !locateImage(imgProgression)) {
-		toggleMode()
+	if (!manualProgression and locateImage(imgFarm)) {
+		clickAwayImage(imgFarm)
 		showTraceSplash("Set Progression Mode")
 	}
 }
@@ -1137,6 +1146,10 @@ checkSafetyZones() {
 			yB := getAdjustedY(sz.y2)
 
 			if (x > xL && y > yT && x < xR && y < yB) {
+				if (sz.zone = "gilded" && !locateImage(imgGildedButton)) {
+					return
+				}
+				Thread, NoTimers ; block timers
 				playNotificationSound()
 				clickerModeSlow()
 				if (locateImage(imgProgression)) {

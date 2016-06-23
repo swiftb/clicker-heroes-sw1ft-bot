@@ -68,11 +68,11 @@ imageFilePath := "images\"
 
 imgSmile := {file:"smile.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 imgQuality := {file:"quality.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
+imgFarm := {file:"farm.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 imgProgression := {file:"progression.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 imgAscend := {file:"ascend.png", topOffset:0, leftOffset:1090, bottomOffset:0, rightOffset:0}
 
 imgClickable := {file:"clickable.png", topOffset:CZTO, leftOffset:CZLO, bottomOffset:0, rightOffset:0}
-imgBoss := {file:"boss_clock.png", topOffset:155, leftOffset:805, bottomOffset:-445, rightOffset:-290}
 
 imgSkillBar := {file:"skill_bar.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
 imgSkillLocked := {file:"skill_locked.png", topOffset:0, leftOffset:575, bottomOffset:0, rightOffset:-496}
@@ -97,7 +97,7 @@ imgGog := {file:"gog.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOf
 imgSolomon := {file:"solomon.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgGilded := {file:"gilded.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
-
+imgGildedButton := {file:"gilded_button.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 imgBuyUpgrades := {file:"upgrades.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
 
 imgClanRaid := {file:"clan_raid.png", topOffset:CZTO, leftOffset:0, bottomOffset:0, rightOffset:CZRO}
@@ -163,10 +163,10 @@ yMonster := 164
 
 ; Safety zones (script will pause when entering)
 safetyZones := {}
-safetyZones[1] := {x1:8, y1:104, x2:575, y2:153} ; tabs
-safetyZones[2] := {x1:1096, y1:29, x2:1144, y2:74} ; settings
-safetyZones[3] := {x1:678, y1:600, x2:949, y2:670} ; sale + shop
-safetyZones[4] := {x1:79, y1:554, x2:194, y2:612} ; gilded
+safetyZones[1] := {zone:"tabs", x1:8, y1:104, x2:575, y2:153}
+safetyZones[2] := {zone:"settings", x1:1096, y1:31, x2:1143, y2:74}
+safetyZones[3] := {zone:"saleShop", x1:678, y1:600, x2:949, y2:670}
+safetyZones[4] := {zone:"gilded", x1:79, y1:554, x2:194, y2:612}
 
 ; The wrench
 xSettings := 1121

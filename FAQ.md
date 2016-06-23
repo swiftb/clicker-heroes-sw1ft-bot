@@ -23,16 +23,14 @@
 **Q:** The monitor power savings seems to cause issues!  
 **A:** Either use Firefox or turn the power savings off.
 
-## General
-
 **Q:** Changing the settings files do nothing!?  
-**A:** Make sure you are __NOT__ editing the system default settings. See __Starting the bot__ in the [README](README.md).
+**A:** Make sure you are __NOT__ editing the system default settings. See the __Step-by-step Guide__ in the [README](README.md).
 
 **Q:** The bot seem to miss-click, do I need to update any coordinates?  
 **A1:** If you have moved or re-sized the client window, just hit <kbd>Alt+F6</kbd> and try again.  
-**A2:** If you run in the browser, make sure the `browserTopMargin` setting is correct. See __Configuration > Mandatory lib settings__ in the [README](README.md).
+**A2:** Make sure the `browserTopMargin` setting is correct. See the __Step-by-step Guide__ in the [README](README.md).
 
-**Q:** I run the web client and have focus issues, why?  
+**Q:** I have focus issues, why?  
 **A1:** You need to run CH in one browser (e.g. Opera), then do your normal surfing in another (e.g. Chrome).  
 **A2:** Make sure the CH window IS NOT focused when you start a run.  
 **A3:** A trick to get focus back, is to left-click and *draw some boxes* on your desktop.

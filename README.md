@@ -19,7 +19,7 @@ A game bot for [Clicker Heroes][Reddit].
     - Supports idle, hybrid and active play
     - Finds gilded heroes/rangers automatically
     - Picks up *clickables* without breaking idle
-    - Dynamic ascensions triggered by a tunable max monster kill time setting
+    - Dynamic ascensions triggered by a tunable _max monster kill time_ setting
     - Option to auto-save before ascending
     - Option to auto-level Solomon after ascending
     - Can automatically resume
@@ -154,6 +154,7 @@ Make sure these match with your settings and that you follow the recommended tra
 | Hotkey | Function |
 | ------ | -------- |
 <kbd>Ctrl+F1</kbd>       | Start the Vision Run loop
+<kbd>Ctrl+F3</kbd>       | Reload and restart Vision Run loop
 <kbd>Pause</kbd>         | Pause/unpause the script
 <kbd>Alt+Pause</kbd>     | Abort any active run or initiated ascension
 <kbd>Shift+Pause</kbd>   | Schedule a stop after finishing the current run
