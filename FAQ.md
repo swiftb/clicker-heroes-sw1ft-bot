@@ -3,12 +3,16 @@
 ## Speed Run
 
 **Q:** Not supported any more?  
-**A:** No, sadly not. Highly repetitive and predictable runs died when Iris was removed. This together with the fact, that the new Transcendent Power speeds up your game progression a great deal, makes it even more difficult to script something even remotely decent when you have no visual cues to guide you. RIP Speed Run, 2015-06-16 -- 2016-04-19 :(
+**A:** No, sadly not. Highly repetitive and predictable runs died when Iris was removed. This together with the fact, that the new Transcendent Power speeds up your game progression a great deal, makes it even more difficult to script something even remotely decent when you have no visual cues to guide you. RIP Speed Run, 2015 -- 2016 :(
 
 ## Vision Run
 
 **Q:** I get a "Start failed (state = 0)!" warning, what's wrong?  
-**A:** In Windows, use standard 100% (96 DPI) display scaling in (32 bit) True Color
+**A1:** Make sure the CH browser window is at 100% zoom.  
+**A2:** In Windows, use standard 100% (96 DPI) display scaling in (32 bit) True Color
+
+**Q:** The bot only level heroes 2 levels at a time, not 200, why?  
+**A1:** The bot fails to focus and Ctrl click. Usually this can be fixed by slightly re-sizing the browser window and hit <kbd>Alt+F6</kbd>.
 
 **Q:** Why isn't the Steam client supported?  
 **A:** The Vision run utilizes the level shown in the browser client title bar. Something the Steam client lacks.
@@ -19,18 +23,17 @@
 **Q:** The monitor power savings seems to cause issues!  
 **A:** Either use Firefox or turn the power savings off.
 
-## General
-
 **Q:** Changing the settings files do nothing!?  
-**A:** Make sure you are __NOT__ editing the system default settings. See __Starting the bot__ in the [README](README.md).
+**A:** Make sure you are __NOT__ editing the system default settings. See the __Step-by-step Guide__ in the [README](README.md).
 
 **Q:** The bot seem to miss-click, do I need to update any coordinates?  
 **A1:** If you have moved or re-sized the client window, just hit <kbd>Alt+F6</kbd> and try again.  
-**A2:** If you run in the browser, make sure the `browserTopMargin` setting is correct. See __Configuration > Mandatory lib settings__ in the [README](README.md).
+**A2:** Make sure the `browserTopMargin` setting is correct. See the __Step-by-step Guide__ in the [README](README.md).
 
-**Q:** I run the web client and have focus issues, why?  
+**Q:** I have focus issues, why?  
 **A1:** You need to run CH in one browser (e.g. Opera), then do your normal surfing in another (e.g. Chrome).  
-**A2:** Make sure the CH window IS NOT focused when you start a run.
+**A2:** Make sure the CH window IS NOT focused when you start a run.  
+**A3:** A trick to get focus back, is to left-click and *draw some boxes* on your desktop.
 
 **Q:** Why do I get an error when trying to run one of the script files?  
 **A:** Make sure you have the latest version of both [AutoHotkey][] and the bot.
@@ -46,14 +49,11 @@
 
 **Q1:** Can I turn off sounds?  
 **Q2:** Can I move the text splash windows or the progress bar?  
-**A1:** Yes. Under __Optional Settings__, you’ll find the __Look & Feel__ section. The monster clicker has similar settings.  
-**A2:** Screenshot sounds in Steam can also be turned off: Right-click __Steam__ in your toolbar and uncheck __Play a sound__ under __Settings > In-Game__
+**A1:** Yes. Under __Optional Settings__, you’ll find the __Look & Feel__ section. The monster clicker has similar settings.
 
 **Q:** I just can’t get the bot to work and none of the answers above did help. What should I do?  
 **A:** Ask me on [Reddit][home]. Also link me a [Pastebin][] with the contents of today's log file in the logs folder.
 
 [AutoHotkey]: http://ahkscript.org/
-[Ancients Optimizer]: http://philni.neocities.org/ancientssoul.html
-[regilding chart]: https://redd.it/3frj62
 [home]: https://redd.it/3wxwfu
 [Pastebin]: http://pastebin.com/

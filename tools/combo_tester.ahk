@@ -6,10 +6,9 @@
 #Persistent
 #NoEnv
 
-SetTitleMatchMode, regex ; Steam [3] or browser [regex] version?
+SetTitleMatchMode, regex
 
-; winName=Clicker Heroes ; Steam
-winName=Lvl.*Clicker Heroes.* ; browser
+winName=Lvl.*Clicker Heroes.*
 
 ; Deep run skill combo tests
 ; https://redd.it/3il3tx
