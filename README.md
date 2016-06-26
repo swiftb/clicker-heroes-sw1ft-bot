@@ -138,7 +138,7 @@ Make sure these match with your settings and that you follow the recommended tra
 
 ## Known issues
 
-* If active, the power savings setting turning of your monitor(s) can cause issues with AHK's image recognition. When last tested, only Firefox continued to run without any issues.
+* If active, the power savings setting turning off your monitor(s) can cause issues with AHK's image recognition. When last tested, only Firefox continued to run without any issues.
 * The script can't handle any extra _stuff_ on the left side, e.g. a bookmark list.
 
 ## Vision Run Error States
@@ -184,7 +184,7 @@ Check the [FAQ](FAQ.md) or visit the original script [home][] on Reddit.
 
 [Reddit]: https://www.reddit.com/r/ClickerHeroes/
 [AutoHotkey]: http://ahkscript.org/
-[home]: https://redd.it/3wxwfu
+[home]: https://www.reddit.com/r/ClickerHeroes/comments/4phxdg/clicker_heroes_sw1ft_bot/?sort=new
 [latest bot release]: https://github.com/swiftb/clicker-heroes-sw1ft-bot/releases/latest
 [regilding chart]: https://redd.it/3frj62
 [Sublime Text]: https://www.sublimetext.com/

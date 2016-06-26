@@ -55,5 +55,5 @@
 **A:** Ask me on [Reddit][home]. Also link me a [Pastebin][] with the contents of today's log file in the logs folder.
 
 [AutoHotkey]: http://ahkscript.org/
-[home]: https://redd.it/3wxwfu
+[home]: https://www.reddit.com/r/ClickerHeroes/comments/4phxdg/clicker_heroes_sw1ft_bot/?sort=new
 [Pastebin]: http://pastebin.com/

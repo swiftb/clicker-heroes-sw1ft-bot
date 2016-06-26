@@ -417,7 +417,7 @@ visionRun() {
 	local zone := startZone
 	zoneTicks := {}
 	local initiatedZone := 0
-	local earliestAscendZone := 129 ; xx4/xx9
+	local earliestAscendZone := 140
 	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger) * 250 - 75 : earliestAscendZone
 	local initZone := 146
 	local earlyGameZone := 175
@@ -553,7 +553,7 @@ visionRun() {
 			elapsedZoneTime := timeBetweenZones(zone-1, zone)
 			zoneTimeIncrease := (elapsedZoneTime - previousZoneTime) / previousZoneTime
 
-			if (zoneTimeIncrease > 1.5) {
+			if (zoneTimeIncrease > 2.0) {
 				logVariable("previousZoneTime", previousZoneTime,, "TRACE")
 				logVariable("elapsedZoneTime", elapsedZoneTime,, "TRACE")
 				showTraceSplash("zoneTimeIncrease = " . zoneTimeIncrease . " @ Lvl " . zone)
@@ -568,7 +568,7 @@ visionRun() {
 			if (secPerMonster >= farmMonsterKillTime and zoneTimeIncrease < 2.5) {
 				showDebugSplash("Lvl " . zone-1 . " -> " . zone . " - Avg monster kill time: " . round(secPerMonster, 2))
 				; No! Time to ascend?
-				if (secPerMonster >= maxMonsterKillTime and zone >= estimatedAscendLevel) {
+				if (secPerMonster >= maxMonsterKillTime and zone > estimatedAscendLevel) {
 					; Yeah, we are done here
 					triggerAscension("End of run")
 					break
@@ -583,17 +583,13 @@ visionRun() {
 
 		; Progressing?
 		if (mod(t, progressCheckDelay) = 0) {
-			if (gameMode = "INIT" and isInitiated and t > bossFightTimer) {
-				triggerAscension("Stuck in INIT mode")
-				break
-			}
 			if (!locateImage(imgProgression) and gameMode != "FARMING") {
 				if (zone > estimatedAscendLevel) {
 					triggerAscension("Stuck at high level boss")
 					break
+				} else {
+					startFarming()
 				}
-				; Unless we are farming, toggle progression back on
-				setProgressionMode()
 			}
 		}
 
@@ -1152,7 +1148,7 @@ checkSafetyZones() {
 				Thread, NoTimers ; block timers
 				playNotificationSound()
 				clickerModeSlow()
-				if (locateImage(imgProgression)) {
+				if (locateImage(imgSmile)) {
 					msgbox,,% script,Click safety pause engaged. Resume?
 					clickAwayImage(imgCombatTab)
 					isResuming := true
@@ -1189,7 +1185,7 @@ timeBetweenZones(z1, z2) {
 	global
 	local z1tick := zoneTicks.HasKey(z1) ? zoneTicks[z1] : A_TickCount
 	local z2tick := zoneTicks.HasKey(z2) ? zoneTicks[z2] : A_TickCount
-	return abs(z1tick - z2tick) / 1000
+	return abs(z1tick - z2tick) / 1000.0
 }
 
 storeZoneTick() {
@@ -1249,23 +1245,27 @@ logZoneData(zStart, zEnd, zInterval) {
 
 startFarming() {
 	global
-	setGameMode("FARMING")
-	setFarmMode()
-	scrollToZone(zoneTicks.MaxIndex())
-	local farmZone := getCurrentZone()
-	if (mod(farmZone, 5) = 0) {
-		scrollToZone(--farmZone)
+	if (gameMode != "FARMING") {
+		setGameMode("FARMING")
+		setFarmMode()
+		scrollToZone(zoneTicks.MaxIndex())
+		local farmZone := getCurrentZone()
+		if (mod(farmZone, 5) = 0) {
+			scrollToZone(--farmZone)
+		}
+		; Farm on highest recorded non-boss zone
+		showDebugSplash("Farm @ Lvl " . farmZone . " for " . farmTime . "s")
+		SetTimer, farmTimer, % -farmTime * 1000
 	}
-	; Farm on highest recorded non-boss zone
-	showDebugSplash("Farm @ Lvl " . farmZone . " for " . farmTime . "s")
-	SetTimer, farmTimer, % -farmTime * 1000
 }
 
 bossFight() {
 	global
-	setGameMode("FIGHTING")
-	setProgressionMode()
-	SetTimer, bossTimer, % -bossFightTimer * 1000
+	if (gameMode != "FIGHTING") {
+		setGameMode("FIGHTING")
+		setProgressionMode()
+		SetTimer, bossTimer, % -bossFightTimer * 1000
+	}
 }
 
 ; -----------------------------------------------------------------------------------------
