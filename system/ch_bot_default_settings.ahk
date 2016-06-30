@@ -69,7 +69,8 @@ skillCombo := comboGoldenLuck
 
 ; -- Look & Feel --------------------------------------------------------------------------
 
-; true or false
+noSleep := false ; keep your computer awake and display turned on
+
 global playNotificationSounds := false ; <Shift+Ctrl+F6>
 global playWarningSounds := true ; <Shift+Ctrl+F7>
 

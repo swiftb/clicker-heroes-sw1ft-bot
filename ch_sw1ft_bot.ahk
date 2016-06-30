@@ -1022,12 +1022,18 @@ startMonitoring() {
 	global
 	setTimer, checkMousePosition, 250
 	setTimer, checkWindowVisibility, 20000
+	if (noSleep) {
+		setTimer, noSleepTimer, 5000
+	}
 }
 
 stopMonitoring() {
 	global
 	setTimer, checkMousePosition, off
 	setTimer, checkWindowVisibility, off
+	if (noSleep) {
+		setTimer, noSleepTimer, off
+	}
 }
 
 handleScheduledReload(function := "") {
@@ -1335,4 +1341,8 @@ return
 
 nextZoneTimer:
 	nextZone()
+return
+
+noSleepTimer:
+	DllCall( "SetThreadExecutionState", UInt, 0x80000003) ; ES_DISPLAY_REQUIRED + ES_SYSTEM_REQUIRED
 return

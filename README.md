@@ -102,7 +102,7 @@ Recommended optional settings:
 
 * Set `autoAscend` to "true"
 * Set `saveBeforeAscending` to "true"
-
+* Set `noSleep` to "true"
 
 **8.** Save and reload with <kbd>Alt+F5</kbd>, then start the Vision Run with <kbd>Ctrl+F1</kbd>.
 
@@ -138,7 +138,7 @@ Make sure these match with your settings and that you follow the recommended tra
 
 ## Known issues
 
-* If active, the power savings setting turning off your monitor(s) can cause issues with AHK's image recognition. When last tested, only Firefox continued to run without any issues.
+* Active power savings settings turning off your monitor(s), can cause issues with AHK's image recognition. To combat this, you can enable the `noSleep` bot setting.
 * The script can't handle any extra _stuff_ on the left side, e.g. a bookmark list.
 
 ## Vision Run Error States

@@ -21,7 +21,7 @@
 **A:** No. The image recognition functionality requires it to be visible at all times.
 
 **Q:** The monitor power savings seems to cause issues!  
-**A:** Either use Firefox or turn the power savings off.
+**A:** Either enable the `noSleep` bot setting, or turn the power savings off.
 
 **Q:** Changing the settings files do nothing!?  
 **A:** Make sure you are __NOT__ editing the system default settings. See the __Step-by-step Guide__ in the [README](README.md).

@@ -12,9 +12,6 @@ browserTopMargin := 211
 
 ; Browser recommendation: Run Clicker Heroes in Firefox or Opera, then use Chrome or some other browser for your normal surfing activities.
 
-; If active, the power savings setting turning of your monitor(s) can cause issues with AHK's image recognition.
-; When last tested, only Firefox continued to run without any issues.
-
 ; -----------------------------------------------------------------------------------------
 ; -- Optional Settings
 ; -----------------------------------------------------------------------------------------
