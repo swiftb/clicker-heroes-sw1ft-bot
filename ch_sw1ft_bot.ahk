@@ -1023,7 +1023,7 @@ startMonitoring() {
 	setTimer, checkMousePosition, 250
 	setTimer, checkWindowVisibility, 20000
 	if (noSleep) {
-		setTimer, noSleepTimer, 5000
+		DllCall( "SetThreadExecutionState", UInt, 0x80000003) ; ES_CONTINUOUS + ES_DISPLAY_REQUIRED + ES_SYSTEM_REQUIRED
 	}
 }
 
@@ -1032,7 +1032,7 @@ stopMonitoring() {
 	setTimer, checkMousePosition, off
 	setTimer, checkWindowVisibility, off
 	if (noSleep) {
-		setTimer, noSleepTimer, off
+		DllCall( "SetThreadExecutionState", UInt, 0x80000000) ; ES_CONTINUOUS
 	}
 }
 
@@ -1341,8 +1341,4 @@ return
 
 nextZoneTimer:
 	nextZone()
-return
-
-noSleepTimer:
-	DllCall( "SetThreadExecutionState", UInt, 0x80000003) ; ES_DISPLAY_REQUIRED + ES_SYSTEM_REQUIRED
 return
