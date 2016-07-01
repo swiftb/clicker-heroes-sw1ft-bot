@@ -21,7 +21,7 @@
 **A:** No. The image recognition functionality requires it to be visible at all times.
 
 **Q:** The monitor power savings seems to cause issues!  
-**A:** Either use Firefox or turn the power savings off.
+**A:** Either enable the `noSleep` bot setting, or turn the power savings off.
 
 **Q:** Changing the settings files do nothing!?  
 **A:** Make sure you are __NOT__ editing the system default settings. See the __Step-by-step Guide__ in the [README](README.md).
@@ -55,5 +55,5 @@
 **A:** Ask me on [Reddit][home]. Also link me a [Pastebin][] with the contents of today's log file in the logs folder.
 
 [AutoHotkey]: http://ahkscript.org/
-[home]: https://redd.it/3wxwfu
+[home]: https://www.reddit.com/r/ClickerHeroes/comments/4phxdg/clicker_heroes_sw1ft_bot/?sort=new
 [Pastebin]: http://pastebin.com/

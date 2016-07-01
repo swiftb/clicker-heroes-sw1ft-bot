@@ -26,6 +26,8 @@ scheduleReload := false
 scheduleStop := false
 manualProgression := false
 
+elapsedTime := 0.0
+
 ; -----------------------------------------------------------------------------------------
 
 #Include system\wm_messages.ahk
@@ -370,7 +372,7 @@ visionRun() {
 	exitThread := false
 	isResuming := false
 
-	local startTime := A_TickCount
+	local startRunTime := A_TickCount
 	
 	local isInitiated := false
 	local isClickerRunning := false
@@ -388,7 +390,7 @@ visionRun() {
 	local progressCheckDelay := 10
 
 	local t := 0
-	local elapsedTime := 0
+	local elapsedRunTime := 0
 
 	local comboDelay := skillCombo[1]
 	comboIndex := 2
@@ -402,9 +404,6 @@ visionRun() {
 		SetTimer, nextZoneTimer, 500
 	}
 
-	local elapsedZoneTime := 0
-	local zoneTimeIncrease := 0
-	local previousZoneTime := 2.0 * (10.0 + kumawakamaru)
 	local previousZone := 0
 
 	local secPerMonster := 0
@@ -412,12 +411,13 @@ visionRun() {
 
 	farmTime := 60
 	bossFightTimer := 30 + chronos + 1
+	bossFailCounter := 0
 
 	local startZone := getCurrentZone()
 	local zone := startZone
-	zoneTicks := {}
+	zoneTime := {}
 	local initiatedZone := 0
-	local earliestAscendZone := 129 ; xx4/xx9
+	local earliestAscendZone := 140
 	local estimatedAscendLevel := gildedRanger ? abs(gildedRanger) * 250 - 75 : earliestAscendZone
 	local initZone := 146
 	local earlyGameZone := 175
@@ -440,18 +440,20 @@ visionRun() {
 	}
 
 	startMonitoring()
+	startTimer()
 	reFocus()
 
-	SetTimer, zoneTickTimer, 500
+	SetTimer, zoneTimer, 500
 
 	loop
 	{
 		if (exitThread) {
-			zoneTicks := ""
+			zoneTime := ""
 			SetTimer, nextZoneTimer, off
-			SetTimer, zoneTickTimer, off
+			SetTimer, zoneTimer, off
 			SetTimer, comboTimer, off
 			clickerStop()
+			stopTimer()
 			stopMonitoring()
 			showUserSplash("Vision Run aborted!")
 			exit
@@ -550,25 +552,15 @@ visionRun() {
 		; Ascend or keep farming?
 		if (zone > 10 and zone > previousZone and mod(zone-4, 5) = 0 and gameMode = "PROGRESSING") {
 			; Progressing @ zone before boss?
-			elapsedZoneTime := timeBetweenZones(zone-1, zone)
-			zoneTimeIncrease := (elapsedZoneTime - previousZoneTime) / previousZoneTime
-
-			if (zoneTimeIncrease > 1.5) {
-				logVariable("previousZoneTime", previousZoneTime,, "TRACE")
-				logVariable("elapsedZoneTime", elapsedZoneTime,, "TRACE")
-				showTraceSplash("zoneTimeIncrease = " . zoneTimeIncrease . " @ Lvl " . zone)
-			}
-
 			previousZone := zone
-			previousZoneTime := elapsedZoneTime
 
 			; Calculate average monster kill time for the previous zone
-			secPerMonster := elapsedZoneTime / (10.0 + kumawakamaru)
+			secPerMonster := timeBetweenZones(zone-1, zone) / (10.0 + kumawakamaru)
 			; Fast enough to kill next boss easily?
-			if (secPerMonster >= farmMonsterKillTime and zoneTimeIncrease < 2.5) {
+			if (secPerMonster >= farmMonsterKillTime) {
 				showDebugSplash("Lvl " . zone-1 . " -> " . zone . " - Avg monster kill time: " . round(secPerMonster, 2))
 				; No! Time to ascend?
-				if (secPerMonster >= maxMonsterKillTime and zone >= estimatedAscendLevel) {
+				if (secPerMonster >= maxMonsterKillTime and zone > estimatedAscendLevel) {
 					; Yeah, we are done here
 					triggerAscension("End of run")
 					break
@@ -583,17 +575,18 @@ visionRun() {
 
 		; Progressing?
 		if (mod(t, progressCheckDelay) = 0) {
-			if (gameMode = "INIT" and isInitiated and t > bossFightTimer) {
-				triggerAscension("Stuck in INIT mode")
-				break
-			}
 			if (!locateImage(imgProgression) and gameMode != "FARMING") {
-				if (zone > estimatedAscendLevel) {
-					triggerAscension("Stuck at high level boss")
-					break
+				if (++bossFailCounter < 2) {
+					showDebugSplash("Try boss one more time...")
+					setProgressionMode()
+				} else {
+					if (zone > estimatedAscendLevel) {
+						triggerAscension("Stuck at high level boss")
+						break
+					} else {
+						startFarming()
+					}
 				}
-				; Unless we are farming, toggle progression back on
-				setProgressionMode()
 			}
 		}
 
@@ -642,19 +635,20 @@ visionRun() {
 	}
 
 	SetTimer, nextZoneTimer, off
-	SetTimer, zoneTickTimer, off
+	SetTimer, zoneTimer, off
 
 	if (useZoneDataLogger) {
 		logZoneData(zdlStart, zone, zdlInterval)
 	}
-	zoneTicks := ""
+	zoneTime := ""
 
 	SetTimer, comboTimer, off
 	clickerStop()
+	stopTimer()
 	stopMonitoring()
 
-	elapsedTime := (A_TickCount - startTime) / 1000
-	showSplash("Vision Run duration: " . formatSeconds(elapsedTime))
+	elapsedRunTime := (A_TickCount - startRunTime) / 1000
+	showSplash("Vision Run duration: " . formatSeconds(elapsedRunTime))
 }
 
 gildedCheck(byref tr1, byref tr2, byref earlyGameZone) {
@@ -1028,12 +1022,18 @@ startMonitoring() {
 	global
 	setTimer, checkMousePosition, 250
 	setTimer, checkWindowVisibility, 20000
+	if (noSleep) {
+		DllCall( "SetThreadExecutionState", UInt, 0x80000003) ; ES_CONTINUOUS + ES_DISPLAY_REQUIRED + ES_SYSTEM_REQUIRED
+	}
 }
 
 stopMonitoring() {
 	global
 	setTimer, checkMousePosition, off
 	setTimer, checkWindowVisibility, off
+	if (noSleep) {
+		DllCall( "SetThreadExecutionState", UInt, 0x80000000) ; ES_CONTINUOUS
+	}
 }
 
 handleScheduledReload(function := "") {
@@ -1152,7 +1152,7 @@ checkSafetyZones() {
 				Thread, NoTimers ; block timers
 				playNotificationSound()
 				clickerModeSlow()
-				if (locateImage(imgProgression)) {
+				if (locateImage(imgSmile)) {
 					msgbox,,% script,Click safety pause engaged. Resume?
 					clickAwayImage(imgCombatTab)
 					isResuming := true
@@ -1187,36 +1187,38 @@ nextZone() {
 
 timeBetweenZones(z1, z2) {
 	global
-	local z1tick := zoneTicks.HasKey(z1) ? zoneTicks[z1] : A_TickCount
-	local z2tick := zoneTicks.HasKey(z2) ? zoneTicks[z2] : A_TickCount
-	return abs(z1tick - z2tick) / 1000
+	local currentTime := getTime()
+	local z1time := zoneTime.HasKey(z1) ? zoneTime[z1] : currentTime
+	local z2time := zoneTime.HasKey(z2) ? zoneTime[z2] : currentTime
+	return abs(z1time - z2time)
 }
 
-storeZoneTick() {
+storeZoneTime() {
 	global
 	local cz := getCurrentZone()
 	if (cz > 0) {
 		local pz := cz - 1
-		local currentTime := A_TickCount
+		local currentTime := getTime()
 
-		if (!zoneTicks.HasKey(pz)) {
-			zoneTicks[pz] := currentTime
+		if (!zoneTime.HasKey(pz)) {
+			zoneTime[pz] := currentTime
 		}
-		if (!zoneTicks.HasKey(cz)) {
-			zoneTicks[cz] := currentTime
+		if (!zoneTime.HasKey(cz)) {
+			zoneTime[cz] := currentTime
 			; Reached a new non-boss zone?
-			if (gameMode != "PROGRESSING" and mod(cz, 5) > 0 and zoneTicks.MaxIndex() > 1) {
+			if (gameMode != "PROGRESSING" and mod(cz, 5) > 0 and zoneTime.MaxIndex() > 1) {
 				; Yup!
 				setGameMode("PROGRESSING")
 			}
+			bossFailCounter := 0
 		}
 	}
 }
 
 logZoneData(zStart, zEnd, zInterval) {
 	global
-	local startZone := zStart < zoneTicks.MinIndex() ? zoneTicks.MinIndex() : zStart
-	local endZone := zEnd > zoneTicks.MaxIndex() ? zoneTicks.MaxIndex() : zEnd
+	local startZone := zStart < zoneTime.MinIndex() ? zoneTime.MinIndex() : zStart
+	local endZone := zEnd > zoneTime.MaxIndex() ? zoneTime.MaxIndex() : zEnd
 	local intervals := ceil((endZone - startZone) / zInterval)
 
 	local zone := startZone
@@ -1249,28 +1251,51 @@ logZoneData(zStart, zEnd, zInterval) {
 
 startFarming() {
 	global
-	setGameMode("FARMING")
-	setFarmMode()
-	scrollToZone(zoneTicks.MaxIndex())
-	local farmZone := getCurrentZone()
-	if (mod(farmZone, 5) = 0) {
-		scrollToZone(--farmZone)
+	if (gameMode != "FARMING") {
+		setGameMode("FARMING")
+		setFarmMode()
+		scrollToZone(zoneTime.MaxIndex())
+		local farmZone := getCurrentZone()
+		if (mod(farmZone, 5) = 0) {
+			scrollToZone(--farmZone)
+		}
+		; Farm on highest recorded non-boss zone
+		showDebugSplash("Farm @ Lvl " . farmZone . " for " . farmTime . "s")
+		SetTimer, farmTimer, % -farmTime * 1000
 	}
-	; Farm on highest recorded non-boss zone
-	showDebugSplash("Farm @ Lvl " . farmZone . " for " . farmTime . "s")
-	SetTimer, farmTimer, % -farmTime * 1000
 }
 
 bossFight() {
 	global
-	setGameMode("FIGHTING")
-	setProgressionMode()
-	SetTimer, bossTimer, % -bossFightTimer * 1000
+	if (gameMode != "FIGHTING") {
+		setGameMode("FIGHTING")
+		setProgressionMode()
+		SetTimer, bossTimer, % -bossFightTimer * 1000
+	}
+}
+
+startTimer() {
+	global
+	SetTimer, timeTick, 250, 4 ; prio 4
+}
+
+stopTimer() {
+	global
+	SetTimer, timeTick, off
+}
+
+getTime() {
+	global
+	return elapsedTime
 }
 
 ; -----------------------------------------------------------------------------------------
 ; -- Subroutines
 ; -----------------------------------------------------------------------------------------
+
+timeTick:
+	elapsedTime += 0.25
+return
 
 ; Safety zone around the in-game tabs (that triggers an automatic script pause when breached)
 checkMousePosition:
@@ -1310,8 +1335,8 @@ ascendTimer:
 	readyToAscend := true
 return
 
-zoneTickTimer:
-	storeZoneTick()
+zoneTimer:
+	storeZoneTime()
 return
 
 nextZoneTimer:
