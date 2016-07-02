@@ -14,7 +14,7 @@ gildedRanger := 0 ; the number of your main gilded ranger
 endLvlIdle := 100000
 endLvlActive := 0
 ; idle:   set endLvlActive = 0
-; hybrid: set endLvlActive > endLvlIdle
+; hybrid: set endLvlActive > endLvlIdle > 0
 ; active: set endLvlIdle = 0
 
 chronos := 0.00 ; +#.## seconds to Boss Fight timers
@@ -24,6 +24,9 @@ vaagur := -0.00 ; -#.##% skill cooldowns
 ; -----------------------------------------------------------------------------------------
 ; -- Optional Settings
 ; -----------------------------------------------------------------------------------------
+
+; [Hybrid] Toggle active when exceeded
+maxIdleMonsterKillTime := 0.4 ; seconds
 
 ; Ascend when exceeded
 maxMonsterKillTime := 2.5 ; seconds

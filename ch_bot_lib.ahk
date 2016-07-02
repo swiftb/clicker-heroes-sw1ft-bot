@@ -9,8 +9,6 @@ libVersion=4.0
 
 winName := "Clicker Heroes"
 
-global ProgressBar, ProgressBarTime ; progress bar controls
-
 exitThread := false
 
 chWinId := ""

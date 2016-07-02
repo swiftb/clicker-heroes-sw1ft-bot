@@ -122,7 +122,7 @@ Open today's log file. The most important bits here are:
     INFO    Recommended transitional hero(es): Banana > Alabaster
     DEBUG   Estimated ascension @ Lvl 3075 (idle), 3475 (active)
 
-Make sure these match with your settings and that you follow the recommended transitional hero(es).
+Make sure these match with your settings. Also put 1 gild on the recommended transitional hero(es).
 
 ## Troubleshooting
 

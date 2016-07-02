@@ -328,6 +328,7 @@ loopVisionRun() {
 	logVariable("gildedRanger", rangers[gildedRanger])
 	logVariable("endLvlIdle", endLvlIdle)
 	logVariable("endLvlActive", endLvlActive)
+	logVariable("maxIdleMonsterKillTime", maxIdleMonsterKillTime)
 	logVariable("maxMonsterKillTime", maxMonsterKillTime)
 	logVariable("chronos", chronos)
 	logVariable("kumawakamaru", kumawakamaru)
@@ -338,6 +339,7 @@ loopVisionRun() {
 	logVariable("clickableHuntDelay", clickableHuntDelay)
 	logVariable("saveBeforeAscending", saveBeforeAscending, true)
 	logVariable("autoAscend", autoAscend, true)
+	logVariable("noSleep", noSleep, true)
 	logVariable("levelSolomon", levelSolomon, true)
 
 	loop
@@ -377,7 +379,7 @@ visionRun() {
 	local isInitiated := false
 	local isClickerRunning := false
 	local isComboActive := false
-	local hasActivatedSkills := false
+	local triggerActive := false
 	local hasBomberBuff := gildedRanger = 12 ? true : false
 	local hasGogBuff := gildedRanger = 13 ? true : false
 	local foundTheHero := false
@@ -405,7 +407,9 @@ visionRun() {
 	}
 
 	local previousZone := 0
+	local previousIdleZone := 0
 
+	local zoneMonsters := 10.0 + kumawakamaru
 	local secPerMonster := 0
 	local farmMonsterKillTime := 2.0 ; stop and farm before boss when exceeded
 
@@ -465,7 +469,7 @@ visionRun() {
 		}
 
 		; Active zone?
-		if (isActiveZone(zone)) {
+		if (isActiveZone(zone) or triggerActive) {
 			if (!isClickerRunning) {
 				; Yup, start hammering!
 				clickerStart() ; ~38 CPS
@@ -549,17 +553,33 @@ visionRun() {
 
 		zone := getCurrentZone()
 
+		; [Hybrid] Trigger active?
+		if (!triggerActive and isHybrid()) {
+			if (zone > 10 and zone > previousIdleZone) {
+				previousIdleZone := zone
+				; Calculate average monster kill time for the previous 5 zones
+				secPerMonster := timeBetweenZones(zone-5, zone) / 5.0 / zoneMonsters
+				; Still insta-killing?
+				if (secPerMonster >= maxIdleMonsterKillTime) {
+					; No, trigger active
+					showDebugSplash("Lvl " . zone-5 . " -> " . zone . " - Avg monster kill time: " . round(secPerMonster, 2))
+					triggerActive := true
+				}
+			} else if (gameMode = "INIT" and isInitiated and t > 5) {
+				triggerActive := true
+			}
+		}
+
 		; Ascend or keep farming?
 		if (zone > 10 and zone > previousZone and mod(zone-4, 5) = 0 and gameMode = "PROGRESSING") {
-			; Progressing @ zone before boss?
+			; Progressing @ zone before boss
 			previousZone := zone
-
 			; Calculate average monster kill time for the previous zone
-			secPerMonster := timeBetweenZones(zone-1, zone) / (10.0 + kumawakamaru)
+			secPerMonster := timeBetweenZones(zone-2, zone) / 2.0 / zoneMonsters
 			; Fast enough to kill next boss easily?
 			if (secPerMonster >= farmMonsterKillTime) {
-				showDebugSplash("Lvl " . zone-1 . " -> " . zone . " - Avg monster kill time: " . round(secPerMonster, 2))
-				; No! Time to ascend?
+				showDebugSplash("Lvl " . zone-2 . " -> " . zone . " - Avg monster kill time: " . round(secPerMonster, 2))
+				; No, time to ascend?
 				if (secPerMonster >= maxMonsterKillTime and zone > estimatedAscendLevel) {
 					; Yeah, we are done here
 					triggerAscension("End of run")
@@ -688,6 +708,11 @@ setGameMode(newGameMode) {
 	global
 	showTraceSplash(gameMode . " --> " . newGameMode . " @ Lvl " . getCurrentZone())
 	gameMode := newGameMode
+}
+
+isHybrid() {
+	global
+	return endLvlActive > endLvlIdle and endLvlIdle > 0
 }
 
 isActiveZone(zone) {
@@ -1206,7 +1231,7 @@ storeZoneTime() {
 		if (!zoneTime.HasKey(cz)) {
 			zoneTime[cz] := currentTime
 			; Reached a new non-boss zone?
-			if (gameMode != "PROGRESSING" and mod(cz, 5) > 0 and zoneTime.MaxIndex() > 1) {
+			if (gameMode != "PROGRESSING" and mod(cz, 5) > 0 and pz > zoneTime.MinIndex()) {
 				; Yup!
 				setGameMode("PROGRESSING")
 			}
@@ -1270,7 +1295,7 @@ bossFight() {
 	if (gameMode != "FIGHTING") {
 		setGameMode("FIGHTING")
 		setProgressionMode()
-		SetTimer, bossTimer, % -bossFightTimer * 1000
+		SetTimer, bossTimer, % -bossFightTimer * 1000, 2 ; prio 2
 	}
 }
 
