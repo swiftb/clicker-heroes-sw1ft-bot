@@ -554,7 +554,7 @@ visionRun() {
 		zone := getCurrentZone()
 
 		; [Hybrid] Trigger active?
-		if (!triggerActive and isHybrid()) {
+		if (!triggerActive and isHybrid() and !isClickerRunning) {
 			if (zone > 10 and zone > previousIdleZone) {
 				previousIdleZone := zone
 				; Calculate average monster kill time for the previous 5 zones

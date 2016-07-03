@@ -48,7 +48,7 @@
 **A:** Yes, set the `autoAscend` option to `true`.
 
 **Q1:** Can I turn off sounds?  
-**Q2:** Can I move the text splash windows or the progress bar?  
+**Q2:** Can I move the text splash windows?  
 **A1:** Yes. Under __Optional Settings__, you’ll find the __Look & Feel__ section. The monster clicker has similar settings.
 
 **Q:** I just can’t get the bot to work and none of the answers above did help. What should I do?  
