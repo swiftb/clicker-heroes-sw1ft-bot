@@ -597,7 +597,6 @@ visionRun() {
 		if (mod(t, progressCheckDelay) = 0) {
 			if (!locateImage(imgProgression) and gameMode != "FARMING") {
 				if (++bossFailCounter < 2) {
-					showDebugSplash("Try boss one more time...")
 					setProgressionMode()
 				} else {
 					if (zone > estimatedAscendLevel) {
@@ -1246,6 +1245,10 @@ logZoneData(zStart, zEnd, zInterval) {
 	local endZone := zEnd > zoneTime.MaxIndex() ? zoneTime.MaxIndex() : zEnd
 	local intervals := ceil((endZone - startZone) / zInterval)
 
+	if (startZone >= endZone) {
+		return 0
+	}
+
 	local zone := startZone
 	local prevZone := zone - zInterval
 
@@ -1312,6 +1315,21 @@ stopTimer() {
 getTime() {
 	global
 	return elapsedTime
+}
+
+getCurrentZone() {
+	global
+	local zone
+	; Try get the current zone lvl
+	loop 2 {
+		zone := getZone()
+		if (zone > 0) {
+			return zone
+		}
+		sleep % zzz
+	}
+	showTraceSplash("Failed to get current zone lvl!")
+	return zoneTime.MaxIndex()
 }
 
 ; -----------------------------------------------------------------------------------------

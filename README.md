@@ -115,13 +115,12 @@ Open today's log file. The most important bits here are:
     DEBUG   browser = Opera
     DEBUG   browserTopMargin = 216
     DEBUG   gildedRanger = Moloch
-    DEBUG   endLvlIdle = 1600
+    DEBUG   endLvlIdle = 99999
     DEBUG   endLvlActive = 100000
     DEBUG   chronos = 11.36
     DEBUG   kumawakamaru = -2.59
     DEBUG   vaagur = -39.71
     INFO    Recommended transitional hero(es): Banana > Alabaster
-    DEBUG   Estimated ascension @ Lvl 3075 (idle), 3475 (active)
 
 Make sure these match with your settings. Also put 1 gild on the recommended transitional hero(es).
 
