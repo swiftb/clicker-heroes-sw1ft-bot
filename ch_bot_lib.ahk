@@ -9,8 +9,6 @@ libVersion=4.0
 
 winName := "Clicker Heroes"
 
-global ProgressBar, ProgressBarTime ; progress bar controls
-
 exitThread := false
 
 chWinId := ""
@@ -424,7 +422,7 @@ toggleFlag(flagName, byref flag) {
 }
 
 scrollToZone(zone) {
-	scrollZone(getCurrentZone(), zone)
+	scrollZone(getZone(), zone)
 }
 
 scrollZone(fromZone, toZone) {
@@ -440,12 +438,12 @@ scrollZone(fromZone, toZone) {
 	}
 }
 
-getCurrentZone() {
+getZone() {
 	global
-	local title, currentZone
+	local title, zone
 	WinGetTitle, title, ahk_id %chWinId%
-	currentZone := SubStr(title, 5, InStr(title, "-") - 6)
-	return currentZone
+	zone := SubStr(title, 5, InStr(title, "-") - 6)
+	return zone
 }
 
 reFocus() {

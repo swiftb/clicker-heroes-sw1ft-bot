@@ -10,11 +10,13 @@
 ; 15:Betty, 16:Midas (use Wepwawet as the last transitional ranger)
 gildedRanger := 0 ; the number of your main gilded ranger
 
-; Ascensions will automatically trigger when things slow down to much
+; The bot will automatically:
+; - Switch from idle to active in hybrid mode (see maxIdleMonsterKillTime)
+; - Trigger ascensions (see maxMonsterKillTime)
 endLvlIdle := 100000
 endLvlActive := 0
 ; idle:   set endLvlActive = 0
-; hybrid: set endLvlActive > endLvlIdle
+; hybrid: set endLvlActive > endLvlIdle > 0
 ; active: set endLvlIdle = 0
 
 chronos := 0.00 ; +#.## seconds to Boss Fight timers
@@ -25,7 +27,10 @@ vaagur := -0.00 ; -#.##% skill cooldowns
 ; -- Optional Settings
 ; -----------------------------------------------------------------------------------------
 
-; Ascend when exceeded
+; [Hybrid] Trigger active when exceeded
+maxIdleMonsterKillTime := 0.45 ; seconds
+
+; Trigger ascension when exceeded
 maxMonsterKillTime := 2.5 ; seconds
 ; At a zone average monster kill time of 2.0 or higher, the bot will stop and farm before attempting a boss.
 ; Setting the max to 2.0 or lower, will cause the bot to immediately ascend instead

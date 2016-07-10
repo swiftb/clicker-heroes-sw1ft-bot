@@ -19,10 +19,11 @@ A game bot for [Clicker Heroes][Reddit].
     - Supports idle, hybrid and active play
     - Finds gilded heroes/rangers automatically
     - Picks up *clickables* without breaking idle
-    - Dynamic ascensions triggered by a tunable _max monster kill time_ setting
+    - Automatic switches from idle to active in hybrid mode
+    - Automatic ascensions
+    - Automatic reload/restart/resume
     - Option to auto-save before ascending
     - Option to auto-level Solomon after ascending
-    - Can automatically resume
     - **Limitations:** Only supported in the CH browser client (in low quality). The window must also be visible in the foreground
 * Hotkeys for raiding
 * Separate active _monster clicker_ script
@@ -114,15 +115,14 @@ Open today's log file. The most important bits here are:
     DEBUG   browser = Opera
     DEBUG   browserTopMargin = 216
     DEBUG   gildedRanger = Moloch
-    DEBUG   endLvlIdle = 1600
+    DEBUG   endLvlIdle = 99999
     DEBUG   endLvlActive = 100000
     DEBUG   chronos = 11.36
     DEBUG   kumawakamaru = -2.59
     DEBUG   vaagur = -39.71
     INFO    Recommended transitional hero(es): Banana > Alabaster
-    DEBUG   Estimated ascension @ Lvl 3075 (idle), 3475 (active)
 
-Make sure these match with your settings and that you follow the recommended transitional hero(es).
+Make sure these match with your settings. Also put 1 gild on the recommended transitional hero(es).
 
 ## Troubleshooting
 
